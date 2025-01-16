@@ -1,0 +1,24 @@
+'use strict'
+
+
+const crypto = require('crypto')
+
+const generatorRandomToken = () => {
+    const token = crypto.randomInt(0, (Math.pow(2, 32)))
+    return token
+}
+
+const replacePlaceHolder = ( template, params) => {
+    Object.keys(params).forEach( k => {
+      const placeholder = `{{${k}}}` //{{verifykey}}
+      console.log(`Replacing placeholder: ${placeholder} with value: ${params[k]}`);
+      template = template.replace( new RegExp(placeholder, 'g'), params[k])
+    })
+
+    return template
+}
+
+module.exports = {
+    generatorRandomToken,
+    replacePlaceHolder
+}
