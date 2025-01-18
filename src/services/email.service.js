@@ -1,9 +1,10 @@
 'use strict'
 
 const nodemailer = require('nodemailer')
-const {newOtp, findOtpByEmail} = require('../models/repositories/otp.repo')
+// const {newOtp, findOtpByEmail, findOtpByToken} = require('../models/repositories/otp.repo')
+const {newOtp, findOtpByTokenService, findOtpByEmailService} = require('../services/otp.service')
 const {BadRequestError} = require('../core/error.response')
-const { findTemplate } = require('../models/repositories/template.repo')
+const { findTemplateService } = require('../services/template.service')
 const { replacePlaceHolder } = require('../utils')
 
 let transport = nodemailer.createTransport({
@@ -47,7 +48,7 @@ const sendEmailToken = async ({
 }) => {
     try {
         //1. each user only send one otp
-        const otp = await findOtpByEmail({ email })
+        const otp = await findOtpByEmailService({ email })
         if(otp != null) throw new BadRequestError('Otp already exists')
         
         //2. get token
@@ -55,17 +56,20 @@ const sendEmailToken = async ({
         //3. check token
         if(!token) throw new BadRequestError('Token not found')
         
-        const template =  await findTemplate({ 
+        //4. check template
+        const template =  await findTemplateService({ 
             tem_name: 'HTML SIGNUP CONFIRM'
         })
         if(!template) throw new BadRequestError('Template not found')
 
+        //5. replace plate holder
         const content = await replacePlaceHolder(
             template.tem_html,
             {
                 link_verify: `http://localhost:3052/api/user/welcome?token=${token}`
             }
         )
+        //6. send email
         await sendEmailLinkVerify({
             html: content,
             toEmail: email,
@@ -79,6 +83,38 @@ const sendEmailToken = async ({
     }
 }
 
+const sendEmailConfirmToken = async ({
+    email
+}) => {
+    const otp = await findOtpByEmailService({ email})
+    if(otp) throw new BadRequestError('Otp already exists')
+    
+    const token = await newOtp({ email })
+    if(!token) throw new BadRequestError('Something went wrong! Pls retry')
+
+    const template = await findTemplateService({
+        tem_name: 'HTML CONFIRM TOKEN EMAIL'
+    })
+    if(!template) throw new BadRequestError('Template not found')
+
+    const content = await replacePlaceHolder(
+        template.tem_html,
+        {
+            otp_code: token
+        }
+    )
+    await sendEmailLinkVerify({
+        html: content,
+        toEmail: email,
+        subject: 'Mã xác thực'
+    }).catch((error) => {
+        console.error(error)
+    })
+
+    return 1;
+}
+
 module.exports = {
-    sendEmailToken
+    sendEmailToken,
+    sendEmailConfirmToken
 }
