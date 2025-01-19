@@ -1,7 +1,14 @@
 'use strict'
 
-
 const crypto = require('crypto')
+const pick = require('lodash/pick')
+
+const getInfoData = ({
+    fields = [],
+    object = {}
+}) => {
+    return pick(object, fields) 
+}
 
 const generatorRandomToken = () => {
     const token = crypto.randomInt(0, (Math.pow(2, 32)))
@@ -18,7 +25,9 @@ const replacePlaceHolder = ( template, params) => {
     return template
 }
 
+
 module.exports = {
     generatorRandomToken,
-    replacePlaceHolder
+    replacePlaceHolder,
+    getInfoData
 }
