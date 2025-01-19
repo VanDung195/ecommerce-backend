@@ -7,7 +7,7 @@ const COLLECTION_NAME = 'Keys'
 
 // Declare the Schema of the Mongo model
 var keytokenSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, required: true},
+    userId: { type: Schema.Types.ObjectId, required: true},
     privateKey: { type: String, required: true},
     publicKey: { type: String, required: true},
     refreshTokenUsed: { type: Schema.Types.Array, default: []},
