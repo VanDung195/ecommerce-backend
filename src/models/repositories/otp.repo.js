@@ -39,7 +39,7 @@ const findOtpByToken = async ({
     return otp
 }
 
-const deleteToken = async ({
+const deleteOtp = async ({
     token
 }) => {
     await OTP_MODEL.deleteOne({
@@ -51,5 +51,5 @@ module.exports = {
     findToken,
     findOtpByEmail,
     findOtpByToken,
-    deleteToken
+    deleteOtp
 }
