@@ -14,6 +14,15 @@ app.use(express.urlencoded({
 
 //init db
 require('./dbs/init.mongodb')
+const ioredis = require('./dbs/init.ioredis')
+ioredis.init({
+    IOREDIS_HOST: 'localhost',
+    IOREDIS_PORT: 6379,
+    IOREDIS_IS_ENABLED: true
+})
+
+
+
 
 app.use('/', require('./routes'))
 
