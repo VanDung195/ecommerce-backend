@@ -25,8 +25,21 @@ class NotFoundError extends ErrorResponse{
     }
 }
 
+class AuthFailureError extends ErrorResponse{
+    constructor( message = ReasonPhrases.UNAUTHORIZED, statusCode = StatusCodes.UNAUTHORIZED) {
+        super(message, statusCode)
+    }
+}
+
+class RedisErrorResponse extends ErrorResponse{
+    constructor( message = ReasonPhrases.INTERNAL_SERVER_ERROR, statusCode = StatusCodes.INTERNAL_SERVER_ERROR){
+        super(message, statusCode)
+    }
+}
 module.exports = {
     BadRequestError,
     NotFoundError,
-    ErrorResponse
+    ErrorResponse,
+    AuthFailureError,
+    RedisErrorResponse
 }
