@@ -1,6 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
+const { login } = require("../services/access.service")
 const { newUserService, checkUserToken, sigupUser } = require("../services/user.service")
 
 class UserController{
@@ -22,6 +23,13 @@ class UserController{
         new SuccessResponse({
             message: 'Create user success',
             metadata: await sigupUser(req.body)
+        }).send(res)
+    }
+
+    login = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Login successfuly',
+            metadata: await login(req.body)
         }).send(res)
     }
 }
