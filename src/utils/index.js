@@ -2,6 +2,7 @@
 
 const crypto = require('crypto')
 const pick = require('lodash/pick')
+const mongoose = require('mongoose')
 
 const getInfoData = ({
     fields = [],
@@ -25,9 +26,12 @@ const replacePlaceHolder = ( template, params) => {
     return template
 }
 
+const convertToObjectIdMongodb = id => new mongoose.Types.ObjectId(id)
+
 
 module.exports = {
     generatorRandomToken,
     replacePlaceHolder,
-    getInfoData
+    getInfoData,
+    convertToObjectIdMongodb
 }
