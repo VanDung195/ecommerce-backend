@@ -23,6 +23,7 @@ var userSchema = new Schema({
     timestamps: true,
     collection: COLLECTION_NAME
 });
+userSchema.index({ usr_email: 'text'})
 userSchema.pre('save', async function (next) {
     let baseSlug = slugify(this.usr_name, { lower: true, replacement: '.' });
     let randomNumber = Math.floor(100000 + Math.random() * 900000)
