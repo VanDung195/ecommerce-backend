@@ -5,9 +5,9 @@ const crypto = require('crypto')
 const { NotFoundError, BadRequestError, AuthFailureError, ForbiddenError } = require("../core/error.response")
 const { findUserByEmail } = require("../models/repositories/user.repo")
 const { createTokenPair } = require('../auth/authUtils')
-const { createKeyToken, findKeyTokenByUserId, updateRefreshTokenUsed } = require('../models/repositories/keytoken.repo')
+const { createKeyToken, findKeyTokenByUserId, updateRefreshTokenUsed, deleteKeyByUserId, deleteKeyById } = require('../models/repositories/keytoken.repo')
 const { CACHE_KEYSTORE } = require('../configs/constant')
-const { setCacheExpiration, getCache } = require('../models/repositories/cache.repo')
+const { setCacheExpiration, getCache, deleteCache } = require('../models/repositories/cache.repo')
 const { getInfoData, convertToObjectIdMongodb } = require('../utils')
 const JWT = require('jsonwebtoken')
 
@@ -16,12 +16,12 @@ const login = async ({
     password
 }) => {
     const foundUser = await findUserByEmail(email)
-    if(!foundUser) throw new BadRequestError('User not register')
-    
-    const match = bcrypt.compare(password, foundUser.usr_password)
-    if(!match) throw new AuthFailureError('Authentication error')
+    if (!foundUser) throw new BadRequestError('User not register')
 
-    const { privateKey, publicKey} = crypto.generateKeyPairSync('rsa', {
+    const match = bcrypt.compare(password, foundUser.usr_password)
+    if (!match) throw new AuthFailureError('Authentication error')
+
+    const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
         modulusLength: 4096,
         publicEncoding: {
             type: 'pkcs1',
@@ -34,14 +34,15 @@ const login = async ({
     })
 
     const keyTokens = await createTokenPair(
-        {payload: { userId: foundUser._id, role: foundUser.usr_role, email: foundUser.usr_email}},
+        { payload: { userId: foundUser._id, role: foundUser.usr_role, email: foundUser.usr_email } },
         privateKey,
         publicKey
     )
-    if(!keyTokens) throw new BadRequestError('Generator token failure')
+    if (!keyTokens) throw new BadRequestError('Generator token failure')
 
     const privateKeyPem = privateKey.export({ type: 'pkcs1', format: 'pem' });
     const publicKeyPem = publicKey.export({ type: 'pkcs1', format: 'pem' });
+
     // const privateKeyBase64 = privateKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
     // const publicKeyBase64 = publicKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
     const userObjectId = await convertToObjectIdMongodb(foundUser._id)
@@ -51,10 +52,9 @@ const login = async ({
         publicKey: publicKeyPem,
         refreshToken: keyTokens.refreshToken
     })
-    console.log(newKeyToken);
-    
-    if(!newKeyToken) throw new BadRequestError('Create new token error')
-    
+
+    if (!newKeyToken) throw new BadRequestError('Create new token error')
+
     const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${foundUser._id}`
     setCacheExpiration({
         key: refreshTokenCache,
@@ -69,35 +69,49 @@ const login = async ({
         }),
         keyTokens
     }
-    
+}
+
+const logout = async ({
+    keyStore
+}) => {
+    if (!keyStore) throw new BadRequestError('Key store not found')
+
+    const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${keyStore.userId.toString()}`
+    await deleteCache({
+        refreshTokenCache
+    })
+
+    const delKey = await deleteKeyById({ id: keyStore._id })
+
+    return delKey
 }
 
 const handlerRefreshToken = async ({
     userIdHeader
 }) => {
-    if(!userIdHeader) throw BadRequestError('Invalid request')
+    if (!userIdHeader) throw BadRequestError('Invalid request')
     const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userIdHeader}`
     const refreshToken = await getCache({
         key: refreshTokenCache
     })
-    if(!refreshToken) {
+    if (!refreshToken) {
         throw new ForbiddenError('Something went wrong! Pls relogin')
     }
     const keyStore = await findKeyTokenByUserId({
         userId: userIdHeader
     })
-    if(!keyStore) throw new NotFoundError('Keystore not found')
+    if (!keyStore) throw new NotFoundError('Keystore not found')
 
     try {
         const decodeRefreshToken = JWT.verify(refreshToken, keyStore.publicKey, {
             algorithms: ['RS256']
         })
-        if(userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
-        
-        const { userId, role, email} = decodeRefreshToken
+        if (userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
+
+        const { userId, role, email } = decodeRefreshToken
 
         const newAccessToken = JWT.sign(
-            { payload: { userId: userId, role: role, email: email}},
+            { payload: { userId: userId, role: role, email: email } },
             keyStore.privateKey,
             {
                 algorithm: 'RS256',
@@ -115,54 +129,75 @@ const handlerRefreshToken = async ({
 const handlerRefreshTokenV2 = async ({
     userIdHeader
 }) => {
-    if(!userIdHeader) throw BadRequestError('Invalid request')
+    if (!userIdHeader) throw BadRequestError('Invalid request')
 
     const keyStore = await findKeyTokenByUserId({
         userId: userIdHeader
     })
-    if(!keyStore) throw new NotFoundError('Pls relogin')
+    if (!keyStore || !keyStore.refreshToken) throw new BadRequestError('Something went wrong! Pls relogin')
 
     const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userIdHeader}`
     const refreshToken = await getCache({
         key: refreshTokenCache
     })
     //refreshToken expired
-    if(!refreshToken) {
-
-
+    if (!refreshToken) {
+        //update refreshTokenUsed
+        await updateRefreshTokenUsed({
+            userId: userIdHeader,
+            refreshTokenOld: keyStore.refreshToken,
+            refreshTokenNew: ''
+        })
 
         throw new ForbiddenError('Something went wrong! Pls relogin')
     }
 
     //refreshToken not expired
-    if(refreshToken){
-        try {
-            const decodeRefreshToken = JWT.verify(refreshToken, keyStore.publicKey, {
-                algorithms: ['RS256']
+    try {
+        if (keyStore.refreshTokenUsed.includes(refreshToken)) {
+            const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userIdHeader}`
+            await deleteCache({
+                refreshTokenCache
             })
-            if(userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
-            
-            const { userId, role, email} = decodeRefreshToken
-    
-            const newAccessToken = JWT.sign(
-                { payload: { userId: userId, role: role, email: email}},
-                keyStore.privateKey,
-                {
-                    algorithm: 'RS256',
-                    expiresIn: '5m'
-                }
-            )
-            return {
-                accessToken: newAccessToken
-            }
-        } catch (error) {
-            throw new AuthFailureError('Invalid or expired Refresh Token');
+            await deleteKeyByUserId({ userId: userIdHeader })
+            throw new ForbiddenError('Something went wrong! Pls relogin')
         }
+
+        if (keyStore.refreshToken != refreshToken)
+            throw new AuthFailureError('User not registed!')
+
+
+        const decodeRefreshToken = JWT.verify(refreshToken, keyStore.publicKey, {
+            algorithms: ['RS256']
+        })
+        if (userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
+
+        const { userId, role, email } = decodeRefreshToken
+
+        const payload = {
+            userId: userId,
+            role: role,
+            email: email
+        }
+
+        const newAccessToken = JWT.sign(
+            payload,
+            keyStore.privateKey,
+            {
+                algorithm: 'RS256',
+                expiresIn: '30s'
+            }
+        )
+        return {
+            accessToken: newAccessToken
+        }
+    } catch (error) {
+        throw new AuthFailureError(`Invalid or expired Refresh Token: ${error.message}`);
     }
 }
 
-
 module.exports = {
     login,
-    handlerRefreshToken
+    handlerRefreshTokenV2,
+    logout
 }
