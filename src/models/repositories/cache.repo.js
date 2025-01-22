@@ -39,8 +39,20 @@ const setCacheExpiration = async ({
     }
 }
 
+const deleteCache = async ({
+    key
+}) => {
+    if(!redisCache) throw new Error('Redis client not initialize')
+    try {
+        return await redisCache.del(key)
+    } catch (error) {
+        throw new Error(`${error.messgae}`)
+    }
+}
+
 module.exports = {
     setCache,
     getCache,
-    setCacheExpiration
+    setCacheExpiration,
+    deleteCache
 }
