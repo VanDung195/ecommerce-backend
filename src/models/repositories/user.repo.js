@@ -22,7 +22,19 @@ const findUserByEmail = async (email) => {
     return user
 }
 
+const updateShopRole = async ({
+    userId,
+    role
+}) => {
+    const filter = { _id: userId},
+            update = {usr_role: role},
+            options = { new: true}
+    const user = await USER.updateOne(filter, update, options)
+    return user
+}
+
 module.exports = {
     createUser,
-    findUserByEmail
+    findUserByEmail,
+    updateShopRole
 }
