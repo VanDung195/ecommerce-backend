@@ -1,9 +1,12 @@
 'use strict'
 const JWT = require('jsonwebtoken')
 const { asyncHandler } = require('../helpers/asyncHandler')
-const { AuthFailureError, NotFoundError } = require('../core/error.response')
+const { AuthFailureError, NotFoundError, ForbiddenError, BadRequestError } = require('../core/error.response')
 const KeyTokenService = require('../services/keytoken.service')
-
+const { getCache } = require('../models/repositories/cache.repo')
+const { deleteKeyById, findKeyTokenByUserId } = require('../models/repositories/keytoken.repo')
+const { convertToObjectIdMongodb } = require('../utils/index')
+const { CACHE_KEYSTORE } = require('../configs/constant')
 
 const HEADER = {
     CLIENT_ID: 'x-client-id',
@@ -13,24 +16,48 @@ const HEADER = {
 const authentication = asyncHandler ( async (req, res, next) => {
     const userId = req.headers[HEADER.CLIENT_ID]
     if(!userId) throw new AuthFailureError('Invalid request')
+    const keyStore = await findKeyTokenByUserId({
+        userId
+    })
+    if(!keyStore) throw new NotFoundError('Keystore not found')
 
-    const keyStore = KeyTokenService.findKeyTokenByUserId({ userId })
-    if(!keyStore) throw new NotFoundError('Keystore not found   ')
+    if(req.url === '/handler_refresh_token') {
+        const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userId}`
+        const refreshToken = await getCache({ key: refreshTokenCache })
+        if(!refreshToken) throw new AuthFailureError('Something went wrong! Pls relogin')
+
+        try {
+            const decodeUser = JWT.verify(refreshToken, keyStore.publicKey, { algorithms: 'RS256'})
+            if(userId !== decodeUser.userId) throw new AuthFailureError('Invalid user1')
+            if(userId !== keyStore.userId.toString()) throw new AuthFailureError('Invalid user2')
+            
+            req.keyStore = keyStore
+            req.user = decodeUser
+            return next()
+        } catch (error) {
+            throw new AuthFailureError(`Invalid or expired token::::${error.message}`);
+        }
+    }
 
     const accessToken = req.headers[HEADER.AUTHORIZATION]
     if(!accessToken) throw new NotFoundError('Invalid keystore')
 
     try {
-        const decodeUser = JWT.verify(accessToken, keyStore.publicKey)
-        if(userId != decodeUser.userId) throw new AuthFailureError('Invalid user')
-
+        const decodeUser = JWT.verify(accessToken, keyStore.publicKey, { algorithms: ['RS256'] });
+        
+        if(userId !== decodeUser.userId) throw new AuthFailureError('Invalid user1')
+        
+        if(userId !== keyStore.userId.toString()) throw new AuthFailureError('Invalid user2')
+        
         req.keyStore = keyStore
         req.user = decodeUser
         return next()
     } catch (error) {
-        throw error
+        if(error.name === 'TokenExpiredError'){
+            throw new AuthFailureError('Access token expired. Please refresh token')
+        }
+        throw new AuthFailureError(`Invalid or expired token::::${error.message}`);
     }
-
 })
 
 
@@ -38,12 +65,14 @@ const createTokenPair = ({ payload }, privateKey, publicKey) => {
     try {
         const accessToken = JWT.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '2 days'
+            // expiresIn: '2 days'
+            expiresIn: '30s'
         })
 
         const refreshToken = JWT.sign(payload, privateKey, {
             algorithm: 'RS256',
             expiresIn: '30 days'
+            // expiresIn: '2 days'
         })
 
         return {
