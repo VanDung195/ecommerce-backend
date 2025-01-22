@@ -3,6 +3,26 @@
 const KEYTOKEN = require('../../models/keytoken.model')
 const { convertToObjectIdMongodb } = require('../../utils/index')
 
+// const createKeyToken = async ({
+//     userId,
+//     privateKey,
+//     publicKey,
+//     refreshToken
+// }) => {
+//     try {
+//         const filter = { userId: userId },
+//             update = {
+//                 privateKey: privateKey,
+//                 publicKey: publicKey,
+//                 refreshToken: refreshToken,
+//                 refreshTokenUsed: []
+//             }, options = { upsert: true, new: true }
+//         const tokens = await KEYTOKEN.findOneAndUpdate(filter, update, options)
+//         return tokens
+//     } catch (error) {
+//         return error
+//     }
+// }
 const createKeyToken = async ({
     userId,
     privateKey,
@@ -10,21 +30,28 @@ const createKeyToken = async ({
     refreshToken
 }) => {
     try {
-        const filter = { userId: userId },
-            update = {
+        const filter = { userId: userId };
+        const update = {
+            $set: {
                 privateKey: privateKey,
                 publicKey: publicKey,
-                refreshToken: refreshToken,
+                refreshToken: refreshToken
+            },
+            $setOnInsert: {
                 refreshTokenUsed: []
-            }, options = { upsert: true, new: true }
-        const tokens = await KEYTOKEN.findOneAndUpdate(filter, update, options)
-        return tokens
+            }
+        };
+        const options = { upsert: true, new: true };
+        const tokens = await KEYTOKEN.findOneAndUpdate(filter, update, options);
+        return tokens;
     } catch (error) {
-        return error
+        return error;
     }
-}
+};
 
-const deleteKeyById = async ({
+
+
+const deleteKeyByUserId = async ({
     userId
 }) => {
     try {
@@ -34,6 +61,12 @@ const deleteKeyById = async ({
     } catch (error) {
         return error
     }
+}
+
+const deleteKeyById = async ({
+    id
+}) => {
+    return await KEYTOKEN.deleteOne(id).lean()
 }
 
 const updateRefreshTokenUsed = async ({
@@ -56,9 +89,6 @@ const updateRefreshTokenUsed = async ({
     return result
 }
 
-const deleteKeyByUserId = async () => {
-
-}
 
 const findKeyTokenByUserId = async ({ userId }) => {
     const objectId = convertToObjectIdMongodb(userId);
@@ -69,8 +99,8 @@ const findKeyTokenByUserId = async ({ userId }) => {
 
 module.exports = {
     createKeyToken,
-    deleteKeyById,
     deleteKeyByUserId,
     findKeyTokenByUserId,
-    updateRefreshTokenUsed
+    updateRefreshTokenUsed,
+    deleteKeyById
 }
