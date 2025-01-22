@@ -7,10 +7,11 @@ const { findUserByEmail, createUser } = require("../models/repositories/user.rep
 const { sendEmailToken, sendEmailConfirmToken } = require('./email.service')
 const { findOtpByTokenService, deleteOtpService } = require('./otp.service')
 const { createTokenPair } = require('../auth/authUtils')
-const { getInfoData } = require('../utils')
+const { getInfoData, convertToObjectIdMongodb } = require('../utils')
 const { CACHE_KEYSTORE } = require('../auth/constant')
 const {setCacheExpiration} = require('../models/repositories/cache.repo')
-const { createKeyToken } = require('./keytoken.service')
+// const { createKeyToken } = require('./keytoken.service')
+const { createKeyToken } = require('../models/repositories/keytoken.repo')
 
 
 const newUserService = async ({
@@ -97,16 +98,19 @@ const sigupUser = async ({
     );
     if(!keyTokens) throw new BadRequestError('Generator token failure')
     
-    const privateKeyBase64 = privateKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
-    const publicKeyBase64 = publicKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
+    // const privateKeyBase64 = privateKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
+    // const publicKeyBase64 = publicKey.export({ type: 'pkcs1', format: 'der' }).toString('base64');
+    const privateKeyPem = privateKey.export({ type: 'pkcs1', format: 'pem' });
+    const publicKeyPem = publicKey.export({ type: 'pkcs1', format: 'pem' });
 
     const newKeyToken = createKeyToken({
-        userId: newUser._id,
-        privateKey: privateKeyBase64,
-        publicKey: publicKeyBase64,    
+        userId: convertToObjectIdMongodb(newUser._id),
+        privateKey: privateKeyPem,
+        publicKey: publicKeyPem,    
         refreshToken: keyTokens.refreshToken
     })
-    if(!newKeyToken) throw new BadRequestError('Create new token error')
+    if(!newKeyToken) throw new BadRequestError('Create key failure')
+
     //delete otp in DB
     deleteOtpService({ token })
     
@@ -124,8 +128,19 @@ const sigupUser = async ({
         }),
         keyTokens
     }
+    
+}
+
+const findUserByEmailService = async (email) => {
+    if(!email) throw new BadRequestError('Email cannot be blank');
+
+    const user = findUserByEmail(email)
+    if(!user) throw new BadRequestError('Email or password incorrect')
+    
+    return user
 }
 module.exports = {
     newUserService,
-    sigupUser
+    sigupUser,
+    findUserByEmailService
 }
