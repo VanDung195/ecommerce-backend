@@ -2,7 +2,7 @@
 
 const { SuccessResponse } = require("../core/success.response")
 const { login } = require("../services/access.service")
-const { newUserService, checkUserToken, sigupUser } = require("../services/user.service")
+const { newUserService, checkUserToken, sigupUser, blockUserService, unBlockUserService } = require("../services/user.service")
 
 class UserController{
     newUser = async (req, res, next) => {
@@ -30,6 +30,20 @@ class UserController{
         new SuccessResponse({
             message: 'Login successfuly',
             metadata: await login(req.body)
+        }).send(res)
+    }
+
+    blockUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Block user successfuly',
+            metadata: await blockUserService(req.body)
+        }).send(res)
+    }
+
+    unBlockUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Un block user successfuly',
+            metadata: await unBlockUserService(req.body)
         }).send(res)
     }
 }
