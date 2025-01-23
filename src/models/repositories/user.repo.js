@@ -33,8 +33,21 @@ const updateShopRole = async ({
     return user
 }
 
+const blockUser = async({
+    userId,
+    status
+}) => {
+    const filter = { _id: userId},
+        update = { usr_status: status },
+        options = { new: true }
+    const user = await USER.updateOne(filter, update, options)
+
+    return user
+}
+
 module.exports = {
     createUser,
     findUserByEmail,
-    updateShopRole
+    updateShopRole,
+    blockUser
 }
