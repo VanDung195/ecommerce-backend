@@ -3,15 +3,15 @@
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 const { BadRequestError } = require('../core/error.response')
-const { findUserByEmail, createUser } = require("../models/repositories/user.repo")
+const { findUserByEmail, createUser, blockUser } = require("../models/repositories/user.repo")
 const { sendEmailToken, sendEmailConfirmToken } = require('./email.service')
 const { findOtpByTokenService, deleteOtpService } = require('./otp.service')
 const { createTokenPair } = require('../auth/authUtils')
 const { getInfoData, convertToObjectIdMongodb } = require('../utils')
 const { CACHE_KEYSTORE } = require('../auth/constant')
-const {setCacheExpiration} = require('../models/repositories/cache.repo')
+const {setCacheExpiration, deleteCache, getCache} = require('../models/repositories/cache.repo')
 // const { createKeyToken } = require('./keytoken.service')
-const { createKeyToken } = require('../models/repositories/keytoken.repo')
+const { createKeyToken, deleteKeyByUserId } = require('../models/repositories/keytoken.repo')
 
 
 const newUserService = async ({
@@ -139,8 +139,44 @@ const findUserByEmailService = async (email) => {
     
     return user
 }
+
+
+const blockUserService = async({
+    userId
+}) => {
+    const userObjectId = convertToObjectIdMongodb(userId)
+    const user = await blockUser({
+        userId: userObjectId,
+        status: 'block' 
+    })
+    if(!user) throw new BadRequestError('User not found')
+    await deleteKeyByUserId({ userId })
+    const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userId}`
+    await deleteCache({ 
+        key: refreshTokenCache 
+    })
+    
+    return user
+}
+
+const unBlockUserService = async({
+    userId
+}) => {
+    const userObjectId = convertToObjectIdMongodb(userId)
+    const user = await blockUser({
+        userId: userObjectId,
+        status: 'active' 
+    })
+    if(!user) throw new BadRequestError('User not found')
+    console.log(user);
+    
+    return user
+}
+
 module.exports = {
     newUserService,
     sigupUser,
-    findUserByEmailService
+    findUserByEmailService,
+    blockUserService,
+    unBlockUserService
 }
