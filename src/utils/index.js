@@ -18,7 +18,7 @@ const generatorRandomToken = () => {
 
 const replacePlaceHolder = ( template, params) => {
     Object.keys(params).forEach( k => {
-      const placeholder = `{{${k}}}` //{{verifykey}}
+      const placeholder = `{{${k}}}`
       console.log(`Replacing placeholder: ${placeholder} with value: ${params[k]}`);
       template = template.replace( new RegExp(placeholder, 'g'), params[k])
     })
@@ -28,10 +28,15 @@ const replacePlaceHolder = ( template, params) => {
 
 const convertToObjectIdMongodb = id => new mongoose.Types.ObjectId(id)
 
+const getSelectData = (select = []) => {
+    return Object.map(select.map(el => [el, 1]))
+}
+
 
 module.exports = {
     generatorRandomToken,
     replacePlaceHolder,
     getInfoData,
-    convertToObjectIdMongodb
+    convertToObjectIdMongodb,
+    getSelectData
 }
