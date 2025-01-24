@@ -42,11 +42,18 @@ class ForbiddenError extends ErrorResponse{
         super(message, statusCode)
     }
 }
+
+class ConflictError extends ErrorResponse{
+    constructor(message = ReasonPhrases.CONFLICT, statusCode = StatusCodes.CONFLICT){
+        super(message, statusCode)
+    }
+}
 module.exports = {
     BadRequestError,
     NotFoundError,
     ErrorResponse,
     AuthFailureError,
     RedisErrorResponse,
-    ForbiddenError
+    ForbiddenError,
+    ConflictError
 }
