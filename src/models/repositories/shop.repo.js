@@ -1,5 +1,6 @@
 'use strict'
 
+const { getSelectData } = require('../../utils')
 const SHOP = require('../shop.model')
 
 const createShop = async ({
@@ -53,11 +54,33 @@ const findShopById = async({
     return foundShop
 }
 
+const findShopByEmail = async({
+    email
+}) => {
+    const foundShop = await SHOP.findOne({ shop_email: email})
+    return foundShop
+}
+
+const findALlShop = async({
+    limit = 50, page = 1, sort = 'ctime', 
+    filter, select
+}) => {
+    const skip = (page - 1) * limit
+    const sortBy = sort === 'ctime' ? {_id: -1} : {_id: 1}
+    const shops = await SHOP.find(filter)
+                        .sort(sortBy)
+                        .skip(skip)
+                        .limit(limit)
+                        .select(getSelectData(select))
+    return shops
+}
 
 module.exports = {
     createShop,
     findShopByUserId,
     findShopById,
     disableShop,
-    verifyShop
+    verifyShop,
+    findShopByEmail,
+    findALlShop
 }
