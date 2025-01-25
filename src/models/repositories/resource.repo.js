@@ -1,5 +1,6 @@
 'use strict'
 
+const { convertToObjectIdMongodb } = require('../../utils')
 const RESOURCE = require('../resource.model')
 
 const createResource = async({
@@ -28,9 +29,6 @@ const findResourceBySlug = async( slug ) => {
     return foundResource
 }
 
-const checkResourceByServer = async(id) =>{
-    
-}
 
 const listResources = async({
     limit = 30,
@@ -58,10 +56,16 @@ const listResources = async({
     }
 }
 
+const getResourceById = async(id) => {
+    return await RESOURCE.findOne({
+        _id: id
+    }).lean()
+}
+
 module.exports = {
     createResource,
     listResources,
     findResourceByName,
     findResourceBySlug,
-    checkResourceByServer
+    getResourceById
 }
