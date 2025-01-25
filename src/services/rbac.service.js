@@ -1,8 +1,9 @@
 'use strict'
 
 const { ConflictError, BadRequestError, NotFoundError } = require("../core/error.response")
-const { findResourceByName, findResourceBySlug, createResource, listResources } = require("../models/repositories/resource.repo")
-const { findRoleByName, findRoleBySlug, createRole } = require("../models/repositories/role.repo")
+const { findResourceByName, findResourceBySlug, createResource, listResources, getResourceById } = require("../models/repositories/resource.repo")
+const { findRoleByName, findRoleBySlug, createRole, listRole, listRoleForRBAC, getGrantsDetailBySlug, getGrantsDetailById, addRoleGrant } = require("../models/repositories/role.repo")
+const { convertToObjectIdMongodb } = require("../utils")
 
 // let grantList = [
 //     { role: 'user', resource: 'profile', action: 'read:own', attributes: '*' },
@@ -74,16 +75,87 @@ const createRoleService = async({
     if(!newRole) throw new BadRequestError('Create role failed')
 
     //check resource id
+    grants.map( async grant => {
+        const foundResource = await getResourceById(grant.resourceId)
+        if(!foundResource) throw new BadRequestError('Grants wrong')
+    })
     return newRole
 }
 
 const roleListService = async() => {
-
+    const roles = await listRole()
+    return roles
 }
+
+const getGrantsDetailBySlugService = async({
+    role
+}) => {
+    if(!role) throw new BadRequestError('Role id is required')
+    
+    const grants = await getGrantsDetailBySlug({ slug: role})
+    if(!grants) throw new NotFoundError('Grants not found')
+    return grants
+}   
+
+const getRoleForRbac = async() => {
+    const roles = await listRoleForRBAC()
+    return roles
+}
+
+const addRoleGrantService = async ({
+    roleId,
+    resourceId,
+    actions = [],
+    attributes
+}) => {
+    try {
+        let resourceObjectId;
+        try {
+            resourceObjectId = convertToObjectIdMongodb(resourceId)
+        } catch (error) {
+            throw new BadRequestError('Resource id is not valid')
+        }
+        const foundResource = await getResourceById(resourceObjectId)
+        if(!foundResource) throw new BadRequestError('Resource not found')
+
+        const grants = await getGrantsDetailById({ roleId });
+        if(!grants) throw new NotFoundError('Role not found')
+        const resourceExists = grants.some(grant => grant.resourceId == resourceId);
+        if (resourceExists) {
+            throw new ConflictError('Resource already exists');
+        }
+        
+        // grants.map( grant => {
+        //     if(grant.resourceId == resourceId) {
+        //         throw new ConflictError('resource already exists2')
+        //     }
+        // })
+        
+        const resource = await getResourceById(resourceId);
+        if (!resource) {
+            throw new NotFoundError('Resource not found');
+        }
+
+        const roleGrant = await addRoleGrant({ roleId, resourceId, actions, attributes });
+        
+        if (!roleGrant) {
+            throw new BadRequestError('Something went wrong');
+        }
+
+        return roleGrant;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 
 module.exports = {
     createResourceService,
-    listResroucesService    ,
+    listResroucesService,
     createRoleService,
-    roleListService
+    roleListService,
+    getRoleForRbac,
+    getGrantsDetailBySlugService,
+    addRoleGrantService
 }
