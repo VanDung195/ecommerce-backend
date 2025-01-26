@@ -2,7 +2,19 @@
 
 const { ConflictError, BadRequestError, NotFoundError } = require("../core/error.response")
 const { findResourceByName, findResourceBySlug, createResource, listResources, getResourceById } = require("../models/repositories/resource.repo")
-const { findRoleByName, findRoleBySlug, createRole, listRole, listRoleForRBAC, getGrantsDetailBySlug, getGrantsDetailById, addRoleGrant } = require("../models/repositories/role.repo")
+const { 
+    findRoleByName, 
+    findRoleBySlug, 
+    createRole, 
+    listRole, 
+    listRoleForRBAC, 
+    getGrantsDetailBySlug, 
+    getGrantsDetailByRoleId, 
+    addRoleGrant, 
+    findRoleById,
+    deleteRoleGrant,
+    updateRoleGrant
+ } = require("../models/repositories/role.repo")
 const { convertToObjectIdMongodb } = require("../utils")
 
 // let grantList = [
@@ -118,18 +130,12 @@ const addRoleGrantService = async ({
         const foundResource = await getResourceById(resourceObjectId)
         if(!foundResource) throw new BadRequestError('Resource not found')
 
-        const grants = await getGrantsDetailById({ roleId });
+        const grants = await getGrantsDetailByRoleId({ roleId });
         if(!grants) throw new NotFoundError('Role not found')
         const resourceExists = grants.some(grant => grant.resourceId == resourceId);
         if (resourceExists) {
             throw new ConflictError('Resource already exists');
         }
-        
-        // grants.map( grant => {
-        //     if(grant.resourceId == resourceId) {
-        //         throw new ConflictError('resource already exists2')
-        //     }
-        // })
         
         const resource = await getResourceById(resourceId);
         if (!resource) {
@@ -147,8 +153,75 @@ const addRoleGrantService = async ({
         console.error(error);
         throw error;
     }
-};
+}
 
+const deleteRoleGrantService = async({
+    roleId,
+    grantId
+}) => {
+    try {
+        let roleObjectId, grantObjectId
+        try {
+            roleObjectId = convertToObjectIdMongodb(roleId)
+            grantObjectId = convertToObjectIdMongodb(grantId)
+        } catch (error) {
+            throw new BadRequestError('Role or grant is not valid')
+        }
+
+        const foundRole = await findRoleById(roleId)
+        if(!foundRole) throw new NotFoundError('Role not found')
+        
+        const foundGrants = await getGrantsDetailByRoleId({ roleId })
+        const grantExists = foundGrants.some(grant => grant.grantId == grantId);
+        if (!grantExists) {
+            throw new ConflictError('Grant not found');
+        }
+
+        const delRoleGrant = await deleteRoleGrant({
+            roleId,
+            grantId
+        })
+        if(!delRoleGrant) throw new BadRequestError('Something went wrong')
+
+        return delRoleGrant
+    } catch (error) {
+        console.error(error)
+        throw new BadRequestError(`Delete role grant error::${error.message}`)
+    }
+}
+
+const updateRoleGrantService = async({
+    roleId,
+    resourceId,
+    actions,
+    attributes
+}) => {
+    let roleObjectId, resourceObjectId
+    try {
+        roleObjectId = convertToObjectIdMongodb(roleId)
+        resourceObjectId = convertToObjectIdMongodb(resourceId)
+    } catch (error) {
+        throw new BadRequestError('Role or grant is not valid')
+    }
+
+    const foundRole = await findRoleById(roleId)
+    if(!foundRole) throw new NotFoundError('Role not found')
+
+    const resource = await getResourceById(resourceId);
+    if (!resource) {
+        throw new NotFoundError('Resource not found');
+    }
+
+    const roleGrant = await updateRoleGrant({
+        roleId,
+        resourceId,
+        actions,
+        attributes
+    })
+    if(!roleGrant) throw new BadRequestError('Something went wrong')
+        
+    return roleGrant
+}
 
 module.exports = {
     createResourceService,
@@ -157,5 +230,7 @@ module.exports = {
     roleListService,
     getRoleForRbac,
     getGrantsDetailBySlugService,
-    addRoleGrantService
+    addRoleGrantService,
+    deleteRoleGrantService,
+    updateRoleGrantService
 }
