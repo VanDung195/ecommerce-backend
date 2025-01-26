@@ -1,0 +1,908 @@
+{
+	"info": {
+		"_postman_id": "3b908394-3249-40d9-a440-aec0b68627f5",
+		"name": "ecommerce api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39199317"
+	},
+	"item": [
+		{
+			"name": "TEMPLATE: create new template",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/template/new_template",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"template",
+						"new_template"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EMAIL: send token email",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"gh438221@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/email/send_email",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"email",
+						"send_email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER: send email otp code",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"gas3436454@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/user/new_user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"user",
+						"new_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER: register user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"1854901396\",\r\n    \"username\": \"Hồ Văn Dũng test 2\",\r\n    \"password\": \"vandung19052003\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/user/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"user",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER: login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"gh438221@gmail.com\",\r\n    \"password\": \"vandung19052003\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/user/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TEST: test authentication middleware",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MTEwLCJleHAiOjE3Mzc2ODM1MTB9.LBQIiwqf51amlmqo00E4tbC54P4JF5wUZzy4b9gvjgE2LmD-7FEDrHfuwBj97Ga2u99WIfXZyNZAjK-6NB8XLX5mk_mgE-hNhKwmsqgNONgpmc3pcQoiVly74-XjKd-0vB_FLjTBGztitOUOHkOdQBfAHIFCl9gSuG0NGmsFYTzOjlg-9aEKhKkF7sz71RTsOKbOPgc1P4GeyOAkwpE2taxInwxLuospietLhUvj6D29ejxKOmTVECwUzYjtLBZj8TzCuMRCYO8XhFAvFa8W2DRu6R8roNMakUwYZqdNi_vYGJuXaUTyjOtROHTYbejDmXgbnF4XPRFZ7iVL-D0x7fDO1ZiKVDCAtqI-ldBBBk7sDFhbV-LhQa1A635bjK5yoZ7G9htlBrBvMMn7PlYNIkxdloJU9Ar-RXHZVhq1Z3UUsQXN2uEn6V6UO_CENuhiT54_IGcAQ-1em3U5G2CCSMJL90X95mpie7haE-9fuqnQZ2sasjBWMOoZUTEbVp2Z0ELEoHUEsHUGyS_PXZ3TJYuLOIW4om1OHb3NpZAaeJGxW5TuL5DawJhyNV0eGQ5nV2yXOEoJmV5pJ0JwT-g0_Ni5rVkn_ZHbz9dfqd6qbtmUTMPNHmcGOUoz0aE5g_-pRxSI_NZUc2kbPNsiORbFNFzW8mriXJKujs0mEsJ1HKI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/template/new_template",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"template",
+						"new_template"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ACCESS: handler refresh token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJJZCI6IjY3OGRmY2M4NzdiZjE3ZWQzYzdiMDA2NCIsInJvbGUiOiJ1c2VyIiwiZW1haWwiOiJnaDQzODIyMUBnbWFpbC5jb20ifSwiaWF0IjoxNzM3NTMyNzA4LCJleHAiOjE3Mzc1MzI3MTh9.GkbRsOEre6FqgSUoygdyp3VApGxu5kaIit5cKRugcFZPiLrZ_XugHHT-x9pOIxn1kYH8LdOnzjnc5ILy4U67sjeUUSKW0fJWAJ1xNhZZtziFDY3xKencWFAb4nL3NY9jeFqrqlh2Nku9Rwkz1NVdp9XwRg43y5M1_FDOhuE3fP8GE1RgTx0BlIBU1bYiNSkQqOFOAowLeqZUmOEcEPa4nIxGxR0SNXAq91G1y7gU40Z57UU_q31te0xJVp51B8vniWvT9aVTQ6QsYmKSj9eGALpV0gwum8kvS039xC59rq5sTSI9UYN9w4srbcUA7Og2k94sjb8lLJn5KYhYzy-iYXSYttN_FvcKRlXUm3QGDHoqEnSCibPDXEz2PNwqIHxMyrYdZ2imD79f0Cg9PD-gTcuMe8ffTJ3u8DCgLJeMwUMu8XKuK466EoDQdVKoqmwtCXlF_Ef3REJoX1Hjl6dtIvfg4l3gYY21Dp4urC04rMXDLPZg3nTUm8SVpKjMcCcjNUeWV8uTNhJa1R1PIDrBTD9u5vxtM6zBXtpuhh_nc9XQL96TyvRMNJ_h_wwpqTnMJmAJwOT1QZSg58Gh5A_8LQqzOG8HcGTKEMsasv2T14vp9cJINuC0TZ3a7xugcDkHIV6568jXElTw0TxRP85yQ2xpCMgZFeg0hy6uOJwJpK4",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/handler_refresh_token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"handler_refresh_token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SHOP: create new shop",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MzkxLCJleHAiOjE3Mzc2ODM3OTF9.czHKamqdjtkvYxVKZykLFW7Kn16SF7O3jn7xv2XO2NuBym1lvLS6e1tiT-Vq0fl_nbeRhtHMueurQuFvksexJLFufWJBrP1xPVlrrhWl-pxg4HtlZBTgLT4BoxCibeW9RqavOCKAYIMkNUGcqixnaUFXKQyJwhP4pcX2BME40-U8U066hB58TOQuXMGo13toGWnR7RTMv5AR1zMrXXNDkfpONfWm8dqZ3eNoRpEqzAMilSzPvzqwozGzXhoST4LpA4hJAG61x31Ein_-QUqAb-pqFX_6DAhPbixESDuElPPu3Ap5dxBjzyvcDZGMU7CjTXRVSO9W8Yq6W7wsCgQ_sQpZuEA9KGCbB_zra9Znb2GiE5gMafvUzpSbpbwST3YlRo4zlJ44FZDrHrTfZKsIflhyfAVDUxxrE-izDAsFd0D17WQwv_9o12hKLm9s2WX1gC-8RXU9xuAAuKCfHDSqoDH-7d41SZF-Fc_ZxlKavuyciRL2gzsRuwxO4vpg76yzohEWxevBDX2_mZ1ujmd-2XmfH4ttqVVq7v4Wjms_KRkq5ehXEbX-mGbD_8aDaX1w-SuGABuK0bD5tTb32qjtItoSK7SfxIjNf5ZMJXZtnvUT0vBDe0Q3BYntUUAPiSVna-0AsVnE0ujyebJJJBY-Zpxc3HGooI3e5vR9u9d-d48",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"DSHOP\",\r\n    \"email\": \"hovandung23214@gmail.com\",\r\n    \"address\": \"6/128 Minh Mạng\",\r\n    \"phone\": \"0942324214\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/shop/new_shop",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"shop",
+						"new_shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER: block user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MzkxLCJleHAiOjE3Mzc2ODM3OTF9.czHKamqdjtkvYxVKZykLFW7Kn16SF7O3jn7xv2XO2NuBym1lvLS6e1tiT-Vq0fl_nbeRhtHMueurQuFvksexJLFufWJBrP1xPVlrrhWl-pxg4HtlZBTgLT4BoxCibeW9RqavOCKAYIMkNUGcqixnaUFXKQyJwhP4pcX2BME40-U8U066hB58TOQuXMGo13toGWnR7RTMv5AR1zMrXXNDkfpONfWm8dqZ3eNoRpEqzAMilSzPvzqwozGzXhoST4LpA4hJAG61x31Ein_-QUqAb-pqFX_6DAhPbixESDuElPPu3Ap5dxBjzyvcDZGMU7CjTXRVSO9W8Yq6W7wsCgQ_sQpZuEA9KGCbB_zra9Znb2GiE5gMafvUzpSbpbwST3YlRo4zlJ44FZDrHrTfZKsIflhyfAVDUxxrE-izDAsFd0D17WQwv_9o12hKLm9s2WX1gC-8RXU9xuAAuKCfHDSqoDH-7d41SZF-Fc_ZxlKavuyciRL2gzsRuwxO4vpg76yzohEWxevBDX2_mZ1ujmd-2XmfH4ttqVVq7v4Wjms_KRkq5ehXEbX-mGbD_8aDaX1w-SuGABuK0bD5tTb32qjtItoSK7SfxIjNf5ZMJXZtnvUT0vBDe0Q3BYntUUAPiSVna-0AsVnE0ujyebJJJBY-Zpxc3HGooI3e5vR9u9d-d48",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"679057a6271baf50a57c1bdb\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/user/block_user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"user",
+						"block_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER: un block user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MzkxLCJleHAiOjE3Mzc2ODM3OTF9.czHKamqdjtkvYxVKZykLFW7Kn16SF7O3jn7xv2XO2NuBym1lvLS6e1tiT-Vq0fl_nbeRhtHMueurQuFvksexJLFufWJBrP1xPVlrrhWl-pxg4HtlZBTgLT4BoxCibeW9RqavOCKAYIMkNUGcqixnaUFXKQyJwhP4pcX2BME40-U8U066hB58TOQuXMGo13toGWnR7RTMv5AR1zMrXXNDkfpONfWm8dqZ3eNoRpEqzAMilSzPvzqwozGzXhoST4LpA4hJAG61x31Ein_-QUqAb-pqFX_6DAhPbixESDuElPPu3Ap5dxBjzyvcDZGMU7CjTXRVSO9W8Yq6W7wsCgQ_sQpZuEA9KGCbB_zra9Znb2GiE5gMafvUzpSbpbwST3YlRo4zlJ44FZDrHrTfZKsIflhyfAVDUxxrE-izDAsFd0D17WQwv_9o12hKLm9s2WX1gC-8RXU9xuAAuKCfHDSqoDH-7d41SZF-Fc_ZxlKavuyciRL2gzsRuwxO4vpg76yzohEWxevBDX2_mZ1ujmd-2XmfH4ttqVVq7v4Wjms_KRkq5ehXEbX-mGbD_8aDaX1w-SuGABuK0bD5tTb32qjtItoSK7SfxIjNf5ZMJXZtnvUT0vBDe0Q3BYntUUAPiSVna-0AsVnE0ujyebJJJBY-Zpxc3HGooI3e5vR9u9d-d48",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"679057a6271baf50a57c1bdb\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/user/unblock_user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"user",
+						"unblock_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SHOP: get shop by user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NzAzODU5LCJleHAiOjE3Mzc3OTAyNTl9.qcAhUuGk8qayNEzMWJbY3oE7CZsLCf8wix7kPa3fnz68HbqEWr693uua8GyioQjrCkb6akLyp2irwkszMIQIhZmZswRrSZlSiDlnGStEyhaVfcyGg64S1YEwv9FG8BzvaUk3kJp-3cTHmXYmbGjZPFODzyfyUJTMAckPjPOWlsPZcZWma2iYCp17M3piKjvQ6Y9KUyswYmUWVTIuJzAm9M77okSpseVFxqVh4i1Gkn90d_71lIiKe0DdDxDiAm_aU2IBTN5eMJXzpSiv1k67dNEBL23nsS82m6uCVGn5vBCfZenLbabJaAXFOdkdjdtjdXM6Ds3jMWK34hqXhOW4XBkbDWmCTQWZ5miXjAmw-ypdPHxfwuJPkOJXc-AEGVqS-WwAcTBMKJObErJ3_zXTrKCFOFbZg7eECrP2OoYLxGLaQwdP_OGUpDhMY_1v_qlyS2lGmdpqRgn_oGlVjLxoMrzMF_jEUzRcDHn9RO6wEqdyQTM0kQp4br9JlcpjZJqw1d-DqM9Cl_CVtIS1LFb70Xb5FKkFqUygnHpdQLs2OB4KLLCcK2-GESEFvZGllOFgXxzYOqy3IcqIwIle5dpqgOXyHd_DtnCK4Kvm-dcRKd83LEjnHJMx5p91-s6glj_WSDIT9ebqbSofK93oLkx9CkUCIR4bUshcl1h2Tqcv3gA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/shop/my_shop",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"shop",
+						"my_shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SHOP: get all shop",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NzAzODU5LCJleHAiOjE3Mzc3OTAyNTl9.qcAhUuGk8qayNEzMWJbY3oE7CZsLCf8wix7kPa3fnz68HbqEWr693uua8GyioQjrCkb6akLyp2irwkszMIQIhZmZswRrSZlSiDlnGStEyhaVfcyGg64S1YEwv9FG8BzvaUk3kJp-3cTHmXYmbGjZPFODzyfyUJTMAckPjPOWlsPZcZWma2iYCp17M3piKjvQ6Y9KUyswYmUWVTIuJzAm9M77okSpseVFxqVh4i1Gkn90d_71lIiKe0DdDxDiAm_aU2IBTN5eMJXzpSiv1k67dNEBL23nsS82m6uCVGn5vBCfZenLbabJaAXFOdkdjdtjdXM6Ds3jMWK34hqXhOW4XBkbDWmCTQWZ5miXjAmw-ypdPHxfwuJPkOJXc-AEGVqS-WwAcTBMKJObErJ3_zXTrKCFOFbZg7eECrP2OoYLxGLaQwdP_OGUpDhMY_1v_qlyS2lGmdpqRgn_oGlVjLxoMrzMF_jEUzRcDHn9RO6wEqdyQTM0kQp4br9JlcpjZJqw1d-DqM9Cl_CVtIS1LFb70Xb5FKkFqUygnHpdQLs2OB4KLLCcK2-GESEFvZGllOFgXxzYOqy3IcqIwIle5dpqgOXyHd_DtnCK4Kvm-dcRKd83LEjnHJMx5p91-s6glj_WSDIT9ebqbSofK93oLkx9CkUCIR4bUshcl1h2Tqcv3gA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/shop",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: create resource",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"role\",\r\n    \"slug\": \"RO00001\",\r\n    \"description\": \"Resource for rbac\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/create_resource",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"create_resource"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: list resource",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NzAzODU5LCJleHAiOjE3Mzc3OTAyNTl9.qcAhUuGk8qayNEzMWJbY3oE7CZsLCf8wix7kPa3fnz68HbqEWr693uua8GyioQjrCkb6akLyp2irwkszMIQIhZmZswRrSZlSiDlnGStEyhaVfcyGg64S1YEwv9FG8BzvaUk3kJp-3cTHmXYmbGjZPFODzyfyUJTMAckPjPOWlsPZcZWma2iYCp17M3piKjvQ6Y9KUyswYmUWVTIuJzAm9M77okSpseVFxqVh4i1Gkn90d_71lIiKe0DdDxDiAm_aU2IBTN5eMJXzpSiv1k67dNEBL23nsS82m6uCVGn5vBCfZenLbabJaAXFOdkdjdtjdXM6Ds3jMWK34hqXhOW4XBkbDWmCTQWZ5miXjAmw-ypdPHxfwuJPkOJXc-AEGVqS-WwAcTBMKJObErJ3_zXTrKCFOFbZg7eECrP2OoYLxGLaQwdP_OGUpDhMY_1v_qlyS2lGmdpqRgn_oGlVjLxoMrzMF_jEUzRcDHn9RO6wEqdyQTM0kQp4br9JlcpjZJqw1d-DqM9Cl_CVtIS1LFb70Xb5FKkFqUygnHpdQLs2OB4KLLCcK2-GESEFvZGllOFgXxzYOqy3IcqIwIle5dpqgOXyHd_DtnCK4Kvm-dcRKd83LEjnHJMx5p91-s6glj_WSDIT9ebqbSofK93oLkx9CkUCIR4bUshcl1h2Tqcv3gA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/resources?limit=1&page=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"resources"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "1"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: create role",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"admin\",\r\n    \"slug\": \"AD00001\",\r\n    \"description\": \"Role of Admin\",\r\n    \"grants\": [\r\n        {\r\n            \"resourceId\": \"679498ba0f33174a1376af34\",\r\n            \"actions\": [\"update:any\", \"read:any\", \"create:any\", \"delete:any\"],\r\n            \"attributes\": \"*\"\r\n        }\r\n    ]\r\n}\r\n\r\n// {\r\n//     \"name\": \"admin\",\r\n//     \"slug\": \"s00001\",\r\n//     \"description\": \"admin extend from shop or user\",\r\n//     \"force\": \"true\",\r\n//     \"grants\": [\r\n//         {\r\n//             \"resourceId\": \"67837759e3608cfd4f29b75e\",\r\n//             \"actions\": [\"update:any\", \"read:any\", \"deleted:any\"],\r\n//             \"attributes\": \"*\"\r\n//         },\r\n//         {\r\n//             \"resourceId\": \"67837782e3608cfd4f29b761\",\r\n//             \"actions\": [\"update:any\", \"read:any\", \"deleted:any\"],\r\n//             \"attributes\": \"*, !mout\" //không có quyền đọc số dư\r\n//         }\r\n//     ]\r\n// }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/create_role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"create_role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: GET ROLE FOR RBAC TEST",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/get_role_rbac_test_admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"get_role_rbac_test_admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: get grants by ROLEID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/grants?role=SH00001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"grants"
+					],
+					"query": [
+						{
+							"key": "role",
+							"value": "SH00001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: create role",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"admin\",\r\n    \"slug\": \"AD00001\",\r\n    \"description\": \"Role of Admin\",\r\n    \"grants\": [\r\n        {\r\n            \"resourceId\": \"679498ba0f33174a1376af34\",\r\n            \"actions\": [\"update:any\", \"read:any\", \"create:any\", \"delete:any\"],\r\n            \"attributes\": \"*\"\r\n        }\r\n    ]\r\n}\r\n\r\n// {\r\n//     \"name\": \"admin\",\r\n//     \"slug\": \"s00001\",\r\n//     \"description\": \"admin extend from shop or user\",\r\n//     \"force\": \"true\",\r\n//     \"grants\": [\r\n//         {\r\n//             \"resourceId\": \"67837759e3608cfd4f29b75e\",\r\n//             \"actions\": [\"update:any\", \"read:any\", \"deleted:any\"],\r\n//             \"attributes\": \"*\"\r\n//         },\r\n//         {\r\n//             \"resourceId\": \"67837782e3608cfd4f29b761\",\r\n//             \"actions\": [\"update:any\", \"read:any\", \"deleted:any\"],\r\n//             \"attributes\": \"*, !mout\" //không có quyền đọc số dư\r\n//         }\r\n//     ]\r\n// }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/create_role",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"create_role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: (grant) add role grant",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roleId\": \"679472b8a0b4e3035cc45870\",\r\n    \"resourceId\": \"679498ba0f33174a1376af34\",\r\n    \"actions\": [\"read:any\", \"update:any\", \"delete:any\", \"create:any\"],\r\n    \"attributes\": \"*, test\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/add_role_grant",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"add_role_grant"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: (grant) delete role grant",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roleId\": \"679472b8a0b4e3035cc45870\",\r\n    \"grantId\": \"6795b737126ae84868022fce\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/delete_role_grant",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"delete_role_grant"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RBAC: (grant) update role grant",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"roleId\": \"679472b8a0b4e3035cc45870\",\r\n    \"resourceId\": \"6793447cac636a9105b857d0\",\r\n    \"actions\": [\"read:own\", \"update:own\", \"delete:own\"],\r\n    \"attributes\": \"*\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/rbac/update_role_grant",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"rbac",
+						"update_role_grant"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
