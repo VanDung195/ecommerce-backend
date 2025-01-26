@@ -1,6 +1,6 @@
 'use strict'
 const {SuccessResponse} = require('../core/success.response')
-const { createResourceService, listResroucesService, createRoleService, getRoleForRbac, getGrantsDetailBySlugService, addRoleGrantService } = require('../services/rbac.service')
+const { createResourceService, listResroucesService, createRoleService, getRoleForRbac, getGrantsDetailBySlugService, addRoleGrantService, deleteRoleGrantService, updateRoleGrantService } = require('../services/rbac.service')
 
 class RBACController{
     newResource = async(req, res, next) => {
@@ -33,7 +33,7 @@ class RBACController{
 
     getGrantsDetail = async(req, res, next) => {
         new SuccessResponse({
-            message: 'Get grant success',
+            message: 'Get role grant success',
             metadata: await getGrantsDetailBySlugService(req.query)
         }).send(res)
     }
@@ -42,6 +42,20 @@ class RBACController{
         new SuccessResponse({
             message: 'Add role grant success',
             metadata: await addRoleGrantService(req.body)
+        }).send(res)
+    }
+
+    deleteRoleGrant = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Delete role grant success',
+            metadata: await deleteRoleGrantService(req.body)
+        }).send(res)
+    }
+
+    updateRoleGrant = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Update role grant success',
+            metadata: await updateRoleGrantService(req.body)
         }).send(res)
     }
 }
