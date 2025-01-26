@@ -16,6 +16,8 @@ router.post('/create_role', asyncHandler(rbacController.newRole))
 router.get('/get_role_rbac_test', asyncHandler(rbacController.getRoleForRbac))
 router.get('/get_role_rbac_test_admin', grantAccess('readOwn', 'resource'), asyncHandler(rbacController.getRoleForRbac))
 router.post('/add_role_grant', asyncHandler(rbacController.addRoleGrant))
+router.delete('/delete_role_grant', asyncHandler(rbacController.deleteRoleGrant))
+router.post('/update_role_grant', asyncHandler(rbacController.updateRoleGrant))
 
 
 module.exports = router
