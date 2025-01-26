@@ -25,10 +25,17 @@ const findRoleByName = async(name) => {
     return foundRole;
 };
 
-
 const findRoleBySlug = async(slug) => {
     const foundRole = await ROLE.findOne({
         rol_slug: new RegExp(`^${slug}$`, 'i')
+    })
+    return foundRole
+}
+
+const findRoleById = async(id) => {
+    const roleObjectId = convertToObjectIdMongodb(id)
+    const foundRole = await ROLE.findOne({
+        _id: roleObjectId
     })
     return foundRole
 }
@@ -117,7 +124,7 @@ const getGrantsDetailBySlug = async({slug}) => {
     return grants
 }
 
-const getGrantsDetailById = async({roleId}) => {
+const getGrantsDetailByRoleId = async({roleId}) => {
     const grants = await ROLE.aggregate([
         {
             $match: {
@@ -143,6 +150,7 @@ const getGrantsDetailById = async({roleId}) => {
                 _id: 0,
                 role_id: '$_id',
                 resourceId: '$resource._id',
+                grantId: '$rol_grants._id',
                 resource_name: '$resource.src_name',
                 resource_description: '$resource.src_description',
                 actions: '$rol_grants.actions',
@@ -157,15 +165,6 @@ const updateRole = async () => {
 
 }
 
-const updateRoleGrant = async ({
-    roleId,
-    resourceId,
-    actions = [],
-    attributes = []
-}) => {
-
-}
-
 const addRoleGrant = async({
     roleId,
     resourceId,
@@ -173,7 +172,6 @@ const addRoleGrant = async({
     attributes
 }) => {
     const roleObjectId = convertToObjectIdMongodb(roleId)
-    console.log(roleObjectId);
     
     const filter = { _id: roleObjectId},
     update = {
@@ -191,17 +189,55 @@ const addRoleGrant = async({
 }
 
 const deleteRoleGrant = async({
-
+    roleId,
+    grantId
 }) => {
+    const roleObjectId = convertToObjectIdMongodb(roleId),
+        grantObjectId = convertToObjectIdMongodb(grantId),
+        filter = { _id: roleObjectId}
+    const delGrant = await ROLE.updateOne(
+        filter, 
+        {
+            $pull: {
+                rol_grants: {
+                    _id: grantObjectId
+                }
+            }
+        }
+    )
+    return delGrant.modifiedCount > 0
+}
 
+const updateRoleGrant = async ({
+    roleId,
+    resourceId,
+    actions = [],
+    attributes = "*"
+}) => {
+    const filter = { _id: convertToObjectIdMongodb(roleId), 'rol_grants.resourceId': convertToObjectIdMongodb(resourceId)},
+        update = {
+            $set: {
+                'rol_grants.$.actions': actions,
+                'rol_grants.$.attributes': attributes
+            }
+        }, options = { new: true}
+    const roleGrant = await ROLE.findOneAndUpdate(filter, update, options)
+    return roleGrant
+}
+
+const deleteRole = async(roleId) => {
+    
 }
 module.exports = {
     createRole,
     listRole,
     findRoleByName,
     findRoleBySlug,
+    findRoleById,
     listRoleForRBAC,
     getGrantsDetailBySlug,
-    getGrantsDetailById,
-    addRoleGrant
+    getGrantsDetailByRoleId,
+    addRoleGrant,
+    deleteRoleGrant,
+    updateRoleGrant
 }
