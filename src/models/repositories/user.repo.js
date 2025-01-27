@@ -45,9 +45,17 @@ const blockUser = async({
     return user
 }
 
+const findUserById = async(id) => {
+    const user = await USER.findOne({
+        _id: id
+    })
+    return user
+}
+
 module.exports = {
     createUser,
     findUserByEmail,
     updateShopRole,
-    blockUser
+    blockUser,
+    findUserById
 }
