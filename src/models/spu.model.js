@@ -39,11 +39,12 @@ var spuSchema = new Schema({
 });
 
 spuSchema.pre('save', async function(next){
+    if (!this.isModified('product_name')) return next(); 
     let baseSlug = slugify(this.product_name, { lower: true, replacement: '-'})
-    let randomNumber = Math.floor(10000000 + Math.random() * 90000000)
+    let randomNumber = Math.floor(1000000000 + Math.random() * 9000000000)
     let urlSlug = `${baseSlug}.${randomNumber}`
-    while(await this.contructor.findOne({ product_slug: urlSlug})){
-        let randomNumberSecond = Math.floor(10000000 + Math.random() * 90000000)
+    while(await this.constructor.findOne({ product_slug: urlSlug})){
+        let randomNumberSecond = Math.floor(1000000000 + Math.random() * 9000000000)
         urlSlug = `${baseSlug}.${randomNumberSecond}`
     }
 
