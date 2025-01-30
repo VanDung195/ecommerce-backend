@@ -29,14 +29,18 @@ const replacePlaceHolder = ( template, params) => {
 const convertToObjectIdMongodb = id => new mongoose.Types.ObjectId(id)
 
 const getSelectData = (select = []) => {
-    return Object.map(select.map(el => [el, 1]))
+    return Object.fromEntries(select.map(el => [el, 1]))
 }
 
+const unSelectData = (unSelect = []) => {
+    return Object.fromEntries(unSelect.map(el => [el, 0]))
+} 
 
 module.exports = {
     generatorRandomToken,
     replacePlaceHolder,
     getInfoData,
     convertToObjectIdMongodb,
-    getSelectData
+    getSelectData,
+    unSelectData
 }
