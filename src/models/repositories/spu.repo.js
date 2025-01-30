@@ -1,5 +1,6 @@
 'use strict'
 
+const { convertToObjectIdMongodb, getSelectData, unSelectData } = require('../../utils')
 const SPU = require('../spu.model')
 
 const createSpu = async({
@@ -25,9 +26,22 @@ const createSpu = async({
     return spu
 }
 
-const getOneSpu = async() => {
-
+const getOneSpuById = async(spuId) => {
+    const spu = await SPU.findOne({
+        _id: convertToObjectIdMongodb(spuId)
+    })
+    return spu
 }
+
+const getOneSpuBySlug = async(slug) => {
+    const spu = await SPU.findOne({
+        product_slug: slug
+    })
+    .select(unSelectData(['isDeleted', 'createdAt', 'updatedAt', '__v']))
+    .lean()
+    return spu
+}
+
 
 const getAllSpu = async({
     limit,
@@ -38,6 +52,7 @@ const getAllSpu = async({
 
 module.exports = {
     createSpu,
-    getOneSpu,
+    getOneSpuById,
+    getOneSpuBySlug,
     getAllSpu
 }
