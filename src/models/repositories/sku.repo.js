@@ -1,6 +1,7 @@
 'use strict'
 
 const SKU = require('../sku.model')
+const { convertToObjectIdMongodb } = require('../../utils/index')
 
 const createSku = async({
     spuId,
@@ -23,6 +24,19 @@ const createSku = async({
     }
 }
 
+const getSkuBySpuId = async({
+    spuId
+}) => {
+    console.log(spuId);
+    
+    const sku = await SKU.find({
+        productId: spuId
+    })
+    
+    return sku
+}
+
 module.exports = {
-    createSku
+    createSku,
+    getSkuBySpuId
 }
