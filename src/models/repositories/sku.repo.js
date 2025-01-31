@@ -25,13 +25,12 @@ const createSku = async({
 }
 
 const getSkuBySpuId = async({
-    spuId
+    spuId,
+    unSelect = []
 }) => {
-    console.log(spuId);
-    
     const sku = await SKU.find({
         productId: spuId
-    })
+    }).select(unSelect).lean()
     
     return sku
 }
