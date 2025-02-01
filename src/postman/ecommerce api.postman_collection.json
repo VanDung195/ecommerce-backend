@@ -7,6 +7,50 @@
 	},
 	"item": [
 		{
+			"name": "TEST: test authentication middleware",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MTEwLCJleHAiOjE3Mzc2ODM1MTB9.LBQIiwqf51amlmqo00E4tbC54P4JF5wUZzy4b9gvjgE2LmD-7FEDrHfuwBj97Ga2u99WIfXZyNZAjK-6NB8XLX5mk_mgE-hNhKwmsqgNONgpmc3pcQoiVly74-XjKd-0vB_FLjTBGztitOUOHkOdQBfAHIFCl9gSuG0NGmsFYTzOjlg-9aEKhKkF7sz71RTsOKbOPgc1P4GeyOAkwpE2taxInwxLuospietLhUvj6D29ejxKOmTVECwUzYjtLBZj8TzCuMRCYO8XhFAvFa8W2DRu6R8roNMakUwYZqdNi_vYGJuXaUTyjOtROHTYbejDmXgbnF4XPRFZ7iVL-D0x7fDO1ZiKVDCAtqI-ldBBBk7sDFhbV-LhQa1A635bjK5yoZ7G9htlBrBvMMn7PlYNIkxdloJU9Ar-RXHZVhq1Z3UUsQXN2uEn6V6UO_CENuhiT54_IGcAQ-1em3U5G2CCSMJL90X95mpie7haE-9fuqnQZ2sasjBWMOoZUTEbVp2Z0ELEoHUEsHUGyS_PXZ3TJYuLOIW4om1OHb3NpZAaeJGxW5TuL5DawJhyNV0eGQ5nV2yXOEoJmV5pJ0JwT-g0_Ni5rVkn_ZHbz9dfqd6qbtmUTMPNHmcGOUoz0aE5g_-pRxSI_NZUc2kbPNsiORbFNFzW8mriXJKujs0mEsJ1HKI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/template/new_template",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"template",
+						"new_template"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "TEMPLATE: create new template",
 			"request": {
 				"auth": {
@@ -148,7 +192,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"gh438221@gmail.com\",\r\n    \"password\": \"vandung19052003\"\r\n}",
+					"raw": "{\r\n    \"email\": \"gh438221@gmail.com\",\r\n    \"password\": \"vandung19052003\"\r\n}\r\n\r\n//shop\r\n// {\r\n//     \"email\": \"gas3436454@gmail.com\",\r\n//     \"password\": \"vandung19052003\"\r\n// }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -172,50 +216,6 @@
 			"response": []
 		},
 		{
-			"name": "TEST: test authentication middleware",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "x-client-id",
-						"value": "678dfcc877bf17ed3c7b0064",
-						"type": "text"
-					},
-					{
-						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MTEwLCJleHAiOjE3Mzc2ODM1MTB9.LBQIiwqf51amlmqo00E4tbC54P4JF5wUZzy4b9gvjgE2LmD-7FEDrHfuwBj97Ga2u99WIfXZyNZAjK-6NB8XLX5mk_mgE-hNhKwmsqgNONgpmc3pcQoiVly74-XjKd-0vB_FLjTBGztitOUOHkOdQBfAHIFCl9gSuG0NGmsFYTzOjlg-9aEKhKkF7sz71RTsOKbOPgc1P4GeyOAkwpE2taxInwxLuospietLhUvj6D29ejxKOmTVECwUzYjtLBZj8TzCuMRCYO8XhFAvFa8W2DRu6R8roNMakUwYZqdNi_vYGJuXaUTyjOtROHTYbejDmXgbnF4XPRFZ7iVL-D0x7fDO1ZiKVDCAtqI-ldBBBk7sDFhbV-LhQa1A635bjK5yoZ7G9htlBrBvMMn7PlYNIkxdloJU9Ar-RXHZVhq1Z3UUsQXN2uEn6V6UO_CENuhiT54_IGcAQ-1em3U5G2CCSMJL90X95mpie7haE-9fuqnQZ2sasjBWMOoZUTEbVp2Z0ELEoHUEsHUGyS_PXZ3TJYuLOIW4om1OHb3NpZAaeJGxW5TuL5DawJhyNV0eGQ5nV2yXOEoJmV5pJ0JwT-g0_Ni5rVkn_ZHbz9dfqd6qbtmUTMPNHmcGOUoz0aE5g_-pRxSI_NZUc2kbPNsiORbFNFzW8mriXJKujs0mEsJ1HKI",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3052/api/template/new_template",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3052",
-					"path": [
-						"api",
-						"template",
-						"new_template"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "ACCESS: handler refresh token",
 			"request": {
 				"auth": {
@@ -231,12 +231,19 @@
 					{
 						"key": "authorization",
 						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJJZCI6IjY3OGRmY2M4NzdiZjE3ZWQzYzdiMDA2NCIsInJvbGUiOiJ1c2VyIiwiZW1haWwiOiJnaDQzODIyMUBnbWFpbC5jb20ifSwiaWF0IjoxNzM3NTMyNzA4LCJleHAiOjE3Mzc1MzI3MTh9.GkbRsOEre6FqgSUoygdyp3VApGxu5kaIit5cKRugcFZPiLrZ_XugHHT-x9pOIxn1kYH8LdOnzjnc5ILy4U67sjeUUSKW0fJWAJ1xNhZZtziFDY3xKencWFAb4nL3NY9jeFqrqlh2Nku9Rwkz1NVdp9XwRg43y5M1_FDOhuE3fP8GE1RgTx0BlIBU1bYiNSkQqOFOAowLeqZUmOEcEPa4nIxGxR0SNXAq91G1y7gU40Z57UU_q31te0xJVp51B8vniWvT9aVTQ6QsYmKSj9eGALpV0gwum8kvS039xC59rq5sTSI9UYN9w4srbcUA7Og2k94sjb8lLJn5KYhYzy-iYXSYttN_FvcKRlXUm3QGDHoqEnSCibPDXEz2PNwqIHxMyrYdZ2imD79f0Cg9PD-gTcuMe8ffTJ3u8DCgLJeMwUMu8XKuK466EoDQdVKoqmwtCXlF_Ef3REJoX1Hjl6dtIvfg4l3gYY21Dp4urC04rMXDLPZg3nTUm8SVpKjMcCcjNUeWV8uTNhJa1R1PIDrBTD9u5vxtM6zBXtpuhh_nc9XQL96TyvRMNJ_h_wwpqTnMJmAJwOT1QZSg58Gh5A_8LQqzOG8HcGTKEMsasv2T14vp9cJINuC0TZ3a7xugcDkHIV6568jXElTw0TxRP85yQ2xpCMgZFeg0hy6uOJwJpK4",
-						"type": "text"
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-client-id-shop",
+						"value": "679057a6271baf50a57c1bdb",
+						"type": "text",
+						"disabled": true
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"tem_name\": \"HTML CONFIRM TOKEN EMAIL\"\r\n}\r\n",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -253,50 +260,6 @@
 					"path": [
 						"api",
 						"handler_refresh_token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "SHOP: create new shop",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "x-client-id",
-						"value": "678dfcc877bf17ed3c7b0064",
-						"type": "text"
-					},
-					{
-						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2g0MzgyMjFAZ21haWwuY29tIiwiaWF0IjoxNzM3NTk3MzkxLCJleHAiOjE3Mzc2ODM3OTF9.czHKamqdjtkvYxVKZykLFW7Kn16SF7O3jn7xv2XO2NuBym1lvLS6e1tiT-Vq0fl_nbeRhtHMueurQuFvksexJLFufWJBrP1xPVlrrhWl-pxg4HtlZBTgLT4BoxCibeW9RqavOCKAYIMkNUGcqixnaUFXKQyJwhP4pcX2BME40-U8U066hB58TOQuXMGo13toGWnR7RTMv5AR1zMrXXNDkfpONfWm8dqZ3eNoRpEqzAMilSzPvzqwozGzXhoST4LpA4hJAG61x31Ein_-QUqAb-pqFX_6DAhPbixESDuElPPu3Ap5dxBjzyvcDZGMU7CjTXRVSO9W8Yq6W7wsCgQ_sQpZuEA9KGCbB_zra9Znb2GiE5gMafvUzpSbpbwST3YlRo4zlJ44FZDrHrTfZKsIflhyfAVDUxxrE-izDAsFd0D17WQwv_9o12hKLm9s2WX1gC-8RXU9xuAAuKCfHDSqoDH-7d41SZF-Fc_ZxlKavuyciRL2gzsRuwxO4vpg76yzohEWxevBDX2_mZ1ujmd-2XmfH4ttqVVq7v4Wjms_KRkq5ehXEbX-mGbD_8aDaX1w-SuGABuK0bD5tTb32qjtItoSK7SfxIjNf5ZMJXZtnvUT0vBDe0Q3BYntUUAPiSVna-0AsVnE0ujyebJJJBY-Zpxc3HGooI3e5vR9u9d-d48",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"DSHOP\",\r\n    \"email\": \"hovandung23214@gmail.com\",\r\n    \"address\": \"6/128 Minh Mạng\",\r\n    \"phone\": \"0942324214\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3052/api/shop/new_shop",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3052",
-					"path": [
-						"api",
-						"shop",
-						"new_shop"
 					]
 				}
 			},
@@ -385,6 +348,50 @@
 						"api",
 						"user",
 						"unblock_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SHOP: create new shop",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "679057a6271baf50a57c1bdb",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzkwNTdhNjI3MWJhZjUwYTU3YzFiZGIiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2FzMzQzNjQ1NEBnbWFpbC5jb20iLCJpYXQiOjE3MzgzOTgxNjYsImV4cCI6MTczODQ4NDU2Nn0.ey6xRapVm_Wt18igvWnYoKG4k6DnumYKwu24t5w9pVrYr3IZIU78KYeIEFG4e-KBmto3bGI8Ll1S1HpklCga-XcBIbT7LZGYq9p9LxNPbjuI_xfZz4jdR59Vuh_wAtFFApjmI0-mAE2d9S3SWgAP-W6URstKB17Jl6HmpHYlp99J_IousBiGXpNsohkU1rmZWqcdiNZVSV7nH6cJgG1qeqPS7l2J44t34X2HEUUoi331krxpLae5wBWZgJfM7YAk5B924EhlaEvAZwSU06PxZHjWX-GJ9rFew1J8FcS2rZRsq-AZzE7fcQwCpZPI3_ToUrXAnSo8jv63x-xukRuUbpxJs387qSNK-ToNmhg9YhEXitUeZEOYjM7MQNmHk0__IAQk_o_mHD45PBT7n9D0PEgQf5rKS3mFOJanhfQUUESx_06KXEQsQtjPc2Pc0KP6GT3n5CzXeMIIUxXsHahjw9QSIp7nm5UyHBYJWlmqGjE0FLgPK_H4_WB8nwh9yCFpJKA196IoYGeZIStmHiaIr48W38gClBMpffNU7yDYsH-hcjxA379c75GJQAkEh_chiFqqY64_KXYxo8sebRTFodzvp-y5QYtaWCmL5MQ7rShdtonSgLYAfykzpnInro2NNxEvzUfOTCDv7k5CchLTC7HBJIP3WXdOZjD7uVxYVKg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"DSHOP\",\r\n    \"email\": \"hovandung23214@gmail.com\",\r\n    \"address\": \"6/128 Minh Mạng\",\r\n    \"phone\": \"0942324214\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/shop/new_shop",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"shop",
+						"new_shop"
 					]
 				}
 			},
@@ -498,13 +505,13 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODIwMzg2NCwiZXhwIjoxNzM4MjkwMjY0fQ.igtXnq79OuvkEW0hw8qhirKDhx0aLi_pxq1eNArZRUW-bMp24APnMES5KpdJLigPRXL5s1GtPkubm83pIa9P5nCdX4RKPxHAC9jv2pQmyMu5XMAa1Oi8_IIS9Qq5D90257iu20HpsMEdjhBV8A2N7cYMnsWBrDD4n00IkVVwHuuVfORTpMCQlfSc5qCXG3pxl1CS9g0A3va9r9o3WxZB5wCbLr5A1f7GoPL7R6mpR0yiaLsg-G4go8RZWdkQ3xvMoSb8jbTSQYcj9C4_gkGKc0G2zdvr5UD0P5-TwlrBNcLDbUDrHJ6_ohbhGm8jx51GWtBJ2tlg9AUspZc7Ev8c9cDb3AviF9iiGOY9G3LdJdTtzsvVkQLGpI-QedJ5OslVyh3Bb63bf1kpYbfiwhxE4u2UtCMLGWp9ha6djzBHmVLIpsRZWfS1wURgQouBo8xybYlE6gdsOcM39VSQf3SJxschHWNv68mn5EDvrUJNwOM06lmv8Zrd9wNopfRjBQ6x_Zk5dj_wyyIZjArYaax3Ep1lECFahWSLf2a6OLSVjQz9_8UJcZOWkvhXf2P_6X2x8irepvJy0U143BtqyyB3h8qfDqO-Rd6WeTJAd8AOq1EbrEWGJQ0rHI8dAZHg_nH-nCLjK-VovG1rJd1Gkf7yRZuc78VhIk8Go2adI1Pq070",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"role\",\r\n    \"slug\": \"RO00001\",\r\n    \"description\": \"Resource for rbac\"\r\n}\r\n",
+					"raw": "{\r\n    \"name\": \"product\",\r\n    \"slug\": \"PRDO00001\",\r\n    \"description\": \"Product for rbac\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -693,7 +700,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODM5ODkxMiwiZXhwIjoxNzM4NDg1MzEyfQ.ADZd08oX9xVhGJ_cPPoxVnDNy5V2jN--5E-0uHJoc8MsAX-1Rcwth1hhHyxP0Dps6qLfTAR_5T8w8dBjYKCEQosXGfHsO7Ml-Cbk5oKJfTumUG-D6WLwGIeSWG7Q8994eElcWFVoyHJHkLIDmkKcfUv0WO_74S78cOgvXRlQK2yF0Byk0MMRqF4olEmJU6Mha80MLc2Q8upWTMBnuMEQgICbgruiIMRkf4G-1HMMj3XoRz8uMtcp6NT8xql3G5BK7bxMcTUB0-A2nNsDxD_YnTTgCb2zlSqNbaxEhdjoMSS4mNxMcR4G7duTJL_jq_mf1uVqOXZcEeRygluI8ETDuu4tvpOfbF5O3dHhig46h3YEMGIfIHYb0l9OoQLV12U0qfvOVbd0PdKk56vus12k--ygYb_1qj-SwCGuZScLnja-my3w4gf2_FZHiF9497ADTpjy44qeGCK4fw4FTKy8Q-AY3vROW0zidzLBcPyRn33nve_upb6d_3_QpWARkJIwX1-9J7kGo0Z8vlFMEynm4ei51bELe-KskfZMGHZP4m-sy4EV_9Y2ycuPy5r0q0AgZVHXSwow_NVhLpSuUOZD9zQrsRbBtToDrpS0id6koggTrOuHC-63kaE8MvY1F0sC72BRAviXElq2NJjwXvnAS0xuZjxuosBaz5LMTPOAjls",
 						"type": "text"
 					}
 				],
@@ -743,7 +750,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODIwMzg2NCwiZXhwIjoxNzM4MjkwMjY0fQ.igtXnq79OuvkEW0hw8qhirKDhx0aLi_pxq1eNArZRUW-bMp24APnMES5KpdJLigPRXL5s1GtPkubm83pIa9P5nCdX4RKPxHAC9jv2pQmyMu5XMAa1Oi8_IIS9Qq5D90257iu20HpsMEdjhBV8A2N7cYMnsWBrDD4n00IkVVwHuuVfORTpMCQlfSc5qCXG3pxl1CS9g0A3va9r9o3WxZB5wCbLr5A1f7GoPL7R6mpR0yiaLsg-G4go8RZWdkQ3xvMoSb8jbTSQYcj9C4_gkGKc0G2zdvr5UD0P5-TwlrBNcLDbUDrHJ6_ohbhGm8jx51GWtBJ2tlg9AUspZc7Ev8c9cDb3AviF9iiGOY9G3LdJdTtzsvVkQLGpI-QedJ5OslVyh3Bb63bf1kpYbfiwhxE4u2UtCMLGWp9ha6djzBHmVLIpsRZWfS1wURgQouBo8xybYlE6gdsOcM39VSQf3SJxschHWNv68mn5EDvrUJNwOM06lmv8Zrd9wNopfRjBQ6x_Zk5dj_wyyIZjArYaax3Ep1lECFahWSLf2a6OLSVjQz9_8UJcZOWkvhXf2P_6X2x8irepvJy0U143BtqyyB3h8qfDqO-Rd6WeTJAd8AOq1EbrEWGJQ0rHI8dAZHg_nH-nCLjK-VovG1rJd1Gkf7yRZuc78VhIk8Go2adI1Pq070",
 						"type": "text"
 					}
 				],
@@ -787,13 +794,13 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczNzc5MTc4NCwiZXhwIjoxNzM3ODc4MTg0fQ.FPK_tQrFLl_A98DlguU87ipAq1bt7iHJ5MHiHkjCMLE6TBEF8BZWc1slp2qsJ7cXY0Q75bB0v2J6ZFl6IKRoqIxF3n1OS_U4nHecZJt7QpXnnUP1ECjFMuKpewYoPRjkSt2hyYZxW9KoodBWQ1TQrdWfDrc6B0Io03IoByp8SVgt0kH5S8_oWhJ6Q5NPo1AB6bTuppjJ3J0pqCe71Y8JLww8sfznGUDsWxPtRahSFOVRUqrmDe5rU2yGvGgxv_4MLttzdrbP83ldT7v3Hj8W3rp2YgcSQW51uInScEsJDvwMhRRvH_7rDbkOEynIyAO8gfAykSimiezcnV1mUIHqng-JIKtHnpvzpnX0MeKg91Dk7tnPNKlKqq5BZ4uleriTV2ao9LeRJSMMD41FoSl0rBrcTw2I-UWgKk_Qb_HnoMnPuM7IpmfdTmFl53z08I8OX0mKx7-sMzavn8Ls6O1aaWykrhHZ2aVtUbpQ8aR40ORTbRNMdUwwrW_yQ37Q12kf7osKmmaZQ-77h09ZKXPUD78MqCxqSGBC5U5d2dKgp43FyhViyVwPlHUQCgsdFf3hI2JGcR5ecAJ4mgq8gU-ld9rMHti8eJWyX17c23CskYxqMJ-JDrEV1WHxHMbFMzeh07gL7oVg9MC2QRhXy_0h8P2LxB1y20LxkuDXE3_VM7A",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODMxMjIzNywiZXhwIjoxNzM4Mzk4NjM3fQ.TNCjSq4AfGEB7IFHnfovNaR_s3DTtnTWokvI1DS1yqvtuBU8sffXog_1YrVq4Bw5QmkcogoNhEYO8uGnQPirAPm-yjiZFi1O9EJBowpuk6EmJw1AIBAA9geJwX_23QX20PcmAYUVG8WgCznNcgK5bwIpcFtvrC_o5g1oX5hIJ5sk-tcXLlYujiNtH1qw_dAO4NZ0U27mjfIwyb7alPvrOdijsLO4HQWClDtynWI5pHR0wCt4P-kNCtVPn2BU5INWQn59eH2Z2xdksOlHU0ZdwoGb5lRemmYu1iqxyOJvadL52pSviOzza7dqacvd3NFlI00UJJp1iaegHdpaLKWC91uWfJa2lf9TdmSUhiNhynWolhP9WjMAM19VmkwZ2jEK76_0iTxmUK4mH_5A1bxVJJqrK38Geim__pbGpsgVOPUMt_Z9_koya5GByJ9KFDmzYNEtRKmNtlg7fWQeCLEe8gEtkQM1gJYxwiA3xj1KGMSzXxOMTPLFuQkdakO_TP4kuzVwHI_aAkeX2sd69eAgp4kycQlOeiRMF3JcTnhrx72IU11O7MoxBiCDSfhW89UGNu_CVtY6UpImhCw9D1ayymj69wL5YJmZOeiU-4Y5s_YKJkXzNVOmdLodqFMJ-v1MmsWSVLH-N68hOxLEmytwiTlmOS4r6M6qykf9wfU3uiI",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"roleId\": \"679472b8a0b4e3035cc45870\",\r\n    \"resourceId\": \"679498ba0f33174a1376af34\",\r\n    \"actions\": [\"read:any\", \"update:any\", \"delete:any\", \"create:any\"],\r\n    \"attributes\": \"*, test\"\r\n}\r\n",
+					"raw": "{\r\n    \"roleId\": \"679498f80f33174a1376af39\",\r\n    \"resourceId\": \"679b9d189d806e961f0aed87\",\r\n    \"actions\": [\"read:any\", \"update:any\", \"delete:any\", \"create:any\"],\r\n    \"attributes\": \"*\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -899,6 +906,338 @@
 						"api",
 						"rbac",
 						"update_role_grant"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SPU: create SPU (and SKU LIST)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "679057a6271baf50a57c1bdb",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzkwNTdhNjI3MWJhZjUwYTU3YzFiZGIiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2FzMzQzNjQ1NEBnbWFpbC5jb20iLCJpYXQiOjE3MzgzOTgxNjYsImV4cCI6MTczODQ4NDU2Nn0.ey6xRapVm_Wt18igvWnYoKG4k6DnumYKwu24t5w9pVrYr3IZIU78KYeIEFG4e-KBmto3bGI8Ll1S1HpklCga-XcBIbT7LZGYq9p9LxNPbjuI_xfZz4jdR59Vuh_wAtFFApjmI0-mAE2d9S3SWgAP-W6URstKB17Jl6HmpHYlp99J_IousBiGXpNsohkU1rmZWqcdiNZVSV7nH6cJgG1qeqPS7l2J44t34X2HEUUoi331krxpLae5wBWZgJfM7YAk5B924EhlaEvAZwSU06PxZHjWX-GJ9rFew1J8FcS2rZRsq-AZzE7fcQwCpZPI3_ToUrXAnSo8jv63x-xukRuUbpxJs387qSNK-ToNmhg9YhEXitUeZEOYjM7MQNmHk0__IAQk_o_mHD45PBT7n9D0PEgQf5rKS3mFOJanhfQUUESx_06KXEQsQtjPc2Pc0KP6GT3n5CzXeMIIUxXsHahjw9QSIp7nm5UyHBYJWlmqGjE0FLgPK_H4_WB8nwh9yCFpJKA196IoYGeZIStmHiaIr48W38gClBMpffNU7yDYsH-hcjxA379c75GJQAkEh_chiFqqY64_KXYxo8sebRTFodzvp-y5QYtaWCmL5MQ7rShdtonSgLYAfykzpnInro2NNxEvzUfOTCDv7k5CchLTC7HBJIP3WXdOZjD7uVxYVKg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\r\n//     \"name\": \"Áo thun test nhé\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 123,\r\n//     \"category\": [\"1\", \"2\", \"3\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ]\r\n// }\r\n\r\n\r\n{\r\n    \"name\": \"Áo thun test cho shop\",\r\n    \"thumb\": \"https://test.com/image123123\",\r\n    \"description\": \"Áo thun để test thôi mày\",\r\n    \"price\": 123,\r\n    \"category\": [\"1\", \"2\", \"3\"],\r\n    \"quantity\": 5,\r\n    \"variations\": [\r\n        {\r\n            \"images\": [\"123\", \"1234\", \"12345\"],\r\n            \"name\": \"color\",\r\n            \"options\": [\"red\", \"green\", \"blue\"]\r\n        },\r\n        {\r\n            \"images\": [\"444\", \"333\", \"222\"],\r\n            \"name\": \"size\",\r\n            \"options\": [\"S\", \"M\", \"XL\"]\r\n        }\r\n    ],\r\n    \"sku_list\": [\r\n        {\r\n            \"sku_tier_idx\": [0, 0],\r\n            \"sku_default\": true,\r\n            \"sku_price\": 120000,\r\n            \"sku_stock\": 20\r\n        },\r\n        {\r\n            \"sku_tier_idx\": [0, 1],\r\n            \"sku_default\": false,\r\n            \"sku_price\": 10000,\r\n            \"sku_stock\": 25\r\n        },\r\n        {\r\n            \"sku_tier_idx\": [1, 1],\r\n            \"sku_default\": true,\r\n            \"sku_price\": 13000,\r\n            \"sku_stock\": 30\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/spu/new_spu",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"spu",
+						"new_spu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SPU: get spu (with SKU list)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODMxMjIzNywiZXhwIjoxNzM4Mzk4NjM3fQ.TNCjSq4AfGEB7IFHnfovNaR_s3DTtnTWokvI1DS1yqvtuBU8sffXog_1YrVq4Bw5QmkcogoNhEYO8uGnQPirAPm-yjiZFi1O9EJBowpuk6EmJw1AIBAA9geJwX_23QX20PcmAYUVG8WgCznNcgK5bwIpcFtvrC_o5g1oX5hIJ5sk-tcXLlYujiNtH1qw_dAO4NZ0U27mjfIwyb7alPvrOdijsLO4HQWClDtynWI5pHR0wCt4P-kNCtVPn2BU5INWQn59eH2Z2xdksOlHU0ZdwoGb5lRemmYu1iqxyOJvadL52pSviOzza7dqacvd3NFlI00UJJp1iaegHdpaLKWC91uWfJa2lf9TdmSUhiNhynWolhP9WjMAM19VmkwZ2jEK76_0iTxmUK4mH_5A1bxVJJqrK38Geim__pbGpsgVOPUMt_Z9_koya5GByJ9KFDmzYNEtRKmNtlg7fWQeCLEe8gEtkQM1gJYxwiA3xj1KGMSzXxOMTPLFuQkdakO_TP4kuzVwHI_aAkeX2sd69eAgp4kycQlOeiRMF3JcTnhrx72IU11O7MoxBiCDSfhW89UGNu_CVtY6UpImhCw9D1ayymj69wL5YJmZOeiU-4Y5s_YKJkXzNVOmdLodqFMJ-v1MmsWSVLH-N68hOxLEmytwiTlmOS4r6M6qykf9wfU3uiI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/ao-thun-test-nhe.7346363486",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"ao-thun-test-nhe.7346363486"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SKU: get list sku by spu (for shop)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODMxMjIzNywiZXhwIjoxNzM4Mzk4NjM3fQ.TNCjSq4AfGEB7IFHnfovNaR_s3DTtnTWokvI1DS1yqvtuBU8sffXog_1YrVq4Bw5QmkcogoNhEYO8uGnQPirAPm-yjiZFi1O9EJBowpuk6EmJw1AIBAA9geJwX_23QX20PcmAYUVG8WgCznNcgK5bwIpcFtvrC_o5g1oX5hIJ5sk-tcXLlYujiNtH1qw_dAO4NZ0U27mjfIwyb7alPvrOdijsLO4HQWClDtynWI5pHR0wCt4P-kNCtVPn2BU5INWQn59eH2Z2xdksOlHU0ZdwoGb5lRemmYu1iqxyOJvadL52pSviOzza7dqacvd3NFlI00UJJp1iaegHdpaLKWC91uWfJa2lf9TdmSUhiNhynWolhP9WjMAM19VmkwZ2jEK76_0iTxmUK4mH_5A1bxVJJqrK38Geim__pbGpsgVOPUMt_Z9_koya5GByJ9KFDmzYNEtRKmNtlg7fWQeCLEe8gEtkQM1gJYxwiA3xj1KGMSzXxOMTPLFuQkdakO_TP4kuzVwHI_aAkeX2sd69eAgp4kycQlOeiRMF3JcTnhrx72IU11O7MoxBiCDSfhW89UGNu_CVtY6UpImhCw9D1ayymj69wL5YJmZOeiU-4Y5s_YKJkXzNVOmdLodqFMJ-v1MmsWSVLH-N68hOxLEmytwiTlmOS4r6M6qykf9wfU3uiI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/sku/detail?spuId=679b102da5dabc81bc00cf5c",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"sku",
+						"detail"
+					],
+					"query": [
+						{
+							"key": "spuId",
+							"value": "679b102da5dabc81bc00cf5c"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SKU: get one sku",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODMxMjIzNywiZXhwIjoxNzM4Mzk4NjM3fQ.TNCjSq4AfGEB7IFHnfovNaR_s3DTtnTWokvI1DS1yqvtuBU8sffXog_1YrVq4Bw5QmkcogoNhEYO8uGnQPirAPm-yjiZFi1O9EJBowpuk6EmJw1AIBAA9geJwX_23QX20PcmAYUVG8WgCznNcgK5bwIpcFtvrC_o5g1oX5hIJ5sk-tcXLlYujiNtH1qw_dAO4NZ0U27mjfIwyb7alPvrOdijsLO4HQWClDtynWI5pHR0wCt4P-kNCtVPn2BU5INWQn59eH2Z2xdksOlHU0ZdwoGb5lRemmYu1iqxyOJvadL52pSviOzza7dqacvd3NFlI00UJJp1iaegHdpaLKWC91uWfJa2lf9TdmSUhiNhynWolhP9WjMAM19VmkwZ2jEK76_0iTxmUK4mH_5A1bxVJJqrK38Geim__pbGpsgVOPUMt_Z9_koya5GByJ9KFDmzYNEtRKmNtlg7fWQeCLEe8gEtkQM1gJYxwiA3xj1KGMSzXxOMTPLFuQkdakO_TP4kuzVwHI_aAkeX2sd69eAgp4kycQlOeiRMF3JcTnhrx72IU11O7MoxBiCDSfhW89UGNu_CVtY6UpImhCw9D1ayymj69wL5YJmZOeiU-4Y5s_YKJkXzNVOmdLodqFMJ-v1MmsWSVLH-N68hOxLEmytwiTlmOS4r6M6qykf9wfU3uiI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"spuId\": \"679b102da5dabc81bc00cf5c\",\r\n    \"skuId\": \"679b102da5dabc81bc00cf5c419-678dfcc877bf17ed3c7b0064\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/sku/one",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"sku",
+						"one"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SKU (ADMIN): get all spus   ",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "678dfcc877bf17ed3c7b0064",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhkZmNjODc3YmYxN2VkM2M3YjAwNjQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImdoNDM4MjIxQGdtYWlsLmNvbSIsImlhdCI6MTczODM5ODkxMiwiZXhwIjoxNzM4NDg1MzEyfQ.ADZd08oX9xVhGJ_cPPoxVnDNy5V2jN--5E-0uHJoc8MsAX-1Rcwth1hhHyxP0Dps6qLfTAR_5T8w8dBjYKCEQosXGfHsO7Ml-Cbk5oKJfTumUG-D6WLwGIeSWG7Q8994eElcWFVoyHJHkLIDmkKcfUv0WO_74S78cOgvXRlQK2yF0Byk0MMRqF4olEmJU6Mha80MLc2Q8upWTMBnuMEQgICbgruiIMRkf4G-1HMMj3XoRz8uMtcp6NT8xql3G5BK7bxMcTUB0-A2nNsDxD_YnTTgCb2zlSqNbaxEhdjoMSS4mNxMcR4G7duTJL_jq_mf1uVqOXZcEeRygluI8ETDuu4tvpOfbF5O3dHhig46h3YEMGIfIHYb0l9OoQLV12U0qfvOVbd0PdKk56vus12k--ygYb_1qj-SwCGuZScLnja-my3w4gf2_FZHiF9497ADTpjy44qeGCK4fw4FTKy8Q-AY3vROW0zidzLBcPyRn33nve_upb6d_3_QpWARkJIwX1-9J7kGo0Z8vlFMEynm4ei51bELe-KskfZMGHZP4m-sy4EV_9Y2ycuPy5r0q0AgZVHXSwow_NVhLpSuUOZD9zQrsRbBtToDrpS0id6koggTrOuHC-63kaE8MvY1F0sC72BRAviXElq2NJjwXvnAS0xuZjxuosBaz5LMTPOAjls",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/spu/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"spu",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SPU (SHOP): publish product",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "679057a6271baf50a57c1bdb",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzkwNTdhNjI3MWJhZjUwYTU3YzFiZGIiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2FzMzQzNjQ1NEBnbWFpbC5jb20iLCJpYXQiOjE3MzgzOTgxNjYsImV4cCI6MTczODQ4NDU2Nn0.ey6xRapVm_Wt18igvWnYoKG4k6DnumYKwu24t5w9pVrYr3IZIU78KYeIEFG4e-KBmto3bGI8Ll1S1HpklCga-XcBIbT7LZGYq9p9LxNPbjuI_xfZz4jdR59Vuh_wAtFFApjmI0-mAE2d9S3SWgAP-W6URstKB17Jl6HmpHYlp99J_IousBiGXpNsohkU1rmZWqcdiNZVSV7nH6cJgG1qeqPS7l2J44t34X2HEUUoi331krxpLae5wBWZgJfM7YAk5B924EhlaEvAZwSU06PxZHjWX-GJ9rFew1J8FcS2rZRsq-AZzE7fcQwCpZPI3_ToUrXAnSo8jv63x-xukRuUbpxJs387qSNK-ToNmhg9YhEXitUeZEOYjM7MQNmHk0__IAQk_o_mHD45PBT7n9D0PEgQf5rKS3mFOJanhfQUUESx_06KXEQsQtjPc2Pc0KP6GT3n5CzXeMIIUxXsHahjw9QSIp7nm5UyHBYJWlmqGjE0FLgPK_H4_WB8nwh9yCFpJKA196IoYGeZIStmHiaIr48W38gClBMpffNU7yDYsH-hcjxA379c75GJQAkEh_chiFqqY64_KXYxo8sebRTFodzvp-y5QYtaWCmL5MQ7rShdtonSgLYAfykzpnInro2NNxEvzUfOTCDv7k5CchLTC7HBJIP3WXdOZjD7uVxYVKg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"spuId\": \"679de3b4cbb3728f5b3fd387\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/spu/publish",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"spu",
+						"publish"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SPU (SHOP): UN publish product",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "679057a6271baf50a57c1bdb",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzkwNTdhNjI3MWJhZjUwYTU3YzFiZGIiLCJyb2xlIjoidXNlciIsImVtYWlsIjoiZ2FzMzQzNjQ1NEBnbWFpbC5jb20iLCJpYXQiOjE3MzgzOTgxNjYsImV4cCI6MTczODQ4NDU2Nn0.ey6xRapVm_Wt18igvWnYoKG4k6DnumYKwu24t5w9pVrYr3IZIU78KYeIEFG4e-KBmto3bGI8Ll1S1HpklCga-XcBIbT7LZGYq9p9LxNPbjuI_xfZz4jdR59Vuh_wAtFFApjmI0-mAE2d9S3SWgAP-W6URstKB17Jl6HmpHYlp99J_IousBiGXpNsohkU1rmZWqcdiNZVSV7nH6cJgG1qeqPS7l2J44t34X2HEUUoi331krxpLae5wBWZgJfM7YAk5B924EhlaEvAZwSU06PxZHjWX-GJ9rFew1J8FcS2rZRsq-AZzE7fcQwCpZPI3_ToUrXAnSo8jv63x-xukRuUbpxJs387qSNK-ToNmhg9YhEXitUeZEOYjM7MQNmHk0__IAQk_o_mHD45PBT7n9D0PEgQf5rKS3mFOJanhfQUUESx_06KXEQsQtjPc2Pc0KP6GT3n5CzXeMIIUxXsHahjw9QSIp7nm5UyHBYJWlmqGjE0FLgPK_H4_WB8nwh9yCFpJKA196IoYGeZIStmHiaIr48W38gClBMpffNU7yDYsH-hcjxA379c75GJQAkEh_chiFqqY64_KXYxo8sebRTFodzvp-y5QYtaWCmL5MQ7rShdtonSgLYAfykzpnInro2NNxEvzUfOTCDv7k5CchLTC7HBJIP3WXdOZjD7uVxYVKg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"spuId\": \"679de3b4cbb3728f5b3fd387\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/product/spu/unPublish",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"product",
+						"spu",
+						"unPublish"
 					]
 				}
 			},
