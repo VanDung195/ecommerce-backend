@@ -1,7 +1,7 @@
 'use strict'
 
 const SKU = require('../sku.model')
-const { convertToObjectIdMongodb } = require('../../utils/index')
+const { convertToObjectIdMongodb, unSelectData } = require('../../utils/index')
 
 const createSku = async({
     spuId,
@@ -24,18 +24,31 @@ const createSku = async({
     }
 }
 
-const getSkuBySpuId = async({
+const getAllSkuBySpuId = async({
     spuId,
     unSelect = []
 }) => {
     const sku = await SKU.find({
         productId: spuId
-    }).select(unSelect).lean()
+    }).select(unSelectData(unSelect)).lean()
     
+    return sku
+}
+
+const getOneSku = async({
+    spuId,
+    skuId,
+    unSelect = []
+}) => {
+    const sku = await SKU.findOne({
+        productId: convertToObjectIdMongodb(spuId),
+        skuId
+    }).select(unSelectData(unSelect)).lean()
     return sku
 }
 
 module.exports = {
     createSku,
-    getSkuBySpuId
+    getAllSkuBySpuId,
+    getOneSku
 }
