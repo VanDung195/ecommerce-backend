@@ -26,8 +26,12 @@ const createSpu = async({
     return spu
 }
 
-const getOneSpuById = async(spuId) => {
+const getOneSpuById = async({
+    shop,
+    spuId
+}) => {
     const spu = await SPU.findOne({
+        product_shop: shop,
         _id: convertToObjectIdMongodb(spuId)
     })
     return spu
@@ -45,14 +49,88 @@ const getOneSpuBySlug = async(slug) => {
 
 const getAllSpu = async({
     limit,
-    page
+    page,
+    search,
+    unSelect = []
 }) => {
+    const filter = {}
+    if(search){
+        filter.product_name = { $regex: search, $options: 'i'}
+    }
+    const skip = (page - 1) * limit
+    const spus = await SPU.find(filter)
+                    .skip(skip)
+                    .limit(limit)
+                    .select(unSelectData(unSelect))
+                    .lean()
+    const total = await SPU.countDocuments(filter)
+    return {
+        data: spus,
+        pagination: {
+            total: total,
+            limit: limit,
+            page: page,
+            totalPages: Math.ceil(total / limit)
+        }
+    }
+}
 
+const publishProductByShop = async({
+    product
+}) => {
+    const { modifiedCount } = await SPU.updateOne(
+        {
+            _id: product._id
+        },
+        {
+            $set: {
+                isDraft: product.isDraft,
+                isPublished: product.isPublished
+            }
+        }
+    )
+    return modifiedCount
+}
+
+const unPublishProductByShop = async({
+    product
+}) => {
+    const { modifiedCount } = await SPU.updateOne(
+        {
+            _id: product._id
+        },
+        {
+            $set: {
+                isDraft: product.isDraft,
+                isPublished: product.isPublished
+            }
+        }
+    )
+    return modifiedCount
+}
+
+const queryProduct = async({
+    query,
+    limit,
+    skip
+}) => {
+    const products = await SPU.find(query)
+                            .populate('product_shop', 'shop_name shop_email -_id')
+                            .sort({
+                                updatedAt: -1
+                            })
+                            .skip(skip)
+                            .limit(limit)
+                            .lean()
+    return products
 }
 
 module.exports = {
     createSpu,
     getOneSpuById,
     getOneSpuBySlug,
-    getAllSpu
+    getAllSpu,
+    publishProductByShop,
+    unPublishProductByShop,
+    queryProduct
 }
