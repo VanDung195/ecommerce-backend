@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require('../core/success.response')
-const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService } = require('../services/spu.service')
+const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService } = require('../services/spu.service')
 
 class SpuController {
     newSpu = async(req, res, next) => {
@@ -59,6 +59,36 @@ class SpuController {
             metadata: await unPublishProductByShopService({
                 userId: req.user.userId,
                 ...req.body
+            })
+        }).send(res)
+    }
+
+    getALlDraftProductByShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list draft product success',
+            metadata: await getAllDraftsForShopService({
+                product_shop: req.shop._id,
+                ...req.query
+            })
+        }).send(res)
+    }
+
+    getALlPublishProductByShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list public product success',
+            metadata: await getAllPublicForShopService({
+                product_shop: req.shop._id,
+                ...req.query
+            })
+        }).send(res)
+    }
+
+    getALlProductByShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get all product success',
+            metadata: await getAllProductForShopService({
+                product_shop: req.shop._id,
+                ...req.query
             })
         }).send(res)
     }
