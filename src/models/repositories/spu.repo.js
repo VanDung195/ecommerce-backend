@@ -112,17 +112,76 @@ const unPublishProductByShop = async({
 const queryProduct = async({
     query,
     limit,
-    skip
+    page,
+    unSelect = []
 }) => {
-    const products = await SPU.find(query)
-                            .populate('product_shop', 'shop_name shop_email -_id')
-                            .sort({
-                                updatedAt: -1
-                            })
-                            .skip(skip)
-                            .limit(limit)
-                            .lean()
-    return products
+    const skip = (page - 1) * limit
+    const spus = await SPU.find(query)
+                    .populate('product_shop', 'shop_name shop_email -_id')
+                    .sort({
+                        updatedAt: -1
+                    })
+                    .skip(skip)
+                    .limit(limit)
+                    .select(unSelectData(unSelect))
+                    .lean()
+    const total = await SPU.countDocuments(query)
+    return {
+        data: spus,
+        pagination: {
+            total,
+            limit,
+            page,
+            totalPages: Math.ceil(total / limit)
+        }
+    }
+}
+
+//update khi sử số lượng hoặc giá của sku
+const updateQuantity = async({
+    productId
+}) => {
+
+}
+
+const updatePriceRange = async({
+    productId,
+    min_price,
+    max_price
+}) => {
+    
+}
+
+const updateInventoryStockSpu = async({
+    shop,
+    spuId,
+    stock
+}) => {
+    const filter = {
+
+    },
+    update = {
+        $set: {
+            inven_stock: stock
+        }
+    }, 
+    options = {
+        new: true
+    }
+    const spu = await SPU.findOneAndUpdate()
+}
+
+const updateSpu = async({
+
+}) => {
+
+}
+
+const deleteSpu = async({
+    shopId,
+    spuId
+}) => {
+
 }
 
 module.exports = {
