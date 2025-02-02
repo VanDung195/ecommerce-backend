@@ -3,10 +3,27 @@
 const { NotFoundError, BadRequestError } = require('../core/error.response')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
 const { createSku, getAllSkuBySpuId, getOneSku } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop } = require('../models/repositories/spu.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
 
+//create product without variations
+const createSpuWithoutVariationsService = async({
+    userId,
+    name,
+    thumb,
+    description,
+    price,
+    category,
+    quantity
+}) => {
+
+}
+//khi đã tạo sản phẩm không có biến thể rồi mà muốn thêm biến thể thì sao? Có được không? Và làm thế nào?
+
+
+
+//create product with variations
 const createSpuService = async({
     userId,
     name,
@@ -46,6 +63,8 @@ const createSpuService = async({
                 sku_list,
                 shopId: shop
             })
+            //TODO
+            //lặp sku sau đó tính tại stock và min price max price
         } catch (error) {
             if(!sku) throw new BadRequestError('Create sku failed')
         }
@@ -116,13 +135,27 @@ const getAllSpuService = async({
     return spus
 }
 
-const updateInventoryStockSpuService = async() => {
+const updateInventoryStockSpuService = async({
+    shop,
+    spuId,
+    stock
+}) => {
 
 }
 
-const updateInventoryStockSkuService = async() => {
+const updateInventoryStockSkuService = async({
+    shop,
+    spuId,
+    skuId,
+    stock
+}) => {
 
 }
+
+const updateVariationsSpuService = async() => {
+
+}
+
 
 const publishProductByShopService = async({
     userId,
@@ -171,21 +204,73 @@ const unPublishProductByShopService = async({
 }
 
 const getAllDraftsForShopService = async({
-    
+    product_shop,
+    limit = 30,
+    page = 1,
+    search = '',
 }) => {
+    const query = { 
+        product_shop,
+        isDraft: true,
+        isDeleted: false
+    }
+    if(search){
+        query.product_name = { $regex: search, $options: 'i'}
+    }
 
+    const spus = await queryProduct({
+        query,
+        limit,
+        page
+    })
+    if(!spus.data.length > 0) return "List product not found"
+    
+    return spus
 }
 
 const getAllPublicForShopService = async({
-
+    product_shop,
+    limit = 30,
+    page = 1,
+    search = '',
 }) => {
+    const query = { 
+        product_shop,
+        isPublished: true,
+        isDeleted: false
+    }
+    if(search){
+        query.product_name = { $regex: search, $options: 'i'}
+    }
+    const spus = await queryProduct({
+        query,
+        limit,
+        page
+    })
+    if(!spus.data.length > 0) return "List product not found"
 
+    return spus
 }
 
 const getAllProductForShopService = async({
-
+    product_shop,
+    limit = 30,
+    page = 1,
+    search = ''
 }) => {
+    const query = {
+        product_shop,
+        isDeleted: false
+    }
+    if(search) query.product_name = { $regex: search, $options: 'i'}
 
+    const spus = await queryProduct({
+        query,
+        limit,
+        page
+    })
+    if(!spus.data.length > 0) return "List product not found"
+    return spus
 }
 
 const updateSpuService = async() => {
@@ -196,7 +281,7 @@ const updateSkuservice = async() => {
 
 }
 
-//Hiển thị cho khách hàng mua
+//display for customer
 const getAllSpuForClient = async() => {
 
 }
@@ -208,5 +293,8 @@ module.exports = {
     getOneSkuService,
     getAllSpuService,
     publishProductByShopService,
-    unPublishProductByShopService
+    unPublishProductByShopService,
+    getAllDraftsForShopService,
+    getAllPublicForShopService,
+    getAllProductForShopService
 }
