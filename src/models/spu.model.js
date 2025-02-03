@@ -11,9 +11,11 @@ var spuSchema = new Schema({
     product_thumb: { type: String, default: ''},
     product_description: { type: String, default: ''},
     product_slug: { type: String, unique: true},
-    product_price: { type: Number, required: true},
+    product_price: { type: Number, required: true, min: 1000},
+    product_min_price: { type: Number, default: 0},
+    product_max_price: { type: Number, default: 0},
     product_category: { type: Array, default: []},
-    product_quantity: { type: Number, required: true},
+    product_quantity: { type: Number, required: true, min: 1},
     product_shop: { type: Schema.Types.ObjectId, ref: 'Shop'},
     product_variations: { type: Array, default: []},
     /*
