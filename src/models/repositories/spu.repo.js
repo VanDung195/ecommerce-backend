@@ -138,18 +138,74 @@ const queryProduct = async({
 }
 
 //update khi sử số lượng hoặc giá của sku
-const updateQuantity = async({
-    productId
+const updateInvenStockSpu = async({
+    productId,
+    quantity
 }) => {
-
+    const spuObjectId = convertToObjectIdMongodb(productId)
+    const spu = await SPU.findOneAndUpdate(
+        {
+            _id: spuObjectId
+        },
+        {
+            $set: {
+                product_quantity: quantity
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return spu
 }
+
 
 const updatePriceRange = async({
     productId,
     min_price,
     max_price
 }) => {
-    
+    const spuObjectId = convertToObjectIdMongodb(productId)
+    const spu = await SPU.findOneAndUpdate(
+        {
+            _id: spuObjectId
+        },
+        {
+            $set: {
+                product_min_price: +min_price,
+                product_max_price: +max_price
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return spu
+}
+
+const updateInvenStockAndPrice = async({
+    productId,
+    totalInvenStock,
+    minPrice,
+    maxPrice
+}) => {
+    const spuObjectId = convertToObjectIdMongodb(productId)
+    const spu = await SPU.findOneAndUpdate(
+        {
+            _id: spuObjectId
+        },
+        {
+            $set: {
+                product_quantity: totalInvenStock,
+                product_min_price: minPrice,
+                product_max_price: maxPrice
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return spu
 }
 
 const updateInventoryStockSpu = async({
@@ -191,5 +247,8 @@ module.exports = {
     getAllSpu,
     publishProductByShop,
     unPublishProductByShop,
-    queryProduct
+    queryProduct,
+    updateInvenStockSpu,
+    updatePriceRange,
+    updateInvenStockAndPrice
 }
