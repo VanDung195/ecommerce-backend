@@ -15,12 +15,13 @@ const login = async ({
     email,
     password
 }) => {
+    console.log('================DEBUG=================');
     const foundUser = await findUserByEmail(email)
     if (!foundUser) throw new BadRequestError('User not register')
 
     const match = bcrypt.compare(password, foundUser.usr_password)
     if (!match) throw new AuthFailureError('Authentication error')
-
+    if(foundUser.usr_status === 'block') throw new BadRequestError('Your account has been banned')
     const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
         modulusLength: 4096,
         publicEncoding: {
@@ -34,7 +35,7 @@ const login = async ({
     })
 
     const keyTokens = await createTokenPair(
-        { payload: { userId: foundUser._id, role: foundUser.usr_role, email: foundUser.usr_email } },
+        { payload: { userId: foundUser._id, email: foundUser.usr_email } },
         privateKey,
         publicKey
     )
@@ -65,7 +66,7 @@ const login = async ({
 
     return {
         user: getInfoData({
-            fields: ['_id', 'usr_name', 'usr_email', 'usr_role'], object: foundUser
+            fields: ['_id', 'usr_name', 'usr_email'], object: foundUser
         }),
         keyTokens
     }
@@ -85,7 +86,7 @@ const logout = async ({
 
     return delKey
 }
-
+/*
 const handlerRefreshToken = async ({
     userIdHeader
 }) => {
@@ -108,7 +109,7 @@ const handlerRefreshToken = async ({
         })
         if (userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
 
-        const { userId, role, email } = decodeRefreshToken
+        const { userId, email } = decodeRefreshToken
 
         const newAccessToken = JWT.sign(
             { payload: { userId: userId, role: role, email: email } },
@@ -124,7 +125,7 @@ const handlerRefreshToken = async ({
     } catch (error) {
         throw new AuthFailureError('Invalid or expired Refresh Token');
     }
-}
+}*/
 
 const handlerRefreshTokenV2 = async ({
     userIdHeader
@@ -134,7 +135,7 @@ const handlerRefreshTokenV2 = async ({
     const keyStore = await findKeyTokenByUserId({
         userId: userIdHeader
     })
-    if (!keyStore || !keyStore.refreshToken) throw new BadRequestError('Something went wrong! Pls relogin')
+    if (!keyStore) throw new BadRequestError('Something went wrong! Pls relogin')
 
     const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userIdHeader}`
     const refreshToken = await getCache({
@@ -172,11 +173,10 @@ const handlerRefreshTokenV2 = async ({
         })
         if (userIdHeader != decodeRefreshToken.userId || userIdHeader != keyStore.userId) throw new AuthFailureError('Invalid user')
 
-        const { userId, role, email } = decodeRefreshToken
+        const { userId, email } = decodeRefreshToken
 
         const payload = {
             userId: userId,
-            role: role,
             email: email
         }
 
@@ -185,7 +185,7 @@ const handlerRefreshTokenV2 = async ({
             keyStore.privateKey,
             {
                 algorithm: 'RS256',
-                expiresIn: '30s'
+                expiresIn: '29 days'
             }
         )
         return {
