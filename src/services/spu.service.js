@@ -2,10 +2,11 @@
 
 const { NotFoundError, BadRequestError } = require('../core/error.response')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
-const { createSku, getAllSkuBySpuId, getOneSku } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct } = require('../models/repositories/spu.repo')
+const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation } = require('../models/repositories/sku.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
+const mongoose = require('mongoose')
 
 //create product without variations
 const createSpuWithoutVariationsService = async({
@@ -286,6 +287,140 @@ const getAllSpuForClient = async() => {
 
 }
 
+const updateInvenStockSpuService = async(spuId) => {
+    const result = await updateInvenStockSpu({ productId: spuId})
+    return result
+}
+
+const deleteProductVariationService = async({
+    shopId,
+    spuId,
+    variation_idx,
+    variation_name
+}) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        const foundProduct = await getOneSpuById({ 
+            shop: shopId,
+            spuId
+        })
+        if(!foundProduct) throw new NotFoundError('Product not found')
+        if(foundProduct.product_variations[variation_idx].name.toLowerCase() !== variation_name.toLowerCase())
+            throw new BadRequestError('Invalid request')
+
+        const delVariation = await deleteVariation({
+            shopId,
+            spuId,
+            variation_name
+        }, { session })
+        if(!delVariation) 
+            throw new BadRequestError('Delete product variation failure')
+    
+        const deletedVariationIndex = foundProduct.product_variations.findIndex( variation => variation.name === variation_name) 
+        //chưa xoá được nhé!!!!!
+        const updateSku = await updateSkuAfterRemovingProductVariation({ 
+            productId: spuId,
+            idx: deletedVariationIndex
+        }, { session })
+        if(!updateSku)
+            throw new BadRequestError('Update sku failure')
+        await session.commitTransaction()
+        return delVariation
+    } catch (error) {
+        await session.abortTransaction()
+    } finally {
+        session.endSession()
+    }
+}
+
+// const addProductVariationService = async({
+//     shopId,
+//     spuId,
+//     images = [], 
+//     name,
+//     options
+// }) => {
+//     const foundProduct = await getOneSpuById({
+//         shop: shopId,
+//         spuId
+//     })
+//     if(!foundProduct) 
+//         throw new NotFoundError('Product not found')
+//     const session = await mongoose.startSession()
+//     session.startTransaction()
+//     const newSpuVariation = await addVariation({
+//         shopId,
+//         spuId,
+//         images,
+//         name,
+//         options
+//     })
+//     if(!newSpuVariation) 
+//         throw new BadRequestError('Add variation failure')
+//     const updateSku = await updateSkuAfterAddingProductVariation({ productId: spuId})
+//     if(!updateSku)
+//         throw new BadRequestError('Update sku failure')
+    
+//     return newSpuVariation
+// }
+const addProductVariationService = async({
+    shopId,
+    spuId,
+    images = [], 
+    name,
+    options
+}) => {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    
+    try {
+        const foundProduct = await getOneSpuById({
+            shop: shopId,
+            spuId
+        })
+        if(!foundProduct) 
+            throw new NotFoundError('Product not found')
+        
+        const newSpuVariation = await addVariation({
+            shopId,
+            spuId,
+            images,
+            name,
+            options
+        }, { session })
+        
+        if(!newSpuVariation) 
+            throw new BadRequestError('Add variation failure')
+        
+        const updateSku = await updateSkuAfterAddingProductVariation({ 
+            productId: spuId
+        }, { session }); 
+        
+        if(!updateSku)
+            throw new BadRequestError('Update sku failure');
+        
+        await session.commitTransaction()
+        return newSpuVariation;
+    } catch (error) {
+        await session.abortTransaction()
+        throw error;
+    } finally {
+        session.endSession()
+    }
+}
+
+const testNhe = async({
+    shopId,
+    spuId
+}) => {
+    const foundProduct = await getOneSpuById({ shop: shopId, spuId})
+    let index = foundProduct.product_variations.findIndex( variation => variation.name === 'size')
+    console.log(index);
+    
+    return foundProduct
+}
+
 module.exports = {
     createSpuService,
     getOneSpuService,
@@ -296,5 +431,9 @@ module.exports = {
     unPublishProductByShopService,
     getAllDraftsForShopService,
     getAllPublicForShopService,
-    getAllProductForShopService
+    getAllProductForShopService,
+    updateInvenStockSpuService,
+    deleteProductVariationService,
+    addProductVariationService,
+    testNhe
 }
