@@ -20,10 +20,18 @@ router.post('/spu/unPublish', checkShopPermission, grantAccess('updateOwn', 'pro
 router.get('/spu/drafts', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.getALlDraftProductByShop))
 router.get('/spu/publish', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.getALlPublishProductByShop))
 router.get('/spu/shop', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.getALlProductByShop))
-router.get('/sku/one', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.oneSku))
+router.patch('/spu/delete_variation', checkShopPermission, grantAccess('deleteOwn', 'product'), asyncHandler(ProductController.deleteProductVariation))
+router.patch('/spu/add_variation', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.addProductVariation))
 //SKU
+router.get('/sku/one', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.oneSku))
 router.patch('/sku/update', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateSku))
 router.patch('/sku/update/list', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateListSku))
+router.post('/sku/publish', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.publishSku))
+router.post('/sku/unPublish', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.unPublishSku))
+
+
+router.post('/spu/test', checkShopPermission, asyncHandler(ProductController.testNhe))
+
 // router.get('/sku/update', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateSku))
 
 //admin
