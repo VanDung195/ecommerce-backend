@@ -2,6 +2,7 @@
 
 const { convertToObjectIdMongodb, getSelectData, unSelectData } = require('../../utils')
 const SPU = require('../spu.model')
+const { getTotalInvenStockAndPriceSku } = require('./sku.repo')
 
 const createSpu = async({
     shop,
@@ -183,20 +184,28 @@ const updatePriceRange = async({
     return spu
 }
 
+//Product have variations
 const updateInvenStockAndPrice = async({
     productId,
-    totalInvenStock,
-    minPrice,
-    maxPrice
 }) => {
     const spuObjectId = convertToObjectIdMongodb(productId)
+    const result = await getTotalInvenStockAndPriceSku({ productId: spuObjectId})
+
+    const totalQuantity = 1
+    const minPrice = 1
+    const maxPrice = 1
+    if(result !== undefined){
+        totalQuantity = result.totalQuantity
+        minPrice = result.minPrice
+        maxPrice = result.maxPrice
+    }
     const spu = await SPU.findOneAndUpdate(
         {
             _id: spuObjectId
         },
         {
             $set: {
-                product_quantity: totalInvenStock,
+                product_quantity: totalQuantity,
                 product_min_price: minPrice,
                 product_max_price: maxPrice
             }
@@ -208,13 +217,17 @@ const updateInvenStockAndPrice = async({
     return spu
 }
 
+//Product has no variations
 const updateInventoryStockSpu = async({
-    shop,
+    shopId,
     spuId,
     stock
 }) => {
+    const shopObjectId = convertToObjectIdMongodb(shopId),
+        productObjectId = convertToObjectIdMongodb(spuId)
     const filter = {
-
+        product_shop: shopObjectId,
+        _id: productObjectId
     },
     update = {
         $set: {
@@ -224,18 +237,144 @@ const updateInventoryStockSpu = async({
     options = {
         new: true
     }
-    const spu = await SPU.findOneAndUpdate()
+    const spu = await SPU.findOneAndUpdate(filter, update, options)
+    return spu
 }
 
-const updateSpu = async({
-
+//update simple product
+const updateSimpleSpu = async({
+    shopId,
+    spuId,
+    name,
+    thumb,
+    description,
+    price,
+    category,
+    quantity
 }) => {
+    const shopObjectId = convertToObjectIdMongodb(shopId),
+        productObjectId = convertToObjectIdMongodb(spuId),
+        filter = {
+            _id: productObjectId,
+            product_shop: shopObjectId
+        },
+        update = {
+            product_name: name,
+            product_thumb: thumb,
+            product_description: description,
+            product_price: price,
+            product_category: category,
+            product_quantity: quantity
+        },
+        options = {
+            new: true
+        }
+    const spu = await SPU.findOneAndUpdate(filter, update, options)
+    return spu
+}
 
+
+const updateVariableSpu = async({
+    shopId,
+    spuId,
+    name,
+    thumb,
+    description,
+    category
+}) => {
+    const shopObjectId = convertToObjectIdMongodb(shopId),
+        productObjectId = convertToObjectIdMongodb(spuId),
+        filter = {
+            _id: productObjectId,
+            product_shop: shopObjectId
+        },
+        update = {
+            product_name: name,
+            product_thumb: thumb,
+            product_description: description,
+            product_category: category,
+        },
+        options = {
+            new: true
+        }
+    const spu = await SPU.findOneAndUpdate(filter, update, options)
+    return spu
+}
+
+const addVariation = async({
+    shopId,
+    spuId,
+    images,
+    name,
+    options
+}) => {
+    const shopObjectId = convertToObjectIdMongodb(shopId),
+        productObjectId = convertToObjectIdMongodb(spuId),
+        filter = {
+            _id: productObjectId,
+            product_shop: shopObjectId
+        }
+    const spu = await SPU.findOneAndUpdate(
+        filter,
+        {
+            $push: {
+                product_variations: {
+                    images,
+                    name,
+                    options
+                }
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return spu
+}
+
+const deleteVariation = async({
+    shopId,
+    spuId,
+    variation_name
+}) => {
+    const shopObjectId = convertToObjectIdMongodb(shopId),
+        productObjectId = convertToObjectIdMongodb(spuId),
+        filter = {
+            _id: productObjectId,
+            product_shop: shopObjectId
+        },
+        variationNameRegex = new RegExp(variation_name, 'i')
+    const delVariation = await SPU.findOneAndUpdate(
+        filter,
+        {
+            $pull: {
+                product_variations: {
+                    name: variationNameRegex
+                }
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return delVariation
 }
 
 const deleteSpu = async({
     shopId,
     spuId
+}) => {
+    
+}
+
+const addVariationOptions = async({
+
+}) => {
+
+}
+
+const deleteVariationOptions = async({
+
 }) => {
 
 }
@@ -250,5 +389,7 @@ module.exports = {
     queryProduct,
     updateInvenStockSpu,
     updatePriceRange,
-    updateInvenStockAndPrice
+    updateInvenStockAndPrice,
+    deleteVariation,
+    addVariation
 }
