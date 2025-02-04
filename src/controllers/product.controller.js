@@ -1,8 +1,8 @@
 'use strict'
 
 const { SuccessResponse } = require('../core/success.response')
-const { updateSkuService, updateOneSkuService, updateListSkuService } = require('../services/sku.service')
-const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService } = require('../services/spu.service')
+const { updateOneSkuService, updateListSkuService, publishSkuService, unPublishSkuService } = require('../services/sku.service')
+const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService, deleteProductVariationService, addProductVariationService, testNhe } = require('../services/spu.service')
 
 class ProductController {
     newSpu = async(req, res, next) => {
@@ -108,6 +108,56 @@ class ProductController {
         new SuccessResponse({
             message: 'Update list sku successfuly',
             metadata: await updateListSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    publishSku = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Publish sku successfully',
+            metadata: await publishSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    unPublishSku = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Un publish sku successfully',
+            metadata: await unPublishSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    deleteProductVariation = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Delete product variation successfully',
+            metadata: await deleteProductVariationService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    addProductVariation = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Add product variation successfully',
+            metadata: await addProductVariationService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    testNhe = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Test thanh cong roi nhe',
+            metadata: await testNhe({
                 shopId: req.shop._id,
                 ...req.body
             })
