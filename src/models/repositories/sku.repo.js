@@ -53,7 +53,6 @@ const getOneSku = async({
 const createOneSku = async({
     shopId,
     spuId,
-    skuId,
     sku_tier_idx,
     sku_price,
     sku_stock
@@ -76,7 +75,7 @@ const deleteListSku = async({
     
 }
 
-const getTotalInvenStockAndPrice = async({
+const getTotalInvenStockAndPriceSku = async({
     productId
 }) => {
     const productObjectId = convertToObjectIdMongodb(productId)
@@ -84,6 +83,7 @@ const getTotalInvenStockAndPrice = async({
         {
             $match: {
                 productId: productObjectId,
+                isPublished: true,
                 isDeleted: false
             }
         },
@@ -113,6 +113,7 @@ const getTotalInvenStock = async({
         {
             $match: {
                 productId: productObjectId,
+                isPublished: true,
                 isDeleted: false
             }
         },
@@ -136,6 +137,7 @@ const getMinAndMaxPrice = async({
         {
             $match: {
                 productId: productObjectId,
+                isPublished: true,
                 isDeleted: false
             }
         },
@@ -247,14 +249,78 @@ const updateListSkuV2 = async({
 }
 
 
-const publishSku = async() => {
-
+const publishSku = async(sku) => {
+    const { modifiedCount } = await SKU.updateOne(
+        {
+            skuId: sku.skuId
+        },
+        {
+            $set: {
+                isDraft: sku.isDraft,
+                isPublished: sku.isPublished
+            }
+        }
+    )
+    return modifiedCount
 }
 
-const unPublishSku = async() => {
-
+const unPublishSku = async(sku) => {
+    const { modifiedCount } = await SKU.updateOne(
+        {
+            skuId: sku.skuId
+        },
+        {
+            $set: {
+                isDraft: sku.isDraft,
+                isPublished: sku.isPublished
+            }
+        }
+    )
+    return modifiedCount
 }
 
+//update variations when delete variations in spu
+const updateSkuAfterAddingProductVariation = async({
+    productId
+}) => {
+    const productObjectId = convertToObjectIdMongodb(productId)
+    const {modifiedCount} = await SKU.updateMany(
+        {
+            productId: productObjectId
+        }, 
+        {
+            $push: {
+                'sku_tier_idx': -1
+            }
+        }
+    )
+    return modifiedCount
+}
+
+const updateSkuAfterRemovingProductVariation = async({ productId, idx }) => {
+    const productObjectId = convertToObjectIdMongodb(productId);
+
+    // Bước 1: unset phần tử tại vị trí idx (giá trị sẽ trở thành null)
+    await SKU.updateMany(
+        { productId: productObjectId },
+        { $unset: { [`sku_tier_idx.${idx}`]: 1 } }
+    );
+
+    // Bước 2: pull các phần tử có giá trị null ra khỏi mảng
+    const { modifiedCount } = await SKU.updateMany(
+        { productId: productObjectId },
+        { $pull: { sku_tier_idx: null } }
+    );
+
+    return modifiedCount;
+};
+
+
+const setDefaultSku = async({
+
+}) => {
+
+}
 
 module.exports = {
     createSku,
@@ -262,9 +328,13 @@ module.exports = {
     getOneSku,
     getTotalInvenStock,
     getMinAndMaxPrice,
-    getTotalInvenStockAndPrice,
+    getTotalInvenStockAndPriceSku,
     updateOneSku,
     updateListSku,
     updateListSkuV2,
-    checkSkuByServer
+    checkSkuByServer,
+    publishSku,
+    unPublishSku,
+    updateSkuAfterAddingProductVariation,
+    updateSkuAfterRemovingProductVariation
 }
