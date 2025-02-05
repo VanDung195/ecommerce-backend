@@ -24,6 +24,23 @@ const createSku = async({
     }
 }
 
+const createOneSku = async({
+    shopId,
+    spuId,
+    sku_tier_idx,
+    sku_price,
+    sku_stock
+}) => {
+    const newSku = await SKU.create({
+        skuId: `${spuId}${Math.floor(100 + Math.random() * 900)}-${shopId}`,
+        sku_tier_idx,
+        sku_price,
+        sku_stock,
+        productId: convertToObjectIdMongodb(spuId)
+    })
+    return newSku
+}
+
 const getAllSkuBySpuId = async({
     spuId,
     unSelect = []
@@ -48,31 +65,6 @@ const getOneSku = async({
     .select(unSelectData(unSelect))
     .lean()
     return sku
-}
-
-const createOneSku = async({
-    shopId,
-    spuId,
-    sku_tier_idx,
-    sku_price,
-    sku_stock
-}) => {
-
-}
-
-const deleteSku = async({
-    shopId,
-    spuId,
-    skuId
-}) => {
-
-}
-
-const deleteListSku = async({
-    shopId,
-    spuId
-}) => {
-    
 }
 
 const getTotalInvenStockAndPriceSku = async({
@@ -302,21 +294,101 @@ const updateSkuAfterRemovingProductVariation = async({ productId, idx }) => {
 
     // Bước 1: unset phần tử tại vị trí idx (giá trị sẽ trở thành null)
     await SKU.updateMany(
-        { productId: productObjectId },
-        { $unset: { [`sku_tier_idx.${idx}`]: 1 } }
+        { 
+            productId: productObjectId 
+        },
+        { 
+            $unset: { 
+                [`sku_tier_idx.${idx}`]: 1 
+            } 
+        }
     );
 
     // Bước 2: pull các phần tử có giá trị null ra khỏi mảng
     const { modifiedCount } = await SKU.updateMany(
-        { productId: productObjectId },
-        { $pull: { sku_tier_idx: null } }
+        { 
+            productId: productObjectId 
+        },
+        { 
+            $pull: { 
+                sku_tier_idx: null 
+            } 
+        }
     );
 
     return modifiedCount;
 };
 
+const deleteOneSku = async({
+    spuId,
+    skuId
+}) => {
+    const spuObjectId = convertToObjectIdMongodb(spuId)
+    const delSku = await SKU.deleteOne({
+        skuId,
+        productId: spuObjectId
+    })
+    return delSku
+}
+
+const deleteListSku = async({
+    spuId
+}) => {
+    const spuObjectId = convertToObjectIdMongodb(spuId)
+    const delSkus = await SKU.deleteMany({
+        productId: spuObjectId
+    })
+    return delSkus
+}
 
 const setDefaultSku = async({
+    spuId,
+    skuId
+}) => {
+    const spuObjectId = convertToObjectIdMongodb(spuId)
+    const sku = await SKU.updateMany(
+        {
+            productId: spuObjectId
+        },
+        [
+            {
+                $set: {
+                    sku_default: {
+                        $cond: [
+                            {
+                                $eq: [
+                                    '$skuId', skuId
+                                ]
+                            },
+                            true, 
+                            false
+                        ]
+                    }
+                }
+            }
+        ]
+    )
+    return sku
+}
+
+const unsetDefaultSku = async({
+    spuId
+}) => {
+    const spuObjectId = convertToObjectIdMongodb(spuId)
+    const sku = await SKU.updateMany(
+        {
+            productId: spuObjectId
+        },
+        {
+            $set: {
+                sku_default: false
+            }
+        }
+    )
+    return sku
+}
+
+const updateSkuTierIdxAfterUpdatingProductVariationsOptions = async({
 
 }) => {
 
@@ -324,6 +396,7 @@ const setDefaultSku = async({
 
 module.exports = {
     createSku,
+    createOneSku,
     getAllSkuBySpuId,
     getOneSku,
     getTotalInvenStock,
@@ -336,5 +409,9 @@ module.exports = {
     publishSku,
     unPublishSku,
     updateSkuAfterAddingProductVariation,
-    updateSkuAfterRemovingProductVariation
+    updateSkuAfterRemovingProductVariation,
+    deleteListSku,
+    deleteOneSku,
+    setDefaultSku,
+    unsetDefaultSku
 }
