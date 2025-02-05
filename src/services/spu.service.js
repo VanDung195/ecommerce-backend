@@ -22,8 +22,6 @@ const createSpuWithoutVariationsService = async({
 }
 //khi đã tạo sản phẩm không có biến thể rồi mà muốn thêm biến thể thì sao? Có được không? Và làm thế nào?
 
-
-
 //create product with variations
 const createSpuService = async({
     userId,
@@ -111,14 +109,13 @@ const getOneSkuService = async({
         skuId,
         unSelect: ['isDeleted', 'createdAt', 'updatedAt', '__v']
     })
-    console.log(sku);
     
     if(!sku) throw new NotFoundError('Sku not found')
     return sku
 }
 
 const deleteSpuService = async() => {
-
+    
 }
 
 const getAllSpuService = async({
@@ -135,28 +132,6 @@ const getAllSpuService = async({
     if(!spus) throw new NotFoundError('Spus not found')
     return spus
 }
-
-const updateInventoryStockSpuService = async({
-    shop,
-    spuId,
-    stock
-}) => {
-
-}
-
-const updateInventoryStockSkuService = async({
-    shop,
-    spuId,
-    skuId,
-    stock
-}) => {
-
-}
-
-const updateVariationsSpuService = async() => {
-
-}
-
 
 const publishProductByShopService = async({
     userId,
@@ -274,18 +249,7 @@ const getAllProductForShopService = async({
     return spus
 }
 
-const updateSpuService = async() => {
 
-}
-
-const updateSkuservice = async() => {
-
-}
-
-//display for customer
-const getAllSpuForClient = async() => {
-
-}
 
 const updateInvenStockSpuService = async(spuId) => {
     const result = await updateInvenStockSpu({ productId: spuId})
@@ -318,7 +282,6 @@ const deleteProductVariationService = async({
             throw new BadRequestError('Delete product variation failure')
     
         const deletedVariationIndex = foundProduct.product_variations.findIndex( variation => variation.name === variation_name) 
-        //chưa xoá được nhé!!!!!
         const updateSku = await updateSkuAfterRemovingProductVariation({ 
             productId: spuId,
             idx: deletedVariationIndex
@@ -334,36 +297,6 @@ const deleteProductVariationService = async({
     }
 }
 
-// const addProductVariationService = async({
-//     shopId,
-//     spuId,
-//     images = [], 
-//     name,
-//     options
-// }) => {
-//     const foundProduct = await getOneSpuById({
-//         shop: shopId,
-//         spuId
-//     })
-//     if(!foundProduct) 
-//         throw new NotFoundError('Product not found')
-//     const session = await mongoose.startSession()
-//     session.startTransaction()
-//     const newSpuVariation = await addVariation({
-//         shopId,
-//         spuId,
-//         images,
-//         name,
-//         options
-//     })
-//     if(!newSpuVariation) 
-//         throw new BadRequestError('Add variation failure')
-//     const updateSku = await updateSkuAfterAddingProductVariation({ productId: spuId})
-//     if(!updateSku)
-//         throw new BadRequestError('Update sku failure')
-    
-//     return newSpuVariation
-// }
 const addProductVariationService = async({
     shopId,
     spuId,
@@ -410,6 +343,40 @@ const addProductVariationService = async({
     }
 }
 
+const getChangedIndicesTest = async() => {
+    let arr = ["size", "color", "material", "material_2"];
+    let elements = ["size", "material"];
+
+    // let indices = elements.map(item => arr.indexOf(item));
+    let indices = arr.reduce((acc, item, index) => {
+        if (!elements.includes(item)) {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
+
+    let indices2 = arr
+        .map((item, index) => (!elements.includes(item) ? index : -1))
+        .filter(index => index !== -1);
+    
+    return indices2
+}
+
+//trả về vị trí đã bị thay đổi
+const getChangedIndices = async({
+    oldIndicies,
+    newIndicies
+}) => {
+    let indices = arr.reduce((acc, item, index) => {
+        if (!elements.includes(item)) {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
+
+    return indices
+}
+
 const testNhe = async({
     shopId,
     spuId
@@ -418,8 +385,95 @@ const testNhe = async({
     let index = foundProduct.product_variations.findIndex( variation => variation.name === 'size')
     console.log(index);
     
+    // const t = foundProduct.product_variations.map( variation => {
+    //     if(variation.name.toLowerCase() === 'color'){
+    //         console.log('CON ME MAY');
+    //         return
+    //     }
+    //     console.log(variation);
+        
+    // })
+    //cái này là mảng cũ => so sánh với mảng mới => Lấy vị trí đã bị thay đổi => 
+    //update tại vị trí đã bị thay đổi ở sku_tier_idx ở sku thành -1 nhé!!!
+    for(let i = 0; i < foundProduct.product_variations.length; i++){
+        const variation = foundProduct.product_variations[i]
+        if(variation.name.toLowerCase() === 'color'){
+            return variation.options
+            break
+        }
+    }
+
     return foundProduct
+    // return getChangedIndicesTest()
 }
+
+const updateVariationOptionsService = async({
+    shopId,
+    spuId,
+    variation_name,
+    variation_options
+}) => {
+    const foundProduct = await getOneSpuById({ shop: shopId, spuId})
+    if(!foundProduct) 
+        throw new NotFoundError('Product not found')
+
+    let variationOptions = ''
+    for(let i = 0; i < foundProduct.product_variations.length; i++){
+        const variation = foundProduct.product_variations[i]
+        if(variation.name.toLowerCase() === variation_name.toLowerCase()){
+            variationOptions = variation.options
+            break
+        }
+    }
+    const changedIndices = getChangedIndices({
+        oldIndicies: variationOptions,
+        newIndicies: variationOptions
+    })
+    //chưa xong nhé!!!
+    return changedIndices
+}
+
+const updateSpuService = async({
+    shopId,
+    productId,
+    name,
+    thumb,
+    description
+}) => {
+
+}
+
+const updateSkuservice = async() => {
+
+}
+
+//display for customer
+const getAllSpuForClient = async() => {
+
+}
+
+const updateInventoryStockSpuService = async({
+    shop,
+    spuId,
+    stock
+}) => {
+
+}
+
+const updateInventoryStockSkuService = async({
+    shop,
+    spuId,
+    skuId,
+    stock
+}) => {
+
+}
+
+const updateVariationsSpuService = async() => {
+
+}
+
+
 
 module.exports = {
     createSpuService,
