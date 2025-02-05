@@ -1,8 +1,48 @@
 'use strict'
 
 const { NotFoundError, BadRequestError } = require("../core/error.response")
-const { getOneSku, updateOneSku, getTotalInvenStockAndPriceSku, checkSkuByServer, updateListSku, publishSku, unPublishSku } = require("../models/repositories/sku.repo")
+const { getOneSku, updateOneSku, getTotalInvenStockAndPriceSku, checkSkuByServer, updateListSku, publishSku, unPublishSku, setDefaultSku, unsetDefaultSku, createOneSku, createSku, updateSkuAfterAddingProductVariation } = require("../models/repositories/sku.repo")
 const { updateInvenStockAndPrice, getOneSpuById } = require("../models/repositories/spu.repo")
+
+const createOneSkuService = async({
+    shopId,
+    productId,
+    sku_tier_idx,
+    sku_price,
+    sku_stock
+}) => {
+    const newSku = await createOneSku({
+        shopId,
+        spuId: productId,
+        sku_tier_idx,
+        sku_price,
+        sku_stock
+    })
+    if(!newSku) throw new BadRequestError('Create sku failure')
+    const updateSpu = await updateInvenStockAndPrice({
+        productId
+    })
+    if(!updateSpu) throw new BadRequestError('Update inventory stock and price failure')
+    return newSku
+}
+
+const createListSkuService = async({
+    productId,
+    sku_list,
+    shopId
+}) => {
+    const newSkus = await createSku({
+        spuId: productId,
+        sku_list,
+        shopId
+    })
+    if(!newSkus) throw new BadRequestError('Create list sku failure')
+    const updateSpu = await updateInvenStockAndPrice({
+        productId
+    })
+    if(!updateSpu) throw new BadRequestError('Update inventory stock and price failure')
+    return newSkus
+}
 
 const updateOneSkuService = async({
     shopId,
@@ -36,16 +76,6 @@ const updateOneSkuService = async({
         sku_stock
     })
     if(!sku) throw new BadRequestError('Update sku failure')
-    
-    // const result = await getTotalInvenStockAndPriceSku({ productId })
-    
-    // const updateSpu = await updateInvenStockAndPrice({
-    //     productId,
-    //     totalInvenStock: result.totalQuantity,
-    //     minPrice: result.minPrice,
-    //     maxPrice: result.maxPrice
-    // })
-
     const updateSpu = await updateInvenStockAndPrice({
         productId
     })
@@ -124,9 +154,51 @@ const unPublishSkuService = async({
     return update > 0 ? "Un publish sku successfuly" : "Un publish failure"
 }
 
+const setDefaultSkuService = async({
+    shopId,
+    productId,
+    skuId
+}) => {
+    const foundSku = await getOneSku({
+        spuId: productId,
+        skuId
+    })
+    if(!foundSku) throw new NotFoundError('Sku not found')
+    if(!shopId.equals(foundSku.productId.product_shop)) throw new BadRequestError('Invalid request')
+
+    const sku = await setDefaultSku({
+        spuId: productId,
+        skuId
+    })
+    if(!sku) throw new BadRequestError('Set default sku failure')
+    return sku 
+}
+
+const unsetDefaultSkuService = async({
+    shopId,
+    productId,
+}) => {
+    const foundSku = await getOneSpuById({
+        shop: shopId,
+        spuId: productId,
+    })
+    if(!foundSku) throw new NotFoundError('Sku not found')
+    if(!shopId.equals(foundSku.product_shop)) throw new BadRequestError('Invalid request')
+
+    const sku = await unsetDefaultSku({
+        spuId: productId
+    })
+    if(!sku) throw new BadRequestError('un Set default sku failure')
+    return sku 
+}
+
 module.exports = {
     updateOneSkuService,
     updateListSkuService,
     publishSkuService,
-    unPublishSkuService
+    unPublishSkuService,
+    setDefaultSkuService,
+    unsetDefaultSkuService,
+    createOneSkuService,
+    createListSkuService
 }
