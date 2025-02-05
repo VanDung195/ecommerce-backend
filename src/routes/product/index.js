@@ -28,7 +28,10 @@ router.patch('/sku/update', checkShopPermission, grantAccess('updateOwn', 'produ
 router.patch('/sku/update/list', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateListSku))
 router.post('/sku/publish', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.publishSku))
 router.post('/sku/unPublish', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.unPublishSku))
-
+router.patch('/sku/set_default', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.setDefaultSku))
+router.patch('/sku/unset_default', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.unsetDefaultSku))
+router.post('/sku/new_one_sku', checkShopPermission, grantAccess('createOwn', 'product'), asyncHandler(ProductController.createOneSKu))
+router.post('/sku/new_list_sku', checkShopPermission, grantAccess('createOwn', 'product'), asyncHandler(ProductController.createListSKu))
 
 router.post('/spu/test', checkShopPermission, asyncHandler(ProductController.testNhe))
 
