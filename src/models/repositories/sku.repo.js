@@ -388,10 +388,32 @@ const unsetDefaultSku = async({
     return sku
 }
 
-const updateSkuTierIdxAfterUpdatingProductVariationsOptions = async({
-
+const updateSkuTierIdx = async({
+    productId,
+    index,
+    listValue = []
 }) => {
-
+    
+    const productObjectId = convertToObjectIdMongodb(productId)
+    const updatedSkus = await Promise.all(
+        listValue.map( async value => {
+            return await SKU.findOneAndUpdate(
+                {
+                    productId: productObjectId,
+                    [`sku_tier_idx.${index}`]: value
+                },
+                {
+                    $set: {
+                        [`sku_tier_idx.${index}`]: -1
+                    }
+                },
+                {
+                    new: true
+                }
+            )
+        })
+    )
+    return updatedSkus
 }
 
 module.exports = {
@@ -413,5 +435,6 @@ module.exports = {
     deleteListSku,
     deleteOneSku,
     setDefaultSku,
-    unsetDefaultSku
+    unsetDefaultSku,
+    updateSkuTierIdx
 }
