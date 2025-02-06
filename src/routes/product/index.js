@@ -22,6 +22,7 @@ router.get('/spu/publish', checkShopPermission, grantAccess('readOwn', 'product'
 router.get('/spu/shop', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.getALlProductByShop))
 router.patch('/spu/delete_variation', checkShopPermission, grantAccess('deleteOwn', 'product'), asyncHandler(ProductController.deleteProductVariation))
 router.patch('/spu/add_variation', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.addProductVariation))
+router.patch('/spu/update_variation_options', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateVariationOptions))
 //SKU
 router.get('/sku/one', checkShopPermission, grantAccess('readOwn', 'product'), asyncHandler(ProductController.oneSku))
 router.patch('/sku/update', checkShopPermission, grantAccess('updateOwn', 'product'), asyncHandler(ProductController.updateSku))
