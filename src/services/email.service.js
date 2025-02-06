@@ -6,12 +6,14 @@ const {newOtp, findOtpByTokenService, findOtpByEmailService} = require('../servi
 const {BadRequestError} = require('../core/error.response')
 const { findTemplateService } = require('../services/template.service')
 const { replacePlaceHolder } = require('../utils')
+const dotenv = require('dotenv')
+dotenv.config()
 
 let transport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'vdung3002519@gmail.com',
-        pass: 'znsdoozstduqgato'
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD
     }
 })
 
