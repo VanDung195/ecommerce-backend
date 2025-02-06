@@ -1,8 +1,6 @@
 'use strict'
 
 const { Schema, Types, model} = require('mongoose'); // Erase if already required
-const slugify = require('slugify');
-// const { updateInvenStockSpuService } = require('../services/spu.service');
 
 const COLLECTION_NAME = 'Skus'
 const DOCUMENT_NAME = 'Sku'
@@ -22,21 +20,5 @@ var skuSchema = new Schema({
     timestamps: true,
     collection: COLLECTION_NAME
 });
-
-// skuSchema.post('save', async(next) => {
-//     if(!this.isModified('sku_price')){
-//         try {
-//             //update min price and max price value of spuSchema
-//             const result = await updateInvenStockSpuService(this.productId)
-//             return next()
-//         } catch (error) {
-//             return next(error)
-//         }
-//     }
-//     if(!this.isModified('sku_stock')){
-//         //update total stock value of spuSchema
-//         return next()
-//     }
-// })
 
 module.exports = model(DOCUMENT_NAME, skuSchema);
