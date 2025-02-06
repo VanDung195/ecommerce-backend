@@ -1,8 +1,8 @@
 'use strict'
 
 const { SuccessResponse } = require('../core/success.response')
-const { updateOneSkuService, updateListSkuService, publishSkuService, unPublishSkuService } = require('../services/sku.service')
-const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService, deleteProductVariationService, addProductVariationService, testNhe } = require('../services/spu.service')
+const { updateOneSkuService, updateListSkuService, publishSkuService, unPublishSkuService, setDefaultSkuService, unsetDefaultSkuService, createOneSkuService, createListSkuService } = require('../services/sku.service')
+const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService, deleteProductVariationService, addProductVariationService, testNhe, updateVariationOptionsService } = require('../services/spu.service')
 
 class ProductController {
     newSpu = async(req, res, next) => {
@@ -148,6 +148,56 @@ class ProductController {
         new SuccessResponse({
             message: 'Add product variation successfully',
             metadata: await addProductVariationService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    setDefaultSku = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Set default sku successfully',
+            metadata: await setDefaultSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    unsetDefaultSku = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Unset default sku successfully',
+            metadata: await unsetDefaultSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    createOneSKu = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Create one sku successfully',
+            metadata: await createOneSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    createListSKu = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Create list sku successfully',
+            metadata: await createListSkuService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    updateVariationOptions = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Update variation options successfully',
+            metadata: await updateVariationOptionsService({
                 shopId: req.shop._id,
                 ...req.body
             })
