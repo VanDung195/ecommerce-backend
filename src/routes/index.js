@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.use('/api/template', require('./template'))
 router.use('/api/product', require('./product'))
+router.use('/api/cart', require('./cart'))
 router.use('/api/email', require('./email'))
 router.use('/api/user', require('./user'))
 router.use('/api/shop', require('./shop'))
