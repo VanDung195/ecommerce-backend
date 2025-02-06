@@ -2,8 +2,8 @@
 
 const { NotFoundError, BadRequestError } = require('../core/error.response')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
-const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation } = require('../models/repositories/spu.repo')
+const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, updateSkuTierIdx } = require('../models/repositories/sku.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation, updateVariationOptions } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
 const mongoose = require('mongoose')
@@ -342,38 +342,17 @@ const addProductVariationService = async({
         session.endSession()
     }
 }
-
-const getChangedIndicesTest = async() => {
-    let arr = ["size", "color", "material", "material_2"];
-    let elements = ["size", "material"];
-
-    // let indices = elements.map(item => arr.indexOf(item));
-    let indices = arr.reduce((acc, item, index) => {
-        if (!elements.includes(item)) {
-            acc.push(index);
-        }
-        return acc;
-    }, []);
-
-    let indices2 = arr
-        .map((item, index) => (!elements.includes(item) ? index : -1))
-        .filter(index => index !== -1);
-    
-    return indices2
-}
-
 //trả về vị trí đã bị thay đổi
 const getChangedIndices = async({
     oldIndicies,
     newIndicies
 }) => {
-    let indices = arr.reduce((acc, item, index) => {
-        if (!elements.includes(item)) {
+    let indices = oldIndicies.reduce((acc, item, index) => {
+        if (!newIndicies.includes(item)) {
             acc.push(index);
         }
         return acc;
     }, []);
-
     return indices
 }
 
@@ -387,7 +366,6 @@ const testNhe = async({
     
     // const t = foundProduct.product_variations.map( variation => {
     //     if(variation.name.toLowerCase() === 'color'){
-    //         console.log('CON ME MAY');
     //         return
     //     }
     //     console.log(variation);
@@ -413,26 +391,52 @@ const updateVariationOptionsService = async({
     variation_name,
     variation_options
 }) => {
-    const foundProduct = await getOneSpuById({ shop: shopId, spuId})
-    if(!foundProduct) 
-        throw new NotFoundError('Product not found')
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+        const foundProduct = await getOneSpuById({ shop: shopId, spuId})
+        if(!foundProduct) 
+            throw new NotFoundError('Product not found')
+        if(!foundProduct.product_shop.equals(shopId))
+            throw new BadRequestError('Invalid request')
 
-    let variationOptions = ''
-    for(let i = 0; i < foundProduct.product_variations.length; i++){
-        const variation = foundProduct.product_variations[i]
-        if(variation.name.toLowerCase() === variation_name.toLowerCase()){
-            variationOptions = variation.options
-            break
+        let variationOptions = {}
+        for(let i = 0; i < foundProduct.product_variations.length; i++){
+            const variation = foundProduct.product_variations[i]
+            if(variation.name.toLowerCase() === variation_name.toLowerCase()){
+                variationOptions.variations = variation.options
+                variationOptions.index = i 
+                break
+            }
         }
-    }
-    const changedIndices = getChangedIndices({
-        oldIndicies: variationOptions,
-        newIndicies: variationOptions
-    })
-    //chưa xong nhé!!!
-    return changedIndices
-}
+        const updatedVariationOptions = await updateVariationOptions({
+            shopId,
+            spuId,
+            variationIdx: variationOptions.index,
+            variationName: variation_name,
+            variationOptions: variation_options
+        })
+        if(!updatedVariationOptions)
+            throw new BadRequestError('Update variation options failure')
 
+        const changedIndices = await getChangedIndices({
+            oldIndicies: variationOptions.variations,
+            newIndicies: variation_options
+        })
+        const updatedSkus = await updateSkuTierIdx({
+            productId: spuId,
+            index: variationOptions.index,
+            listValue: changedIndices
+        })
+        if(!updatedSkus) throw new BadRequestError('Update skus failure')
+        await session.commitTransaction()
+        return updatedSkus
+    } catch (error) {
+        await session.abortTransaction()
+    } finally {
+        session.endSession()
+    }
+}
 const updateSpuService = async({
     shopId,
     productId,
@@ -442,11 +446,6 @@ const updateSpuService = async({
 }) => {
 
 }
-
-const updateSkuservice = async() => {
-
-}
-
 //display for customer
 const getAllSpuForClient = async() => {
 
@@ -468,13 +467,6 @@ const updateInventoryStockSkuService = async({
 }) => {
 
 }
-
-const updateVariationsSpuService = async() => {
-
-}
-
-
-
 module.exports = {
     createSpuService,
     getOneSpuService,
@@ -489,5 +481,6 @@ module.exports = {
     updateInvenStockSpuService,
     deleteProductVariationService,
     addProductVariationService,
+    updateVariationOptionsService,
     testNhe
 }
