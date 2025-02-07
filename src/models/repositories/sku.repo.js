@@ -2,6 +2,7 @@
 
 const SKU = require('../sku.model')
 const { convertToObjectIdMongodb, unSelectData } = require('../../utils/index')
+const { addStockToInventory } = require('./inventory.repo')
 
 const createSku = async({
     spuId,
@@ -416,11 +417,20 @@ const updateSkuTierIdx = async({
     return updatedSkus
 }
 
+const getOneSkuById = async(skuId) => {
+    return await SKU.findOne({
+            skuId
+    })
+    .populate('productId', 'product_shop -_id')
+    .lean()
+}
+
 module.exports = {
     createSku,
     createOneSku,
     getAllSkuBySpuId,
     getOneSku,
+    getOneSkuById,
     getTotalInvenStock,
     getMinAndMaxPrice,
     getTotalInvenStockAndPriceSku,
