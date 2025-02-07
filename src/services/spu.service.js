@@ -1,28 +1,14 @@
 'use strict'
 
 const { NotFoundError, BadRequestError } = require('../core/error.response')
+const { addStockToInventory } = require('../models/repositories/inventory.repo')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
-const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, updateSkuTierIdx } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation, updateVariationOptions } = require('../models/repositories/spu.repo')
+const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, updateSkuTierIdx, createOneSku } = require('../models/repositories/sku.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
 const mongoose = require('mongoose')
 
-//create product without variations
-const createSpuWithoutVariationsService = async({
-    userId,
-    name,
-    thumb,
-    description,
-    price,
-    category,
-    quantity
-}) => {
-
-}
-//khi đã tạo sản phẩm không có biến thể rồi mà muốn thêm biến thể thì sao? Có được không? Và làm thế nào?
-
-//create product with variations
 const createSpuService = async({
     userId,
     name,
@@ -38,7 +24,6 @@ const createSpuService = async({
     if(!foundUser) throw new NotFoundError('User not found')
 
     //check shop role (vi du viet middleware sau)
-
     const foundShop = await findShopById({ userId: convertToObjectIdMongodb(foundUser._id)})
     if(!foundShop) throw new NotFoundError('Shop not found')
     if(foundUser.usr_role !== 'shop') throw new BadRequestError('You dont have permisssion')
@@ -56,18 +41,42 @@ const createSpuService = async({
     if(!spu) throw new BadRequestError('Create spu failed')
     if(spu && sku_list.length > 0) {
         try {
-            //create sku
-            const sku = await createSku({
+            const skus = await createSku({
                 spuId: spu._id,
                 sku_list,
                 shopId: shop
             })
-            //TODO
-            //lặp sku sau đó tính tại stock và min price max price
+
+            await Promise.all( skus.map( async sku => {
+                return await addStockToInventory({
+                    productId: sku.skuId,
+                    shopId: shop,
+                    stock: sku.sku_stock
+                })
+            }))
+
         } catch (error) {
             if(!sku) throw new BadRequestError('Create sku failed')
         }
     }
+    if(spu && variations.length === 0){
+        try {
+            const sku = await createOneSku({
+                shopId: shop,
+                spuId: spu._id,
+                sku_price: price,
+                sku_stock: quantity
+            })
+            await addStockToInventory({
+                productId: sku.skuId,
+                shopId: shop,
+                stock: sku.sku_stock
+            })
+        } catch (error) {
+            throw new BadRequestError('Create sku failed')
+        }
+    }
+    await updateInvenStockAndPrice({ productId: spu._id})
     return spu
 }
 
@@ -152,6 +161,7 @@ const publishProductByShopService = async({
 
     const modifiedCount = await publishProductByShop({ product: foundProduct })
     if(modifiedCount <= 0) throw new BadRequestError('Publish product failure')
+    await updateInvenStockAndPrice({ productId: foundProduct._id})
 
     return modifiedCount
 }
@@ -175,7 +185,7 @@ const unPublishProductByShopService = async({
 
     const modifiedCount = await unPublishProductByShop({ product: foundProduct })
     if(modifiedCount <= 0) throw new BadRequestError('unPublish product failure')
-
+    await updateInvenStockAndPrice({ productId: foundProduct._id})
     return modifiedCount
 }
 
@@ -247,13 +257,6 @@ const getAllProductForShopService = async({
     })
     if(!spus.data.length > 0) return "List product not found"
     return spus
-}
-
-
-
-const updateInvenStockSpuService = async(spuId) => {
-    const result = await updateInvenStockSpu({ productId: spuId})
-    return result
 }
 
 const deleteProductVariationService = async({
@@ -478,7 +481,6 @@ module.exports = {
     getAllDraftsForShopService,
     getAllPublicForShopService,
     getAllProductForShopService,
-    updateInvenStockSpuService,
     deleteProductVariationService,
     addProductVariationService,
     updateVariationOptionsService,
