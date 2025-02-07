@@ -1,6 +1,7 @@
 'use strict'
 
 const { NotFoundError, BadRequestError } = require("../core/error.response")
+const { addStockToInventory } = require("../models/repositories/inventory.repo")
 const { getOneSku, updateOneSku, getTotalInvenStockAndPriceSku, checkSkuByServer, updateListSku, publishSku, unPublishSku, setDefaultSku, unsetDefaultSku, createOneSku, createSku, updateSkuAfterAddingProductVariation } = require("../models/repositories/sku.repo")
 const { updateInvenStockAndPrice, getOneSpuById } = require("../models/repositories/spu.repo")
 
@@ -79,6 +80,11 @@ const updateOneSkuService = async({
     const updateSpu = await updateInvenStockAndPrice({
         productId
     })
+    await addStockToInventory({
+        productId: sku.skuId,
+        shopId,
+        stock: sku_stock
+    })
     if(!updateSpu) throw new BadRequestError('Update inventory stock and price failure')
     
     return sku
@@ -95,17 +101,25 @@ const updateListSkuService = async({
     const checkSku = await checkSkuByServer({ productId, listSku})
     if(!checkSku) throw new BadRequestError('Something went wrong!')
 
-    const updateSku = await updateListSku({ 
+    const skus = await updateListSku({ 
         productId,
         listSku
     })
-    if(!updateSku) throw new BadRequestError('Update sku failure')
+    if(!skus) throw new BadRequestError('Update sku failure')
 
-    const updateSpu = await updateInvenStockAndPrice({
+    await updateInvenStockAndPrice({
         productId
     })
 
-    return updateSku
+    await Promise.all( skus.map( async sku => {
+        return await addStockToInventory({
+            productId: sku.skuId,
+            shopId,
+            stock: sku.sku_stock
+        })
+    }))
+
+    return skus
 }
 
 const publishSkuService = async({
