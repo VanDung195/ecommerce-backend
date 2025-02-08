@@ -1,7 +1,7 @@
 'use strict'
 
 const { BadRequestError, NotFoundError } = require('../core/error.response')
-const { getOneCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart } = require("../models/repositories/cart.repo")
+const { getOneCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart } = require("../models/repositories/cart.repo")
 const { findShopById, findShopByShopId } = require('../models/repositories/shop.repo')
 const { getOneSkuById } = require('../models/repositories/sku.repo')
 
@@ -28,7 +28,9 @@ const addToCartService = async({
         return await createCart({
             userId,
             product :{
+                name: foundProduct.productId.product_name,
                 price: foundProduct.sku_price,
+                isSelected: false,
                 ...product
             }
         })
@@ -37,7 +39,9 @@ const addToCartService = async({
     if(!existsProductInCart){
         userCart.cart_count_product = userCart.cart_count_product + 1
         userCart.cart_products.push({
+            name: foundProduct.productId.product_name,
             price: foundProduct.sku_price,
+            isSelected: false,
             ...product
         })
         const cart = await userCart.save()
@@ -49,21 +53,6 @@ const addToCartService = async({
         userId,
         product
     })
-    // console.log(userCart);
-    
-    // if(existsProductInCart) {
-    //     userCart.cart_products = userCart.cart_products.map( productInCart => {
-    //         if(productInCart.name === product.name && productInCart.productId.toString() === product.productId){
-    //             return { ...productInCart, quantity: productInCart.quantity + product.quantity}
-    //         }
-    //     })
-    // } else {
-    //     userCart.cart_products.push(product)
-    //     userCart.cart_count_product = userCart.cart_products.length
-    //     await updateCartCount({ userId, quantity: 1})
-    // }
-    // await userCart.save()
-    // return userCart
 }
 
 /*
@@ -83,33 +72,36 @@ const updateCartQuantityService = async({
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
     const foundProduct = await getOneSkuById(shopProduct.productId)
+    if(foundProduct.productId.product_shop.toString() !== shopProduct.shopId)
+        throw new BadRequestError('Invalid shop')
     if(!foundProduct)
         throw new NotFoundError('Product not found')
     if(shopProduct.quantity === 0)
-        return await removeFromCart({
-            userId, 
-            productId: shopProduct.productId
-        })
-
-    return await updateProductQuantity({
+        return await removeFromCart({ userId, productId: shopProduct.productId })
+    shopProduct.quantity = shopProduct.quantity - shopProduct.old_quantity
+    const cart = await updateProductQuantity({
         cartId: foundCart._id,
         userId,
         product: shopProduct
     })
+    if(cart.cart_count_product <= 0)
+        return await removeFromCart({ userId, productId: shopProduct.productId })
+    return cart
 }
 
 const removeFromCartService = async({
     userId,
+    shopId,
     productId
 }) => {
     const foundCart = await getOneCartByUserId({ userId })
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
-    const foundProduct = await getOneSkuById(shopProduct.productId)
+    const foundProduct = await getOneSkuById(productId)
     if(!foundProduct)
         throw new NotFoundError('Product not found')
     await updateCartCount({ userId, quantity: -1})
-    return await removeFromCart({ userId, productId})
+    return await removeFromCart({ userId, productId, shopId})
 }
 
 const clearCartService = async({
@@ -131,10 +123,31 @@ const listToCartService = async({
     return foundCart
 }
 
+const toggleSelectionProductFromCartService = async({
+    userId,
+    shopId,
+    productId
+}) => {
+    const foundCart = await getOneCartByUserId({ userId })
+    if(!foundCart) 
+        throw new NotFoundError('Cart not found')
+    const foundProduct = await getOneSkuById(productId)
+    if(foundProduct.productId.product_shop.toString() !== shopId)
+        throw new BadRequestError('Invalid shop')
+    if(!foundProduct)
+        throw new NotFoundError('Product not found')
+    return await selectProductFromCart({
+        userId,
+        shopId,
+        productId
+    })
+}
+
 module.exports = {
     addToCartService,
     updateCartQuantityService,
     removeFromCartService,
     clearCartService,
-    listToCartService
+    listToCartService,
+    toggleSelectionProductFromCartService
 }
