@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { addToCartService, updateCartQuantityService, removeFromCartService, clearCartService, listToCartService } = require("../services/cart.service")
+const { addToCartService, updateCartQuantityService, removeFromCartService, clearCartService, listToCartService, toggleSelectionProductFromCartService } = require("../services/cart.service")
 
 class CartController{
     listToCart = async(req, res, next) => {
@@ -26,7 +26,7 @@ class CartController{
             message: 'Update quantity successfully',
             metadata: await updateCartQuantityService({
                 userId: req.user.userId,
-                ...req.body
+                shopProduct: req.body
             })
         }).send(res)
     }
@@ -45,6 +45,18 @@ class CartController{
         new SuccessResponse({
             message: 'Clear cart successfully',
             metadata: await clearCartService({ userId: req.user.userId})
+        }).send(res)
+    }
+
+    toggleSelectionProductFromCart = async(req, res, next) => {
+        const { productId, shopId } = req.body
+        new SuccessResponse({
+            message: 'Toggle select success',
+            metadata: await toggleSelectionProductFromCartService({
+                userId: req.user.userId,
+                shopId,
+                productId
+            })
         }).send(res)
     }
 }
