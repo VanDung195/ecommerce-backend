@@ -5,20 +5,19 @@ const CART = require('../cart.model')
 
 const createCart = async ({
     userId,
-    product
+    product_shop
 }) => {
     const newCart = await CART.create(
         {
             userId,
-            cart_products: product
+            cart_products: product_shop
         }
     )
     return newCart
 }
 
-const updateProductQuantity = async ({ cartId, userId, product }) => {
-    console.log(product);
 
+const updateProductQuantity = async ({ cartId, userId, product }) => {
     const cart = await CART.findOneAndUpdate(
         {
             _id: convertToObjectIdMongodb(cartId),
@@ -38,6 +37,33 @@ const updateProductQuantity = async ({ cartId, userId, product }) => {
     )
     return cart
 }
+
+const updateProductQuantityV2 = async ({ cartId, userId, product_shop }) => {
+    product_shop.shopId = convertToObjectIdMongodb(product_shop.shopId)
+    const cart = await CART.findOneAndUpdate(
+        {
+            _id: convertToObjectIdMongodb(cartId),
+            userId: convertToObjectIdMongodb(userId),
+            cart_state: 'active',
+            'cart_products.shopId': product_shop.shopId,
+            'cart_products.product_shop.productId': product_shop.productId
+        },
+        {
+            $inc: {
+                'cart_products.$[shop].product_shop.$[product].quantity': product_shop.quantity
+            }
+        },
+        {
+            new: true,
+            arrayFilters: [
+                { 'shop.shopId': product_shop.shopId },
+                { 'product.productId': product_shop.productId }
+            ]
+        }
+    )
+    return cart
+}
+
 
 const getOneCartByUserId = async ({
     userId,
@@ -67,6 +93,31 @@ const updateCartCount = async ({
     )
 }
 
+// const removeFromCart = async ({
+//     userId,
+//     productId,
+//     shopId
+// }) => {
+//     const cart = await CART.findOneAndUpdate(
+//         {
+//             userId,
+//             'cart_products.productId': productId,
+//             'cart_products.shopId': shopId
+//         },
+//         {
+//             $pull: {
+//                 'cart_products': {
+//                     productId: productId
+//                 }
+//             }
+//         },
+//         {
+//             new: true
+//         }
+//     )
+//     return cart
+// }
+
 const removeFromCart = async ({
     userId,
     productId,
@@ -75,13 +126,40 @@ const removeFromCart = async ({
     const cart = await CART.findOneAndUpdate(
         {
             userId,
-            'cart_products.productId': productId,
-            'cart_products.shopId': shopId
+            cart_state: 'active',
+            'cart_products.shopId': convertToObjectIdMongodb(shopId),
+        },
+        {
+            $pull: {
+                'cart_products.$[shop].product_shop': {
+                    productId: productId
+                }
+            }
+        },
+        {
+            new: true,
+            arrayFilters: [
+                { 'shop.shopId': convertToObjectIdMongodb(shopId) }
+            ]
+        }
+    )
+    return cart
+}
+
+const removeCartShop = async ({
+    userId,
+    shopId
+}) => {
+    const cart = await CART.findOneAndUpdate(
+        {
+            userId,
+            cart_state: 'active',
+            'cart_products.shopId': convertToObjectIdMongodb(shopId)
         },
         {
             $pull: {
                 'cart_products': {
-                    productId: productId
+                    shopId: convertToObjectIdMongodb(shopId)
                 }
             }
         },
@@ -112,7 +190,7 @@ const clearCart = async ({
 }
 
 const getListProductFromCart = async ({
-    userId,
+    userId
 }) => {
     const cart = await CART.aggregate([
         {
@@ -124,69 +202,75 @@ const getListProductFromCart = async ({
             $unwind: '$cart_products'
         },
         {
-            $lookup: {
-                from: 'Skus',
-                localField: 'cart_products.productId',
-                foreignField: 'skuId',
-                as: 'variantInfo'
-            }
+            $unwind: '$cart_products.product_shop'
         },
         {
-            $unwind: '$variantInfo'
+            $lookup: {
+                from: 'Skus',
+                localField: 'cart_products.product_shop.productId',
+                foreignField: 'skuId',
+                as: 'variant_info'
+            }
         },
         {
             $project: {
                 _id: 0,
                 cart_state: 0,
-                __v: 0,
                 userId: 0,
-                'variantInfo._id': 0,
-                'variantInfo.isDraft': 0,
-                'variantInfo.isPublished': 0,
-                'variantInfo.isDeleted': 0,
-                'variantInfo.createdAt': 0,
-                'variantInfo.updatedAt': 0,
-                'variantInfo.__v': 0,
-                'variantInfo.skuId': 0,
+                createOn: 0,
+                modifiedOn: 0,
+                __v: 0,
+                'variant_info.isDraft': 0,
+                'variant_info.isPublished': 0,
+                'variant_info.isDeleted': 0,
+                'variant_info.createdAt': 0,
+                'variant_info.updatedAt': 0,
+                'variant_info.__v': 0,
             }
         },
         {
             $lookup: {
                 from: 'Spus',
-                localField: 'variantInfo.productId',
+                localField: 'variant_info.productId',
                 foreignField: '_id',
-                as: 'productInfo'
+                as: 'spu'
             }
         },
         {
             $project: {
-                'productInfo._id': 0,
-                'productInfo.isDraft': 0,
-                'productInfo.isPublished': 0,
-                'productInfo.isDeleted': 0,
-                'productInfo.createdAt': 0,
-                'productInfo.updatedAt': 0,
-                'productInfo.__v': 0,
+                'spu.isDraft': 0,
+                'spu.isPublished': 0,
+                'spu.isDeleted': 0,
+                'spu.createdAt': 0,
+                'spu.updatedAt': 0,
+                'spu.__v': 0,
             }
         },
         {
-            $unwind: '$productInfo'
+            $unwind: '$variant_info'
+        },
+        {
+            $unwind: '$spu'
         },
         {
             $project: {
                 cart_count_product: 1,
                 product: {
-                    name: '$productInfo.product_name',
-                    price: '$productInfo.product_price',
-                    quantity: '$cart_products.quantity',
-                    shopId: '$productInfo.product_shop',
+                    name: '$spu.product_name',
+                    thumb: '$spu.product_thumb',
+                    price: '$variant_info.sku_price',
+                    quantity: '$cart_products.product_shop.quantity',
+                    shopId: '$cart_products.shopId',
                     productId: '$cart_products.productId',
                     isSelected: '$cart_products.isSelected',
-                    productVariations: '$productInfo.product_variations',
                     totalPrice: {
-                        $multiply: ['$productInfo.product_price', '$cart_products.quantity']
+                        $multiply: ['$variant_info.sku_price', '$cart_products.product_shop.quantity']
                     },
-                    variant: '$variantInfo'
+                    variant: '$variant_info',
+                    variationNameInfo: {
+                        product_thumb: '$spu.product_thumb',
+                        variations: '$spu.product_variations'
+                    }
                 },
             }
         },
@@ -210,12 +294,55 @@ const getListProductFromCart = async ({
     return cart
 }
 
+// const selectProductFromCart = async ({ userId, shopId, productId }) => {
+//     const cart = await CART.findOneAndUpdate(
+//         {
+//             userId,
+//             'cart_products.product_shop.productId': productId,
+//             'cart_products.shopId': shopId
+//         },
+//         [
+//             {
+//                 $set: {
+//                     cart_products: {
+//                         $map: {
+//                             input: "$cart_products",
+//                             as: "item",
+//                             in: {
+//                                 $cond: {
+//                                     if: {
+//                                         $and: [
+//                                             { $eq: ["$$item.product_shop.productId", productId] },
+//                                             { $eq: ["$$item.shopId", shopId] }
+//                                         ]
+//                                     },
+//                                     then: {
+//                                         $mergeObjects: [
+//                                             "$$item",
+//                                             { isSelected: { $not: ["$$item.product_shop.isSelected"] } }
+//                                         ]
+//                                     },
+//                                     else: "$$item"
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         ],
+//         { new: true }
+//     )
+//     return cart
+// }
+
+
 const selectProductFromCart = async ({ userId, shopId, productId }) => {
+    shopId = convertToObjectIdMongodb(shopId)
     const cart = await CART.findOneAndUpdate(
         {
             userId,
-            'cart_products.productId': productId,
-            'cart_products.shopId': shopId
+            'cart_products.shopId': shopId,
+            'cart_products.product_shop.productId': productId
         },
         [
             {
@@ -223,22 +350,36 @@ const selectProductFromCart = async ({ userId, shopId, productId }) => {
                     cart_products: {
                         $map: {
                             input: "$cart_products",
-                            as: "item",
+                            as: "shop",
                             in: {
                                 $cond: {
-                                    if: {
-                                        $and: [
-                                            { $eq: ["$$item.productId", productId] },
-                                            { $eq: ["$$item.shopId", shopId] }
-                                        ]
-                                    },
+                                    if: { $eq: ["$$shop.shopId", shopId] },
                                     then: {
                                         $mergeObjects: [
-                                            "$$item",
-                                            { isSelected: { $not: ["$$item.isSelected"] } }
+                                            "$$shop",
+                                            {
+                                                product_shop: {
+                                                    $map: {
+                                                        input: "$$shop.product_shop",
+                                                        as: "prod",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$prod.productId", productId] },
+                                                                then: {
+                                                                    $mergeObjects: [
+                                                                        "$$prod",
+                                                                        { isSelected: { $not: ["$$prod.isSelected"] } }
+                                                                    ]
+                                                                },
+                                                                else: "$$prod"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         ]
                                     },
-                                    else: "$$item"
+                                    else: "$$shop"
                                 }
                             }
                         }
@@ -252,13 +393,16 @@ const selectProductFromCart = async ({ userId, shopId, productId }) => {
 }
 
 
+
 module.exports = {
     createCart,
     getOneCartByUserId,
     updateProductQuantity,
+    updateProductQuantityV2,
     removeFromCart,
     clearCart,
     updateCartCount,
     getListProductFromCart,
-    selectProductFromCart
+    selectProductFromCart,
+    removeCartShop
 }
