@@ -392,7 +392,53 @@ const selectProductFromCart = async ({ userId, shopId, productId }) => {
     return cart
 }
 
-
+ /*
+        [
+            {
+                shopId,
+                shop_discount: {
+                    shopId,
+                    discountId,
+                    codeId    
+                }
+                product_shop: [
+                    {
+                        productId,
+                        name,
+                        price,
+                        quantity,
+                        isSelected
+                    }
+                ]
+            }
+        ]    
+    */
+const applyDiscountProductCart = async({
+    userId,
+    shopId,
+    discount
+}) => {
+    const cart = await CART.findOneAndUpdate(
+        {
+            userId: convertToObjectIdMongodb(userId),
+            'cart_products.shopId': shopId,
+            cart_state: 'active'
+        },
+        {
+            $set: {
+                shop_discount: {
+                    shopId: discount.shopId,
+                    discountId: discount.discountId,
+                    code: discount.discount_code
+                }
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return cart
+}
 
 module.exports = {
     createCart,
@@ -404,5 +450,6 @@ module.exports = {
     updateCartCount,
     getListProductFromCart,
     selectProductFromCart,
-    removeCartShop
+    removeCartShop,
+    applyDiscountProductCart
 }
