@@ -1,8 +1,7 @@
 'use strict'
 
 const { NotFoundError, ConflictError, BadRequestError } = require("../core/error.response")
-const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getRecommendDiscount } = require("../models/repositories/discount.repo")
-const { findShopById, findShopByShopId } = require("../models/repositories/shop.repo")
+const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
 
 /*
     truyền vào các products của shopId và check xem discount_applies_to === 'specific' thì tiến hành check xem discount_productIds
@@ -48,16 +47,44 @@ const createDiscountByShopService = async({
     return newDiscount
 }
 
+const updateDiscountByShopService = async({
+
+}) => {
+
+}
+
+const isValidDiscount = async({
+
+}) => {
+
+}
+
+const applyDiscountToProduct = async({
+    product,
+    discount
+}) => {
+
+}
+
 const deleteDiscountByShop = async({
 
 }) => {
 
 }
 
-const getAllDiscountByShop = async({
-
+const getAllDiscountByShopService = async({
+    shopId,
+    page = 1,
+    limit = 20
 }) => {
-    
+    const discounts = await getAllDiscountByShop({
+        shopId,
+        page,
+        limit
+    })
+    if(!discounts) 
+        throw new NotFoundError('Discount not found')
+    return discounts
 }
 
 const getOneDiscoutByShopService = async({
@@ -87,5 +114,6 @@ const getRecommendPlatformDiscount = async({
 module.exports = {
     createDiscountByShopService,
     getOneDiscoutByShopService,
-    getRecommendShopDiscountService
+    getRecommendShopDiscountService,
+    getAllDiscountByShopService
 }
