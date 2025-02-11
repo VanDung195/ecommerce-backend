@@ -1,7 +1,8 @@
 'use strict'
 
 const { BadRequestError, NotFoundError } = require('../core/error.response')
-const { getOneCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop } = require("../models/repositories/cart.repo")
+const { getOneCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart } = require("../models/repositories/cart.repo")
+const { getOneDiscountCode } = require('../models/repositories/discount.repo')
 const { findShopById, findShopByShopId } = require('../models/repositories/shop.repo')
 const { getOneSkuById } = require('../models/repositories/sku.repo')
 
@@ -127,6 +128,74 @@ const updateCartQuantityService = async({
     return cart
 }
 
+const applyDiscountForShopProductService = async({
+    userId,
+    shopId,
+    discount_code
+}) => {
+    const foundDiscount = await getOneDiscountCode({ shopId, code: discount_code})
+    if(!foundDiscount)
+        throw new NotFoundError('Discount not found')
+    const foundCart = await getOneCartByUserId({ userId })
+    if(!foundCart)
+        throw new NotFoundError('Cart not found')
+    if(foundCart.cart_products.cart_count_product === 0)
+        throw new BadRequestError('Invalid request')
+    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+
+    // return shopInCart
+
+    // const shopTotalPrice = shopInCart.product_shop.map( product => {
+    //     return product.price * product.quantity
+    // })
+    const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
+        return total + (product.price * product.quantity);
+    }, 0);
+    
+    let eligibleProducts = []
+    if(foundDiscount.discount_applies_to === 'all'){
+        eligibleProducts = shopInCart.product_shop.filter( product => product.isSelected)
+    }
+    if(foundDiscount.discount_applies_to === 'specific'){
+        eligibleProducts = shopInCart.product_shop.filter( product => 
+            product.isSelected && foundDiscount.discount_productIds.includes(product.productId)
+        )
+    }
+    if(foundDiscount.discount_max_amount < shopTotalPrice)
+        throw new BadRequestError(`Order total doesn't meet the discount minimum order value of ${foundDiscount.discount_min_order_value}.`)
+
+    //check số tiền tối thiểu nữa
+    //check start date and end date
+    if(eligibleProducts.length === 0)
+        throw new BadRequestError('No eliglible product found for discount')
+    
+    const discount = {
+        shopId: shopId,
+        discountId: foundDiscount._id,
+        code: foundDiscount.discount_code
+    }
+    // const updatedCart = await applyDiscountProductCart({ userId, shopId, discount})
+
+    // return updatedCart
+
+    //chọn 1 sản phẩm để apply discount (sản phẩm có giá cao nhất)
+    const productToDiscount = eligibleProducts.reduce( (prev, current) => {
+        return (prev.price > current.price ? prev : current)
+    })
+
+    const discountType = foundDiscount.discount_type
+    const discountValue = 0
+    if(discountType === 'fixed_amount'){
+        discountValue = foundDiscount.discount_value
+    } else {
+        discountValue = (productToDiscount.price * foundDiscount.discount_value) / 100 
+    }
+
+    return discountValue
+}
+
 const removeFromCartService = async({
     userId,
     shopId,
@@ -196,5 +265,6 @@ module.exports = {
     removeFromCartService,
     clearCartService,
     listToCartService,
-    toggleSelectionProductFromCartService
+    toggleSelectionProductFromCartService,
+    applyDiscountForShopProductService
 }
