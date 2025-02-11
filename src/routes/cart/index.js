@@ -14,5 +14,6 @@ router.post('/update', asyncHandler(cartController.updateQuantity))
 router.get('', asyncHandler(cartController.listToCart))
 router.delete('/remove', asyncHandler(cartController.removeFromCart))
 router.post('/toggle', asyncHandler(cartController.toggleSelectionProductFromCart))
+router.post('/apply_discount', asyncHandler(cartController.applyDiscount))
 
 module.exports = router
