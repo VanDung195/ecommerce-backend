@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { createDiscountByShopService, getOneDiscoutByShopService, getRecommendShopDiscountService } = require("../services/discount.service")
+const { createDiscountByShopService, getOneDiscoutByShopService, getRecommendShopDiscountService, getAllDiscountByShopService } = require("../services/discount.service")
 
 class DiscountController {
     newDiscount = async(req, res, next) => {
@@ -31,6 +31,16 @@ class DiscountController {
                 userId: req.user.userId,
                 shopId: req.body.shop,
                 products: ['67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7', '67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7']
+            })
+        }).send(res)
+    }
+
+    getAllDiscount = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get all discounts success',
+            metadata: await getAllDiscountByShopService({
+                shopId: req.shop._id,
+                ...req.query
             })
         }).send(res)
     }
