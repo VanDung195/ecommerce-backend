@@ -189,7 +189,133 @@ const clearCart = async ({
     return cart
 }
 
-const getListProductFromCart = async ({
+const getListProductFromCart = async({
+    userId
+}) => {
+    const cart = await CART.aggregate([
+        {
+            $match: {
+                userId: convertToObjectIdMongodb(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: 'Shops',
+                localField: 'cart_products.shopId',
+                foreignField: '_id',
+                as: 'shop_info'
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    shop_info: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: '$shop_info',
+                                                    as: 'shop',
+                                                    cond: {
+                                                        $eq: ['$$shop._id', '$$product.shopId']
+                                                    }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unset: 'shop_info'
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: 'cart_products.product_shop.productId',
+                foreignField: 'skuId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'cart_product',
+                        in: {
+                            $mergeObjects: [
+                                '$$cart_product',
+                                {
+                                    product_shop: {
+                                        $map: {
+                                            input: '$$cart_product.product_shop',
+                                            as: 'product',
+                                            in: {
+                                                $mergeObjects: [
+                                                    '$$product',
+                                                    {
+                                                        sku_info: {
+                                                            $arrayElemAt: [
+                                                                {
+                                                                    $filter: {
+                                                                        input: '$sku_info',
+                                                                        as: 'sku',
+                                                                        cond: {
+                                                                            $eq: ['$$sku.skuId', '$$product.productId']
+                                                                        }
+                                                                    }
+                                                                },
+                                                                0
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unset: 'sku_info'
+        },
+        {
+            $project: {
+                cart_state: 0,
+                _id: 0,
+                'cart_products.product_shop.sku_info._id': 0,
+                'cart_products.product_shop.sku_info.skuId': 0,
+                'cart_products.product_shop.sku_info.sku_default': 0,
+                'cart_products.product_shop.sku_info.sku_slug': 0,
+                'cart_products.product_shop.sku_info.isDraft': 0,
+                'cart_products.product_shop.sku_info.isPublished': 0,
+                'cart_products.product_shop.sku_info.isDeleted': 0,
+                'cart_products.product_shop.sku_info.createdAt': 0,
+                'cart_products.product_shop.sku_info.updatedAt': 0,
+                'cart_products.product_shop.sku_info.__v': 0,
+            }
+        }
+    ])
+    return cart
+}   
+
+const getListProductFromCartV1 = async ({
     userId
 }) => {
     const cart = await CART.aggregate([
@@ -421,16 +547,38 @@ const applyDiscountProductCart = async({
     const cart = await CART.findOneAndUpdate(
         {
             userId: convertToObjectIdMongodb(userId),
-            'cart_products.shopId': shopId,
+            'cart_products.shopId': convertToObjectIdMongodb(shopId),
             cart_state: 'active'
         },
         {
             $set: {
-                shop_discount: {
+                'cart_products.$.shop_discount': {
                     shopId: discount.shopId,
                     discountId: discount.discountId,
-                    code: discount.discount_code
+                    code: discount.code
                 }
+            }
+        },
+        {
+            new: true
+        }
+    )
+    return cart
+}
+
+const removeDiscountProductCart = async({
+    userId,
+    shopId,
+}) => {
+    const cart = await CART.findOneAndUpdate(
+        {
+            userId: convertToObjectIdMongodb(userId),
+            'cart_products.shopId': convertToObjectIdMongodb(shopId),
+            cart_state: 'active'
+        },
+        {
+            $set: {
+                'cart_products.$.shop_discount': null
             }
         },
         {
@@ -451,5 +599,6 @@ module.exports = {
     getListProductFromCart,
     selectProductFromCart,
     removeCartShop,
-    applyDiscountProductCart
+    applyDiscountProductCart,
+    removeDiscountProductCart
 }
