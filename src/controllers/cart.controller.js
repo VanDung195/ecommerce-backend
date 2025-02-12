@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { addToCartService, updateCartQuantityService, removeFromCartService, clearCartService, listToCartService, toggleSelectionProductFromCartService, applyDiscountForShopProductService } = require("../services/cart.service")
+const { addToCartService, updateCartQuantityService, removeFromCartService, clearCartService, listToCartService, toggleSelectionProductFromCartService, applyDiscountForShopProductService, removeDiscountProductCartService } = require("../services/cart.service")
 
 class CartController{
     listToCart = async(req, res, next) => {
@@ -64,6 +64,16 @@ class CartController{
         new SuccessResponse({
             message: 'Apply discount successfully',
             metadata: await applyDiscountForShopProductService({
+                userId: req.user.userId,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    removeDiscount = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Remove discount successfully',
+            metadata: await removeDiscountProductCartService({
                 userId: req.user.userId,
                 ...req.body
             })
