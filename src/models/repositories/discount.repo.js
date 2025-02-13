@@ -33,10 +33,18 @@ const createDiscountByShop = async ({
 
 const getAllDiscountByShop = async ({
     shopId,
-    page = 1,
+    page,
     limit
 }) => {
-
+    const offset = (page - 1) * limit
+    const discounts = await DISCOUNT.find({
+        discount_shopId: convertToObjectIdMongodb(shopId),
+        isDeleted: false
+    })
+    .limit(limit)
+    .offset(offset)
+    .lean()
+    return discounts
 }
 
 const getRecommendShopDiscount = async ({ userId, shopId, products }) => {
@@ -99,17 +107,30 @@ const getRecommendShopDiscount = async ({ userId, shopId, products }) => {
     return discounts;
 };
 
-const getRecommendDiscount = async({ userId, shopId, products}) => {
+//cần check số tiền tối thiểu 
+const getRecommendDiscount = async({ userId, shopId, products, totalPrice}) => {
+    const now = new Date()
     const discounts = await DISCOUNT.aggregate([
         {
             $match: {
-                discount_shopId: convertToObjectIdMongodb(shopId)
+                discount_shopId: convertToObjectIdMongodb(shopId),
+                discount_start_date: {
+                    $lte: now // <=
+                },
+                discount_end_date: {
+                    $gte: now // >=
+                },
+                // $or: [
+                //     { discount_min_order_value: 0},
+                //     { discount_min_order_value: { $lte: totalPrice}}
+                // ]
             }
         },
         {
             $addFields: {
                 products: products,
-                userId: userId
+                userId: userId,
+                totalPrice: totalPrice
             }
         },
         {
@@ -160,17 +181,19 @@ const getRecommendDiscount = async({ userId, shopId, products}) => {
                 'is_valid': {
                     $and: [
                         { $lt: ['$user_usage_count', '$discount_max_use_per_user'] },
-                        { $gt: [{ $size: '$applicable_products' }, 0] }
+                        { $gt: [{ $size: '$applicable_products' }, 0] },
+                        { $lte: ['$discount_min_order_value', totalPrice]},
+                        { $lte: ['$discount_uses_count', '$discount_max_uses']}
                     ]
                 },
                 applicable_products: 1,
-                userId: 1
+                userId: 1,
+                totalPrice: 1
             }
         }
     ])
     return discounts
 }
-
 
 //freeship, ...
 const getRecommendPlatformDiscount = async ({
@@ -179,6 +202,11 @@ const getRecommendPlatformDiscount = async ({
 
 }
 
+const checkValidDiscount = async({
+
+}) => {
+    
+}
 
 const getOneDiscountCode = async ({
     shopId,
@@ -199,5 +227,6 @@ module.exports = {
     getOneDiscountCode,
     createDiscountByShop,
     getRecommendShopDiscount,
-    getRecommendDiscount
+    getRecommendDiscount,
+    getAllDiscountByShop
 }
