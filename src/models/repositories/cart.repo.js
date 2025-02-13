@@ -65,13 +65,254 @@ const updateProductQuantityV2 = async ({ cartId, userId, product_shop }) => {
 }
 
 
-const getOneCartByUserId = async ({
+const getCartByUserId = async ({
     userId,
 }) => {
     const cart = await CART.findOne({
         userId: convertToObjectIdMongodb(userId)
     })
     return cart
+}
+
+const getCartForOrder = async({
+    userId
+}) => {
+    const cart = await CART.aggregate([
+        {
+            $match: {
+                userId: convertToObjectIdMongodb(userId)
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $filter: {
+                        input: {
+                            $map: {
+                                input: '$cart_products',
+                                as: 'cart_product',
+                                in: {
+                                    $mergeObjects: [
+                                        '$$cart_product',
+                                        {
+                                            product_shop: {
+                                                $filter: {
+                                                    input: '$$cart_product.product_shop',
+                                                    as: 'product',
+                                                    cond: { $eq: ['$$product.isSelected', true] }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        as: 'cart_product',
+                        cond: { $gt: [{ $size: '$$cart_product.product_shop' },0]}
+                    }
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: 'Shops',
+                localField: 'cart_products.shopId',
+                foreignField: '_id',
+                as: 'shop_info'
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    shop_info: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: '$shop_info',
+                                                    as: 'shop',
+                                                    cond: {
+                                                        $eq: ['$$shop._id', '$$product.shopId']
+                                                    }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unset: 'shop_info'
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: 'cart_products.product_shop.productId',
+                foreignField: 'skuId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'cart_product',
+                        in: {
+                            $mergeObjects: [
+                                '$$cart_product',
+                                {
+                                    product_shop: {
+                                        $map: {
+                                            input: '$$cart_product.product_shop',
+                                            as: 'product',
+                                            in: {
+                                                $mergeObjects: [
+                                                    '$$product',
+                                                    {
+                                                        sku_info: {
+                                                            $arrayElemAt: [
+                                                                {
+                                                                    $filter: {
+                                                                        input: '$sku_info',
+                                                                        as: 'sku',
+                                                                        cond: {
+                                                                            $eq: ['$$sku.skuId', '$$product.productId']
+                                                                        }
+                                                                    }
+                                                                },
+                                                                0
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unset: 'sku_info'
+        },
+        {
+            $project: {
+                cart_state: 0,
+                _id: 0,
+                'cart_products.product_shop.sku_info._id': 0,
+                'cart_products.product_shop.sku_info.skuId': 0,
+                'cart_products.product_shop.sku_info.sku_default': 0,
+                'cart_products.product_shop.sku_info.sku_slug': 0,
+                'cart_products.product_shop.sku_info.isDraft': 0,
+                'cart_products.product_shop.sku_info.isPublished': 0,
+                'cart_products.product_shop.sku_info.isDeleted': 0,
+                'cart_products.product_shop.sku_info.createdAt': 0,
+                'cart_products.product_shop.sku_info.updatedAt': 0,
+                'cart_products.product_shop.sku_info.__v': 0,
+                'cart_products.shop_info._id': 0,
+                'cart_products.shop_info.userId': 0,
+                'cart_products.shop_info.shop_phone': 0,
+                'cart_products.shop_info.shop_status': 0,
+                'cart_products.shop_info.shop_verify': 0,
+                'cart_products.shop_info.shop_description': 0,
+                'cart_products.shop_info.shop_type': 0,
+                'cart_products.shop_info.createdAt': 0,
+                'cart_products.shop_info.updatedAt': 0,
+                'cart_products.shop_info.__v': 0,
+            }
+        },
+        {
+            $lookup: {
+                from: 'Spus',
+                localField: 'cart_products.product_shop.sku_info.productId',
+                foreignField: '_id',
+                as: 'spu_info'
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'cart_product',
+                        in: {
+                            $mergeObjects: [
+                                '$$cart_product',
+                                {
+                                    product_shop: {
+                                        $map: {
+                                            input: '$$cart_product.product_shop',
+                                            as: 'product',
+                                            in: {
+                                                $mergeObjects: [
+                                                    '$$product',
+                                                    {
+                                                        product_info: {
+                                                            $arrayElemAt: [
+                                                                {
+                                                                    $filter: {
+                                                                        input: '$spu_info',
+                                                                        as: 'spu',
+                                                                        cond: { 
+                                                                            $eq: ['$$spu._id', '$$product.sku_info.productId']
+                                                                        }
+                                                                    }
+                                                                }, 
+                                                                0
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unset: 'spu_info'
+        },
+        {
+            $project: {
+                'cart_products.product_shop.product_info._id': 0,
+                'cart_products.product_shop.product_info.product_price': 0,
+                'cart_products.product_shop.product_info.product_min_price': 0,
+                'cart_products.product_shop.product_info.product_max_price': 0,
+                'cart_products.product_shop.product_info.product_category': 0,
+                'cart_products.product_shop.product_info.product_quantity': 0,
+                'cart_products.product_shop.product_info.product_shop': 0,
+                'cart_products.product_shop.product_info.isDraft': 0,
+                'cart_products.product_shop.product_info.isPublished': 0,
+                'cart_products.product_shop.product_info.isDeleted': 0,
+                'cart_products.product_shop.product_info.createdAt': 0,
+                'cart_products.product_shop.product_info.updatedAt': 0,
+                'cart_products.product_shop.product_info.__v': 0,
+                'cart_products.product_shop.product_info.product_variations.images': 0,
+                cart_count_product: 0,
+                __v: 0
+            }
+        }
+    ])
+    return cart[0]
 }
 
 const updateCartCount = async ({
@@ -190,8 +431,11 @@ const clearCart = async ({
 }
 
 const getListProductFromCart = async({
-    userId
+    userId,
+    limit,
+    page
 }) => {
+    const offset = (page - 1) * limit
     const cart = await CART.aggregate([
         {
             $match: {
@@ -309,158 +553,101 @@ const getListProductFromCart = async({
                 'cart_products.product_shop.sku_info.createdAt': 0,
                 'cart_products.product_shop.sku_info.updatedAt': 0,
                 'cart_products.product_shop.sku_info.__v': 0,
-            }
-        }
-    ])
-    return cart
-}   
-
-const getListProductFromCartV1 = async ({
-    userId
-}) => {
-    const cart = await CART.aggregate([
-        {
-            $match: {
-                userId: convertToObjectIdMongodb(userId)
-            }
-        },
-        {
-            $unwind: '$cart_products'
-        },
-        {
-            $unwind: '$cart_products.product_shop'
-        },
-        {
-            $lookup: {
-                from: 'Skus',
-                localField: 'cart_products.product_shop.productId',
-                foreignField: 'skuId',
-                as: 'variant_info'
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                cart_state: 0,
-                userId: 0,
-                createOn: 0,
-                modifiedOn: 0,
-                __v: 0,
-                'variant_info.isDraft': 0,
-                'variant_info.isPublished': 0,
-                'variant_info.isDeleted': 0,
-                'variant_info.createdAt': 0,
-                'variant_info.updatedAt': 0,
-                'variant_info.__v': 0,
+                'cart_products.shop_info._id': 0,
+                'cart_products.shop_info.userId': 0,
+                'cart_products.shop_info.shop_phone': 0,
+                'cart_products.shop_info.shop_status': 0,
+                'cart_products.shop_info.shop_verify': 0,
+                'cart_products.shop_info.shop_description': 0,
+                'cart_products.shop_info.shop_type': 0,
+                'cart_products.shop_info.createdAt': 0,
+                'cart_products.shop_info.updatedAt': 0,
+                'cart_products.shop_info.__v': 0,
             }
         },
         {
             $lookup: {
                 from: 'Spus',
-                localField: 'variant_info.productId',
+                localField: 'cart_products.product_shop.sku_info.productId',
                 foreignField: '_id',
-                as: 'spu'
+                as: 'spu_info'
             }
         },
         {
-            $project: {
-                'spu.isDraft': 0,
-                'spu.isPublished': 0,
-                'spu.isDeleted': 0,
-                'spu.createdAt': 0,
-                'spu.updatedAt': 0,
-                'spu.__v': 0,
-            }
-        },
-        {
-            $unwind: '$variant_info'
-        },
-        {
-            $unwind: '$spu'
-        },
-        {
-            $project: {
-                cart_count_product: 1,
-                product: {
-                    name: '$spu.product_name',
-                    thumb: '$spu.product_thumb',
-                    price: '$variant_info.sku_price',
-                    quantity: '$cart_products.product_shop.quantity',
-                    shopId: '$cart_products.shopId',
-                    productId: '$cart_products.productId',
-                    isSelected: '$cart_products.isSelected',
-                    totalPrice: {
-                        $multiply: ['$variant_info.sku_price', '$cart_products.product_shop.quantity']
-                    },
-                    variant: '$variant_info',
-                    variationNameInfo: {
-                        product_thumb: '$spu.product_thumb',
-                        variations: '$spu.product_variations'
+            $addFields: {
+                cart_products: {
+                    $map: {
+                        input: '$cart_products',
+                        as: 'cart_product',
+                        in: {
+                            $mergeObjects: [
+                                '$$cart_product',
+                                {
+                                    product_shop: {
+                                        $map: {
+                                            input: '$$cart_product.product_shop',
+                                            as: 'product',
+                                            in: {
+                                                $mergeObjects: [
+                                                    '$$product',
+                                                    {
+                                                        product_info: {
+                                                            $arrayElemAt: [
+                                                                {
+                                                                    $filter: {
+                                                                        input: '$spu_info',
+                                                                        as: 'spu',
+                                                                        cond: { 
+                                                                            $eq: ['$$spu._id', '$$product.sku_info.productId']
+                                                                        }
+                                                                    }
+                                                                }, 
+                                                                0
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
-                },
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                cart_count_product: {
-                    $first: '$cart_count_product',
-                },
-                products: {
-                    $push: '$product'
                 }
             }
         },
         {
+            $unset: 'spu_info'
+        },
+        {
             $project: {
-                _id: 0
+                'cart_products.product_shop.product_info._id': 0,
+                'cart_products.product_shop.product_info.product_price': 0,
+                'cart_products.product_shop.product_info.product_min_price': 0,
+                'cart_products.product_shop.product_info.product_max_price': 0,
+                'cart_products.product_shop.product_info.product_category': 0,
+                'cart_products.product_shop.product_info.product_quantity': 0,
+                'cart_products.product_shop.product_info.product_shop': 0,
+                'cart_products.product_shop.product_info.isDraft': 0,
+                'cart_products.product_shop.product_info.isPublished': 0,
+                'cart_products.product_shop.product_info.isDeleted': 0,
+                'cart_products.product_shop.product_info.createdAt': 0,
+                'cart_products.product_shop.product_info.updatedAt': 0,
+                'cart_products.product_shop.product_info.__v': 0,
+                'cart_products.product_shop.product_info.product_variations.images': 0,
+            }
+        },
+        {
+            $addFields: {
+                cart_products: {
+                    $slice: ['$cart_products', offset, limit]
+                }
             }
         }
     ])
-    return cart
+    return cart[0]
 }
-
-// const selectProductFromCart = async ({ userId, shopId, productId }) => {
-//     const cart = await CART.findOneAndUpdate(
-//         {
-//             userId,
-//             'cart_products.product_shop.productId': productId,
-//             'cart_products.shopId': shopId
-//         },
-//         [
-//             {
-//                 $set: {
-//                     cart_products: {
-//                         $map: {
-//                             input: "$cart_products",
-//                             as: "item",
-//                             in: {
-//                                 $cond: {
-//                                     if: {
-//                                         $and: [
-//                                             { $eq: ["$$item.product_shop.productId", productId] },
-//                                             { $eq: ["$$item.shopId", shopId] }
-//                                         ]
-//                                     },
-//                                     then: {
-//                                         $mergeObjects: [
-//                                             "$$item",
-//                                             { isSelected: { $not: ["$$item.product_shop.isSelected"] } }
-//                                         ]
-//                                     },
-//                                     else: "$$item"
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         ],
-//         { new: true }
-//     )
-//     return cart
-// }
-
 
 const selectProductFromCart = async ({ userId, shopId, productId }) => {
     shopId = convertToObjectIdMongodb(shopId)
@@ -590,7 +777,7 @@ const removeDiscountProductCart = async({
 
 module.exports = {
     createCart,
-    getOneCartByUserId,
+    getCartByUserId,
     updateProductQuantity,
     updateProductQuantityV2,
     removeFromCart,
@@ -600,5 +787,6 @@ module.exports = {
     selectProductFromCart,
     removeCartShop,
     applyDiscountProductCart,
-    removeDiscountProductCart
+    removeDiscountProductCart,
+    getCartForOrder
 }
