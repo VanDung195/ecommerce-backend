@@ -15,5 +15,6 @@ router.get('', asyncHandler(cartController.listToCart))
 router.delete('/remove', asyncHandler(cartController.removeFromCart))
 router.post('/toggle', asyncHandler(cartController.toggleSelectionProductFromCart))
 router.post('/apply_discount', asyncHandler(cartController.applyDiscount))
+router.post('/remove_discount', asyncHandler(cartController.removeDiscount))
 
 module.exports = router
