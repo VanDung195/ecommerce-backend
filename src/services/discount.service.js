@@ -1,6 +1,7 @@
 'use strict'
 
 const { NotFoundError, ConflictError, BadRequestError } = require("../core/error.response")
+const { getOneCartByUserId } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
 
 /*
@@ -9,10 +10,21 @@ const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getR
 const getRecommendShopDiscountService = async({
     userId,
     shopId,
-    products
 }) => {
-    // const discount = await getRecommendShopDiscount({ userId, shopId, products})
-    const discount = await getRecommendDiscount({ userId, shopId, products})
+    const foundCart = await getOneCartByUserId({ userId })
+    if(!foundCart)
+        throw new NotFoundError('Cart not found')
+    const shopInCart = foundCart.cart_products.find(shop => shop.shopId.toString() === shopId)
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+    const { products, totalPrice} = shopInCart.product_shop.reduce((acc, product) => {
+        if(product.isSelected){
+            acc.products.push(product.productId)
+            acc.totalPrice += product.quantity * product.price
+        }
+        return acc
+    }, { products: [], totalPrice: 0})
+    const discount = await getRecommendDiscount({ userId, shopId, products, totalPrice})
     return discount
 }
 
