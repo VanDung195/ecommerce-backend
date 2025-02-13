@@ -1,7 +1,7 @@
 'use strict'
 
 const { BadRequestError, NotFoundError } = require('../core/error.response')
-const { getOneCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart } = require("../models/repositories/cart.repo")
+const { getCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart, updateDiscountProductCart, removeDiscountProductCart } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode } = require('../models/repositories/discount.repo')
 const { findShopById, findShopByShopId } = require('../models/repositories/shop.repo')
 const { getOneSkuById } = require('../models/repositories/sku.repo')
@@ -24,14 +24,13 @@ const addToCartService = async({
         throw new NotFoundError('Product not exists')
     if(foundProduct.productId.product_shop.toString() !== product.shopId)
         throw new BadRequestError('Invalid shop')
-    const userCart = await getOneCartByUserId({ userId })
+    const userCart = await getCartByUserId({ userId })
     if(!userCart){
         return await createCart({
             userId,
             product_shop: [
                 {
                     shopId: product.shopId,              
-                    // shop_discount: null,
                     product_shop: [                       
                         {
                             productId: product.productId,
@@ -62,7 +61,6 @@ const addToCartService = async({
         } else {
             userCart.cart_products.push({
                 shopId: product.shopId,
-                // shop_discount: {},
                 product_shop: [
                     {
                         productId: product.productId,
@@ -96,7 +94,7 @@ const updateCartQuantityService = async({
     userId,
     product
 }) => {
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
     const foundProduct = await getOneSkuById(product.productId)
@@ -128,6 +126,27 @@ const updateCartQuantityService = async({
     return cart
 }
 
+/*
+    [
+        {
+            shopId,
+            shop_discount: {
+                shopId,
+                discountId,
+                code
+            }
+            product_shop: [
+                {
+                    productId,
+                    name,
+                    price,
+                    quantity,
+                    isSelected
+                }
+            ],
+        }
+    ]    
+*/
 const applyDiscountForShopProductService = async({
     userId,
     shopId,
@@ -136,7 +155,7 @@ const applyDiscountForShopProductService = async({
     const foundDiscount = await getOneDiscountCode({ shopId, code: discount_code})
     if(!foundDiscount)
         throw new NotFoundError('Discount not found')
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart)
         throw new NotFoundError('Cart not found')
     if(foundCart.cart_products.cart_count_product === 0)
@@ -145,15 +164,11 @@ const applyDiscountForShopProductService = async({
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
 
-    // return shopInCart
-
-    // const shopTotalPrice = shopInCart.product_shop.map( product => {
-    //     return product.price * product.quantity
-    // })
     const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
         return total + (product.price * product.quantity);
     }, 0);
     
+    //check sản phẩm hợp lệ
     let eligibleProducts = []
     if(foundDiscount.discount_applies_to === 'all'){
         eligibleProducts = shopInCart.product_shop.filter( product => product.isSelected)
@@ -163,11 +178,21 @@ const applyDiscountForShopProductService = async({
             product.isSelected && foundDiscount.discount_productIds.includes(product.productId)
         )
     }
-    if(foundDiscount.discount_max_amount < shopTotalPrice)
+    //check số tiền tối thiểu (nếu bằng o thì bỏ qua)
+    if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0)
         throw new BadRequestError(`Order total doesn't meet the discount minimum order value of ${foundDiscount.discount_min_order_value}.`)
 
-    //check số tiền tối thiểu nữa
-    //check start date and end date
+    //check start date and end date valid
+    const now = new Date()
+    const startDate = new Date(foundDiscount.discount_start_date)
+    const endDate = new Date(foundDiscount.discount_end_date)
+    if(isNaN(startDate) || isNaN(endDate))
+        throw new BadRequestError('Invalid start date or end date')
+    if(now > endDate)
+        throw new BadRequestError('Discount has expired')
+    if(startDate > endDate)
+        throw new BadRequestError('Start date must before end date')
+
     if(eligibleProducts.length === 0)
         throw new BadRequestError('No eliglible product found for discount')
     
@@ -176,32 +201,86 @@ const applyDiscountForShopProductService = async({
         discountId: foundDiscount._id,
         code: foundDiscount.discount_code
     }
-    // const updatedCart = await applyDiscountProductCart({ userId, shopId, discount})
+    const updatedCart = await applyDiscountProductCart({ userId, shopId, discount})
 
-    // return updatedCart
+    return updatedCart
 
-    //chọn 1 sản phẩm để apply discount (sản phẩm có giá cao nhất)
+    //select 1 product to apply discount (highest priced product)
     const productToDiscount = eligibleProducts.reduce( (prev, current) => {
         return (prev.price > current.price ? prev : current)
     })
 
     const discountType = foundDiscount.discount_type
-    const discountValue = 0
-    if(discountType === 'fixed_amount'){
+    let discountValue = 0
+    
+    //get discount amount after apply discount
+    if (discountType === 'fixed_amount') {
         discountValue = foundDiscount.discount_value
     } else {
-        discountValue = (productToDiscount.price * foundDiscount.discount_value) / 100 
+        const percentageDiscount = (productToDiscount.price * foundDiscount.discount_value) / 100
+        const maxAmount = foundDiscount.discount_max_amount
+    
+        discountValue = (maxAmount !== 0 && percentageDiscount > maxAmount) ? maxAmount : percentageDiscount
     }
 
     return discountValue
 }
 
+// const updateDiscountForShopProductService = async({
+//     userId,
+//     shopId,
+//     discount_code
+// }) => {
+//     const foundCart = await getCartByUserId({ userId })
+//     if(!foundCart)
+//         throw new NotFoundError('Cart not found')
+//     if(foundCart.cart_products.cart_count_product === 0)
+//         throw new BadRequestError('Invalid request')
+//     if(discount_code === ''){
+//         //remove discount
+//         return await updateDiscountProductCart({ userId, shopId, discount: null})
+//     }
+//     //change discount
+//     const foundDiscount = await getOneDiscountCode({ shopId, code: discount_code})
+//     if(!foundDiscount)
+//         throw new NotFoundError('Discount not found')
+//     const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
+//     if(!shopInCart)
+//         throw new NotFoundError('Shop in cart not found')
+//     const discount = {
+//         shopId: shopId,
+//         discountId: foundDiscount._id,
+//         code: foundDiscount.discount_code
+//     }
+//     return await updateDiscountProductCart({ userId, shopId, discount})
+// }
+const removeDiscountProductCartService = async({
+    userId,
+    shopId
+}) => {
+    const foundCart = await getCartByUserId({ userId })
+    if(!foundCart)
+        throw new NotFoundError('Cart not found')
+    if(foundCart.cart_products.cart_count_product === 0)
+        throw new BadRequestError('Invalid request')
+    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+    const foundDiscount = await getOneDiscountCode({ shopId, code: shopInCart.shop_discount.code})
+    if(!foundDiscount)
+        throw new NotFoundError('Discount not found')
+    const rmDiscount = await removeDiscountProductCart({ userId, shopId })
+    return rmDiscount
+}
+
+
+//remove one product from cart
 const removeFromCartService = async({
     userId,
     shopId,
     productId
 }) => {
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
     const foundProduct = await getOneSkuById(productId)
@@ -223,7 +302,7 @@ const removeFromCartService = async({
 const clearCartService = async({
     userId
 }) => {
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
     await updateCartCount({ userId, quantity: -foundCart.cart_count_product})
@@ -231,9 +310,11 @@ const clearCartService = async({
 }
 
 const listToCartService = async({
-    userId
+    userId,
+    limit = 1,
+    page = 1
 }) => {
-    const foundCart = await getListProductFromCart({ userId })
+    const foundCart = await getListProductFromCart({ userId, limit, page })
     if(!foundCart)
         throw new NotFoundError('Cart not found')
     return foundCart
@@ -244,7 +325,7 @@ const toggleSelectionProductFromCartService = async({
     shopId,
     productId
 }) => {
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart) 
         throw new NotFoundError('Cart not found')
     const foundProduct = await getOneSkuById(productId)
@@ -259,6 +340,7 @@ const toggleSelectionProductFromCartService = async({
     })
 }
 
+
 module.exports = {
     addToCartService,
     updateCartQuantityService,
@@ -266,5 +348,6 @@ module.exports = {
     clearCartService,
     listToCartService,
     toggleSelectionProductFromCartService,
-    applyDiscountForShopProductService
+    applyDiscountForShopProductService,
+    removeDiscountProductCartService
 }
