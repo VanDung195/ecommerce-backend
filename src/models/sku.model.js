@@ -9,12 +9,11 @@ var skuSchema = new Schema({
     skuId: { type: String, required: true, unique: true},
     sku_tier_idx: { type: Array, default: [0]},
     sku_default: { type: Boolean, default: false},
-    sku_slug: { type: String, default: ''},
     sku_price: { type: Number, required: true, min: 1000},
     sku_stock: { type: Number, required: true, min: 1},
     productId: { type: Schema.Types.ObjectId, ref: 'Spu'},
-    isDraft: { type: Boolean, default: true, index: true, select: false},
-    isPublished: { type: Boolean, default: false, index: true, select: false},
+    isDraft: { type: Boolean, default: false, index: true, select: false},
+    isPublished: { type: Boolean, default: true, index: true, select: false},
     isDeleted: { type: Boolean, default: false}
 }, {
     timestamps: true,
