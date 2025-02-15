@@ -2,10 +2,8 @@
 const JWT = require('jsonwebtoken')
 const { asyncHandler } = require('../helpers/asyncHandler')
 const { AuthFailureError, NotFoundError, ForbiddenError, BadRequestError } = require('../core/error.response')
-const KeyTokenService = require('../services/keytoken.service')
 const { getCache } = require('../models/repositories/cache.repo')
 const { deleteKeyById, findKeyTokenByUserId } = require('../models/repositories/keytoken.repo')
-const { convertToObjectIdMongodb } = require('../utils/index')
 const { CACHE_KEYSTORE } = require('../configs/constant')
 
 const HEADER = {
@@ -13,19 +11,18 @@ const HEADER = {
     AUTHORIZATION: 'authorization'
 }
 
-const authentication = asyncHandler ( async (req, res, next) => {
+const authentication = asyncHandler(async (req, res, next) => {
     const userId = req.headers[HEADER.CLIENT_ID]
     if(!userId) throw new AuthFailureError('Invalid request')
     const keyStore = await findKeyTokenByUserId({
         userId
     })
     if(!keyStore) throw new NotFoundError('Keystore not found')
-
     if(req.url === '/handler_refresh_token') {
         const refreshTokenCache = `${CACHE_KEYSTORE.REFRESH_TOKEN}${userId}`
         const refreshToken = await getCache({ key: refreshTokenCache })
-        if(!refreshToken) throw new AuthFailureError('Something went wrong! Pls relogin')
-
+        // if(!refreshToken) throw new AuthFailureError('Something went wrong! Pls relogin')
+        if(!refreshToken) return next()
         try {
             const decodeUser = JWT.verify(refreshToken, keyStore.publicKey, { algorithms: 'RS256'})
             if(userId !== decodeUser.userId) throw new AuthFailureError('Invalid user1')
@@ -65,14 +62,12 @@ const createTokenPair = ({ payload }, privateKey, publicKey) => {
     try {
         const accessToken = JWT.sign(payload, privateKey, {
             algorithm: 'RS256',
-            // expiresIn: '2 days'
-            expiresIn: '30s'
+            expiresIn: '1 days'
         })
 
         const refreshToken = JWT.sign(payload, privateKey, {
             algorithm: 'RS256',
             expiresIn: '30 days'
-            // expiresIn: '2 days'
         })
 
         return {
