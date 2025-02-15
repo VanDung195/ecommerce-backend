@@ -49,7 +49,8 @@ var orderSchema = new Schema({
     order_payment: { type: paymentSchema, required: true},
     order_products: { type: [orderProductSchema], required: true},
     order_status: { type: String, enum: ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered', 'returned'], default: 'pending'},
-    order_cancellation: { type: cancellationSchema, default: null}
+    order_cancellation: { type: cancellationSchema, default: null},
+    order_note: { type: String, default: ''}
 }, {
     timestamps: {
         createdAt: 'createdOn',
