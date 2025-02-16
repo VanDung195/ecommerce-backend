@@ -1,7 +1,7 @@
 'use strict'
 
 const { NotFoundError, ConflictError, BadRequestError } = require("../core/error.response")
-const { getOneCartByUserId } = require("../models/repositories/cart.repo")
+const { getCartByUserId, getShopInCart } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
 
 /*
@@ -11,10 +11,10 @@ const getRecommendShopDiscountService = async({
     userId,
     shopId,
 }) => {
-    const foundCart = await getOneCartByUserId({ userId })
+    const foundCart = await getCartByUserId({ userId })
     if(!foundCart)
         throw new NotFoundError('Cart not found')
-    const shopInCart = foundCart.cart_products.find(shop => shop.shopId.toString() === shopId)
+    const shopInCart = await getShopInCart({ userId, shopId})
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
     const { products, totalPrice} = shopInCart.product_shop.reduce((acc, product) => {
@@ -109,13 +109,11 @@ const getOneDiscoutByShopService = async({
     return foundDiscount
 }
 
-//freeship discount, flash discount
 const createDiscountByAdmin = async({
 
 }) => {
 
 }
-
 
 const getRecommendPlatformDiscount = async({
 
@@ -123,9 +121,105 @@ const getRecommendPlatformDiscount = async({
 
 }
 
+const getDiscountAmountService = async({
+    userId,
+    shopId = '679dd8efddf5bd2cc2cd5ba7',
+    code = 'PPP',
+    products = ['67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7', '67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7']
+}) => {
+    const foundDiscount = await getOneDiscountCode({ shopId, code})
+    if(!foundDiscount)
+        throw new NotFoundError('Discount not found')
+    const foundCart = await getCartByUserId({ userId })
+    if(!foundCart)
+        throw new NotFoundError('Cart not found')
+    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+    const seletedProducts = {
+        shopId,
+        products: []
+    }
+    shopInCart.product_shop.map( product => {
+        if(products.includes(product.productId)){
+            seletedProducts.products.push(product)
+        }
+    })
+    //check product valid for discount
+    let eligibleProducts = []
+    if(foundDiscount.discount_applies_to === 'all')
+        eligibleProducts = shopInCart.product_shop.map(product => product)
+        
+    if(foundDiscount.discount_applies_to === 'specific'){
+        eligibleProducts = shopInCart.product_shop.filter(product => {
+            foundDiscount.discount_productIds.includes(product.productId)
+        })
+    }
+    if(eligibleProducts.length === 0)
+        throw new BadRequestError('No eligible product found for discount')
+
+    const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
+        return total + product.quantity * product.price
+    }, 0)
+
+    //check minimum amount
+    if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0){
+        throw new BadRequestError(`Order total doesn't meet the discount`)
+    }
+    //check start date and end date valid
+    const now = new Date()
+    const startDate = new Date(foundDiscount.discount_start_date)
+    const endDate = new Date(foundDiscount.discount_end_date)
+    if(isNaN(startDate) || isNaN(endDate))
+        throw new BadRequestError('Invalid start date or end date')
+    if(now > endDate)
+        throw new BadRequestError('Discount has expired')
+    if(startDate > endDate)
+        throw new BadRequestError('Start date must before end date')
+
+    //select 1 product to apply discout (highest priced product)
+    const productToDiscount = eligibleProducts.reduce( (pre, current) => {
+        return (pre.price > current.price ? pre : current)
+    })
+
+    const discountType = foundDiscount.discount_type
+    let discountValue = 0
+    if(discountType === 'fixed_amount'){
+        discountValue = foundDiscount.discount_value
+    } else {
+        const percentageDiscount = (+foundDiscount.discount_value / 100) * productToDiscount.price
+        const maxAmount = foundDiscount.discount_max_amount
+
+        discountValue = (maxAmount !== 0 && percentageDiscount > maxAmount ? maxAmount : percentageDiscount)
+    }
+    return discountValue
+}
+
+/*
+{
+    "shopId": "679dd8efddf5bd2cc2cd5ba7",
+    "product_shop": [
+        {
+            "productId": "67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7",
+            "name": "Áo thun!!!",
+            "price": 1500,
+            "quantity": 2
+        },
+        {
+            "productId": "67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7",
+            "name": "Áo thun đỏ!!!",
+            "price": 1600,
+            "quantity": 2
+        }
+    ]
+}
+
+*/
+
 module.exports = {
     createDiscountByShopService,
     getOneDiscoutByShopService,
     getRecommendShopDiscountService,
-    getAllDiscountByShopService
+    getAllDiscountByShopService,
+    getDiscountAmountService
 }
