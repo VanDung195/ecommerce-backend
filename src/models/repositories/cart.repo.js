@@ -64,7 +64,6 @@ const updateProductQuantityV2 = async ({ cartId, userId, product_shop }) => {
     return cart
 }
 
-
 const getCartByUserId = async ({
     userId,
 }) => {
@@ -73,6 +72,7 @@ const getCartByUserId = async ({
     })
     return cart
 }
+
 const updateCartCount = async ({
     userId,
     quantity
@@ -533,14 +533,44 @@ const removeDiscountProductCart = async({
     return cart
 }
 
-const checkProductFromCart = async({
+const getShopInCart = async({
     userId,
     shopId,
-    productId
 }) => {
-    // const products = CART.aggregate([
-
-    // ])
+    const shopInCart = await CART.aggregate([
+        {
+            $match: {
+                userId: convertToObjectIdMongodb(userId)
+            }
+        },
+        {
+            $project: {
+                cart_products: {
+                    $filter: {
+                        input: '$cart_products',
+                        as: 'cart_product',
+                        cond: {
+                            $eq: ['$$cart_product.shopId', convertToObjectIdMongodb(shopId)]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $unwind: '$cart_products'
+        },
+        {
+            $project: {
+                _id: 0
+            }
+        },
+        {
+            $replaceRoot: {
+                newRoot: '$cart_products'
+            }
+        }
+    ])
+    return shopInCart[0]
 }
 
 module.exports = {
@@ -555,5 +585,5 @@ module.exports = {
     removeCartShop,
     applyDiscountProductCart,
     removeDiscountProductCart,
-    checkProductFromCart
+    getShopInCart
 }
