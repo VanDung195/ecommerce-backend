@@ -3,6 +3,7 @@
 const SKU = require('../sku.model')
 const { convertToObjectIdMongodb, unSelectData } = require('../../utils/index')
 const { addStockToInventory } = require('./inventory.repo')
+const { findOne } = require('../cart.model')
 
 const createSku = async({
     spuId,
@@ -179,7 +180,7 @@ const checkSkuByServer = async({
     productId,
     listSku
 }) => {
-    const checkSpus = await Promise.all(
+    const checkSkus = await Promise.all(
         listSku.map( async sku => {
             const foundSku = await getOneSku({
                 spuId: productId,
@@ -190,7 +191,24 @@ const checkSkuByServer = async({
             }
         })
     )
-    return checkSpus
+    return checkSkus
+}
+
+const checkSkuByServerV2 = async({
+    listSku
+}) => {
+    return await Promise.all(
+        listSku.map( async sku => {
+            const foundSku = await SKU.findOne({
+                skuId: sku.productId,
+                sku_price: sku.price
+            }).lean()
+            // return foundSku ? foundSku : undefined
+            if(foundSku){
+                return foundSku
+            }
+        })
+    )
 }
 
 const updateListSku = async ({ 
@@ -421,7 +439,7 @@ const getOneSkuById = async(skuId) => {
     return await SKU.findOne({
             skuId
     })
-    .populate('productId', 'product_shop -_id')
+    .populate('productId', 'product_shop product_name -_id')
     .lean()
 }
 
@@ -446,5 +464,6 @@ module.exports = {
     deleteOneSku,
     setDefaultSku,
     unsetDefaultSku,
-    updateSkuTierIdx
+    updateSkuTierIdx,
+    checkSkuByServerV2
 }
