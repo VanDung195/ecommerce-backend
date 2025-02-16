@@ -36,7 +36,6 @@ const addToCartService = async({
                             productId: product.productId,
                             name: foundProduct.productId.product_name,
                             price: foundProduct.sku_price,
-                            isSelected: false,
                             quantity: product.quantity
                         }
                     ]
@@ -55,7 +54,6 @@ const addToCartService = async({
                 productId: product.productId,
                 name: foundProduct.productId.product_name,
                 price: foundProduct.sku_price,
-                isSelected: false,
                 quantity: product.quantity
             })
         } else {
@@ -66,7 +64,6 @@ const addToCartService = async({
                         productId: product.productId,
                         name: foundProduct.productId.product_name,
                         price: foundProduct.sku_price,
-                        isSelected: false,
                         quantity: product.quantity
                     }
                 ]
@@ -130,23 +127,18 @@ const updateCartQuantityService = async({
     [
         {
             shopId,
-            shop_discount: {
-                shopId,
-                discountId,
-                code
-            }
             product_shop: [
                 {
                     productId,
                     name,
                     price,
                     quantity,
-                    isSelected
                 }
             ],
         }
     ]    
 */
+/*
 const applyDiscountForShopProductService = async({
     userId,
     shopId,
@@ -226,34 +218,6 @@ const applyDiscountForShopProductService = async({
     return discountValue
 }
 
-// const updateDiscountForShopProductService = async({
-//     userId,
-//     shopId,
-//     discount_code
-// }) => {
-//     const foundCart = await getCartByUserId({ userId })
-//     if(!foundCart)
-//         throw new NotFoundError('Cart not found')
-//     if(foundCart.cart_products.cart_count_product === 0)
-//         throw new BadRequestError('Invalid request')
-//     if(discount_code === ''){
-//         //remove discount
-//         return await updateDiscountProductCart({ userId, shopId, discount: null})
-//     }
-//     //change discount
-//     const foundDiscount = await getOneDiscountCode({ shopId, code: discount_code})
-//     if(!foundDiscount)
-//         throw new NotFoundError('Discount not found')
-//     const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
-//     if(!shopInCart)
-//         throw new NotFoundError('Shop in cart not found')
-//     const discount = {
-//         shopId: shopId,
-//         discountId: foundDiscount._id,
-//         code: foundDiscount.discount_code
-//     }
-//     return await updateDiscountProductCart({ userId, shopId, discount})
-// }
 const removeDiscountProductCartService = async({
     userId,
     shopId
@@ -272,7 +236,7 @@ const removeDiscountProductCartService = async({
     const rmDiscount = await removeDiscountProductCart({ userId, shopId })
     return rmDiscount
 }
-
+*/
 
 //remove one product from cart
 const removeFromCartService = async({
@@ -320,6 +284,7 @@ const listToCartService = async({
     return foundCart
 }
 
+/*
 const toggleSelectionProductFromCartService = async({
     userId,
     shopId,
@@ -339,6 +304,31 @@ const toggleSelectionProductFromCartService = async({
         productId
     })
 }
+*/
+
+//lấy ra các sản phẩm trong giỏ hàng, chỉ các sản phẩm được chọn
+const getSeletedProductFromCartService = async({
+    userId,
+    shopId,
+    products
+}) => {
+    const cart = await getCartByUserId({ userId })
+    if(!cart)
+        throw new NotFoundError('Cart not found')
+    const shopInCart = cart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+    const seletedProducts = {
+        shopId,
+        products: []
+    }
+    shopInCart.product_shop.map( product => {
+        if(products.includes(product.productId)){
+            seletedProducts.products.push(product)
+        }
+    })
+    return seletedProducts
+}
 
 
 module.exports = {
@@ -347,7 +337,5 @@ module.exports = {
     removeFromCartService,
     clearCartService,
     listToCartService,
-    toggleSelectionProductFromCartService,
-    applyDiscountForShopProductService,
-    removeDiscountProductCartService
+    getSeletedProductFromCartService
 }
