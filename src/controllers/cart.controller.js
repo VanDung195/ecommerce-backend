@@ -7,7 +7,11 @@ class CartController{
     listToCart = async(req, res, next) => {
         new SuccessResponse({
             message: 'Get list product successfully',
-            metadata: await listToCartService({ userId: req.user.userId })
+            metadata: await listToCartService({ 
+                userId: req.user.userId,
+                limit: +req.query.limit,
+                page: +req.query.page
+            })
         }).send(res)
     }
 
@@ -48,6 +52,7 @@ class CartController{
         }).send(res)
     }
 
+    /*
     toggleSelectionProductFromCart = async(req, res, next) => {
         const { productId, shopId } = req.body
         new SuccessResponse({
@@ -79,6 +84,7 @@ class CartController{
             })
         }).send(res)
     }
+    */
 }
 
 module.exports = new CartController()
