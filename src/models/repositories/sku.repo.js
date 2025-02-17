@@ -1,7 +1,7 @@
 'use strict'
 
 const SKU = require('../sku.model')
-const { convertToObjectIdMongodb, unSelectData } = require('../../utils/index')
+const { convertToObjectIdMongodb, unSelectData, getSelectData } = require('../../utils/index')
 const { addStockToInventory } = require('./inventory.repo')
 const { findOne } = require('../cart.model')
 
@@ -52,6 +52,14 @@ const getAllSkuBySpuId = async({
     }).select(unSelectData(unSelect)).lean()
     
     return sku
+}
+
+const getAllSkuByListSkuId = async({
+    skuIds = [],
+    selectData = []
+}) => {
+    const skus = await SKU.find({ skuId: { $in: skuIds}}).select(getSelectData(selectData)).lean()
+    return skus
 }
 
 const getOneSku = async({
@@ -465,5 +473,6 @@ module.exports = {
     setDefaultSku,
     unsetDefaultSku,
     updateSkuTierIdx,
-    checkSkuByServerV2
+    checkSkuByServerV2,
+    getAllSkuByListSkuId
 }
