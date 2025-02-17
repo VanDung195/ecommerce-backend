@@ -77,6 +77,71 @@ const getOrderService = async({
         ]
     }
 */
+const checkoutOrderReviewServiceV2 = async({
+    userId,
+    shop_order_ids = []
+}) => {
+    const foundCart = await getCartByUserId({ userId })
+    if(!foundCart)
+        throw new NotFoundError('Cart not found')
+    const item_checkout = []
+    let totalPrice = 0
+    let totalDiscount = 0
+    let totalCheckout = 0
+    let feeShip = 0
+
+    for(let i = 0; i < shop_order_ids.length; i++){
+        const shopId = shop_order_ids[i].shopId
+        const products = shop_order_ids[i].item_products.map(product => product.productId);
+        const seletedProductFromCart = await getSeletedProductFromCartService({ userId, shopId, products })
+
+        if(shop_order_ids[i].item_products.length !== seletedProductFromCart.products.length)
+            throw new BadRequestError('Some product invalid')
+
+        const checkProductServer = await checkSkuByServerV2({ listSku: seletedProductFromCart.products})
+        //check product valid (price)
+        const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
+        if(hasUndefinedProduct){
+            throw new BadRequestError('Order wrong')
+        }
+        const discount = shop_order_ids[i].shop_discount
+        if(shopId !== discount.shopId)
+            throw new BadRequestError('Order wrong')
+        let discountAmount = 0
+        if(discount.code !== null){
+            discountAmount = await getDiscountAmountService({ userId, shopId: shopId, code: discount.code, products})
+        }
+        let price_raw = seletedProductFromCart.products.reduce((acc, product) => {
+            return acc + product.price * product.quantity
+        }, 0)
+        const price_apply_discount = price_raw - discountAmount
+        //itemCheckout
+        item_checkout.push({
+            shopId,
+            shop_discount: discount,
+            price_raw,
+            price_apply_discount,
+            item_products: seletedProductFromCart.products
+        })
+
+        totalPrice += seletedProductFromCart.products.reduce((acc, product) => {
+            return acc + product.price * product.quantity
+        }, 0)   
+        totalDiscount += discountAmount
+    }
+    totalCheckout = totalPrice - totalDiscount
+    const checkout_order = {
+        totalPrice,
+        feeShip,
+        totalDiscount,
+        totalCheckout
+    }
+    return {
+        checkout_order,
+        item_checkout
+    }
+}
+
 const checkoutOrderReviewService = async({
     userId,
     shop_order_ids = []
@@ -84,64 +149,63 @@ const checkoutOrderReviewService = async({
     const foundCart = await getCartByUserId({ userId })
     if(!foundCart)
         throw new NotFoundError('Cart not found')
-    const checkout_order = {
-        totalPrice: 0, //tong tien hang
-        feeShip: 0, //phí vận chuyển
-        totalDiscount: 0, //tổng giảm giá bao nhiêu trên đơn hàng (nó giảm bao nhiêu)
-        totalCheckout: 0 //tổng thanh toán
-    }
-    // const itemCheckout = {
-    //     shopId,
-    //     shop_discounts,
-    //     priceRaw: checkoutPrice, //tong gia tri truoc khi giam gia
-    //     priceApplyDiscount: checkoutPrice,
-    //     item_products: checkProductServer
-    // }
-    const itemCheckout = {}
+    const item_checkout = []
     let totalPrice = 0
     let totalDiscount = 0
     let totalCheckout = 0
+    let feeShip = 0
 
     for(let i = 0; i < shop_order_ids.length; i++){
         const shopId = shop_order_ids[i].shopId
         const products = shop_order_ids[i].item_products.map(product => product.productId);
         const seletedProductFromCart = await getSeletedProductFromCartService({ userId, shopId, products })
-        console.log(seletedProductFromCart);
 
+        if(shop_order_ids[i].item_products.length !== seletedProductFromCart.products.length)
+            throw new BadRequestError('Some product invalid')
+        
         const checkProductServer = await checkSkuByServerV2({ listSku: seletedProductFromCart.products})
-
         //check product valid (price)
         const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
         if(hasUndefinedProduct){
             throw new BadRequestError('Order wrong')
         }
-        
-        
-
-        //get shopid
-        const skuId = shop_order_ids[i].item_products[0].productId
-        const spuId = skuId.split('-')[0].slice(0, -3)
-        
-        // const check = await checkSkuByServer({ })
-
-        const shop = shop_order_ids[i].shopId
         const discount = shop_order_ids[i].shop_discount
         let discountAmount = 0
-        if(discount.code !== null){
-            discountAmount = await getDiscountAmountService({ userId, shopId: shop, code: discount.code, products})
+        if(discount !== null){
+            if(shopId !== discount.shopId)
+                throw new BadRequestError('Order wrong')
+            discountAmount = await getDiscountAmountService({ userId, shopId: shopId, code: discount.code, products})
         }
-    }
-    //check product from server
-    //check discount
-    //apply discount
-    //get product from cart
-    
-    // const productFromCart = await getSeletedProductFromCartService({ userId })
-    // // return productFromCart
-    // return productFromCart
-    // return foundCart
-}
+        let price_raw = seletedProductFromCart.products.reduce((acc, product) => {
+            return acc + product.price * product.quantity
+        }, 0)
+        const price_apply_discount = price_raw - discountAmount
+        //itemCheckout
+        item_checkout.push({
+            shopId,
+            shop_discount: discount,
+            price_raw,
+            price_apply_discount,
+            item_products: seletedProductFromCart.products
+        })
 
+        totalPrice += seletedProductFromCart.products.reduce((acc, product) => {
+            return acc + product.price * product.quantity
+        }, 0)   
+        totalDiscount += discountAmount
+    }
+    totalCheckout = totalPrice - totalDiscount
+    const checkout_order = {
+        totalPrice,
+        feeShip,
+        totalDiscount,
+        totalCheckout
+    }
+    return {
+        checkout_order,
+        item_checkout
+    }
+}
 const cancelOrderService = async({
 
 }) => {
