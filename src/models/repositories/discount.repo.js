@@ -108,7 +108,8 @@ const getRecommendShopDiscount = async ({ userId, shopId, products }) => {
 };
 
 //cần check số tiền tối thiểu 
-const getRecommendDiscount = async({ userId, shopId, products, totalPrice}) => {
+const getRecommendDiscount = async({ userId, shopId, products}) => {
+    const productIds = products.map(product => product.productId)
     const now = new Date()
     const discounts = await DISCOUNT.aggregate([
         {
@@ -120,17 +121,13 @@ const getRecommendDiscount = async({ userId, shopId, products, totalPrice}) => {
                 discount_end_date: {
                     $gte: now // >=
                 },
-                // $or: [
-                //     { discount_min_order_value: 0},
-                //     { discount_min_order_value: { $lte: totalPrice}}
-                // ]
             }
         },
         {
             $addFields: {
                 products: products,
+                productIds: productIds,
                 userId: userId,
-                totalPrice: totalPrice
             }
         },
         {
@@ -149,12 +146,33 @@ const getRecommendDiscount = async({ userId, shopId, products, totalPrice}) => {
                         if: { $eq: ['$discount_applies_to', 'specific']},
                         then: {
                             $filter: {
-                                input: '$products',
+                                input: '$productIds',
                                 as: 'product',
                                 cond: { $in: ['$$product', '$discount_productIds']}
                             }
                         }, 
-                        else: '$products'
+                        else: '$productIds'
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                applicable_products_total_price: {
+                    $sum: {
+                        $map: {
+                            input: {
+                                $filter: {
+                                    input: '$products',
+                                    as: 'product',
+                                    cond: { $in: ['$$product.productId', '$applicable_products']}
+                                }
+                            },
+                            as: 'p',
+                            in: {
+                                $multiply: ['$$p.quantity', '$$p.price']
+                            }
+                        }
                     }
                 }
             }
@@ -175,20 +193,27 @@ const getRecommendDiscount = async({ userId, shopId, products, totalPrice}) => {
                 discount_min_order_value: 1,
                 discount_applies_to: 1,
                 discount_productIds: 1,
-                products_input: products,
+                products_input: productIds,
                 discount_user_used: 1,
                 user_usage_count: 1,
                 'is_valid': {
                     $and: [
                         { $lt: ['$user_usage_count', '$discount_max_use_per_user'] },
                         { $gt: [{ $size: '$applicable_products' }, 0] },
-                        { $lte: ['$discount_min_order_value', totalPrice]},
-                        { $lte: ['$discount_uses_count', '$discount_max_uses']}
+                        { $lt: ['$discount_uses_count', '$discount_max_uses']},
+                        {
+                            $or: [
+                                { $lte: ['$discount_min_order_value', '$applicable_products_total_price'] },
+                                { $eq: ['$discount_min_order_value', 0] }
+                            ]
+                        }
                     ]
                 },
                 applicable_products: 1,
                 userId: 1,
-                totalPrice: 1
+                products: 1,
+                applicable_products_total_price: 1
+                // totalPrice: 1
             }
         }
     ])
@@ -223,6 +248,21 @@ const getOneDiscountCode = async ({
     return discount
 }
 
+const checkDiscountCode = async({
+    shopId,
+    code,
+}) => {
+
+}
+
+const getDicountAmont = async({
+    userId,
+    code,
+    shopId,
+    product
+}) => {
+    
+}
 module.exports = {
     getOneDiscountCode,
     createDiscountByShop,
