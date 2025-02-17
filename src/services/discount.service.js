@@ -2,7 +2,8 @@
 
 const { NotFoundError, ConflictError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getShopInCart } = require("../models/repositories/cart.repo")
-const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
+const { getOneDiscountCode, createDiscountByShop, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
+const { getSeletedProductFromCartService } = require("./cart.service")
 
 /*
     truyền vào các products của shopId và check xem discount_applies_to === 'specific' thì tiến hành check xem discount_productIds
@@ -10,21 +11,16 @@ const { getOneDiscountCode, createDiscountByShop, getRecommendShopDiscount, getR
 const getRecommendShopDiscountService = async({
     userId,
     shopId,
+    products = []
 }) => {
-    const foundCart = await getCartByUserId({ userId })
-    if(!foundCart)
-        throw new NotFoundError('Cart not found')
-    const shopInCart = await getShopInCart({ userId, shopId})
-    if(!shopInCart)
-        throw new NotFoundError('Shop in cart not found')
-    const { products, totalPrice} = shopInCart.product_shop.reduce((acc, product) => {
-        if(product.isSelected){
-            acc.products.push(product.productId)
-            acc.totalPrice += product.quantity * product.price
-        }
-        return acc
-    }, { products: [], totalPrice: 0})
-    const discount = await getRecommendDiscount({ userId, shopId, products, totalPrice})
+    // const foundCart = await getCartByUserId({ userId })
+    // if(!foundCart)
+    //     throw new NotFoundError('Cart not found')
+    // const shopInCart = await getShopInCart({ userId, shopId})
+    //lấy ra giá tiền và só lượng của sản phẩm
+    const seletedProducts = await getSeletedProductFromCartService({ userId, shopId, products})
+    console.log(seletedProducts)
+    const discount = await getRecommendDiscount({ userId, shopId, products: seletedProducts.products})
     return discount
 }
 
@@ -123,9 +119,9 @@ const getRecommendPlatformDiscount = async({
 
 const getDiscountAmountService = async({
     userId,
-    shopId = '679dd8efddf5bd2cc2cd5ba7',
-    code = 'PPP',
-    products = ['67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7', '67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7']
+    shopId,
+    code,
+    products
 }) => {
     const foundDiscount = await getOneDiscountCode({ shopId, code})
     if(!foundDiscount)
@@ -133,13 +129,14 @@ const getDiscountAmountService = async({
     const foundCart = await getCartByUserId({ userId })
     if(!foundCart)
         throw new NotFoundError('Cart not found')
-    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    const shopInCart = await getShopInCart({ userId, shopId })
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
     const seletedProducts = {
         shopId,
         products: []
     }
+    console.log(foundDiscount)
     shopInCart.product_shop.map( product => {
         if(products.includes(product.productId)){
             seletedProducts.products.push(product)
@@ -176,7 +173,6 @@ const getDiscountAmountService = async({
         throw new BadRequestError('Discount has expired')
     if(startDate > endDate)
         throw new BadRequestError('Start date must before end date')
-
     //select 1 product to apply discout (highest priced product)
     const productToDiscount = eligibleProducts.reduce( (pre, current) => {
         return (pre.price > current.price ? pre : current)
@@ -189,7 +185,6 @@ const getDiscountAmountService = async({
     } else {
         const percentageDiscount = (+foundDiscount.discount_value / 100) * productToDiscount.price
         const maxAmount = foundDiscount.discount_max_amount
-
         discountValue = (maxAmount !== 0 && percentageDiscount > maxAmount ? maxAmount : percentageDiscount)
     }
     return discountValue
