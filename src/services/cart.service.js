@@ -1,10 +1,10 @@
 'use strict'
 
 const { BadRequestError, NotFoundError } = require('../core/error.response')
-const { getCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart, updateDiscountProductCart, removeDiscountProductCart } = require("../models/repositories/cart.repo")
+const { getCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart, updateDiscountProductCart, removeDiscountProductCart, getShopInCart } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode } = require('../models/repositories/discount.repo')
 const { findShopById, findShopByShopId } = require('../models/repositories/shop.repo')
-const { getOneSkuById } = require('../models/repositories/sku.repo')
+const { getOneSkuById, getAllSkuByListSkuId } = require('../models/repositories/sku.repo')
 
 /*
     - product: 
@@ -307,7 +307,7 @@ const toggleSelectionProductFromCartService = async({
 */
 
 //lấy ra các sản phẩm trong giỏ hàng, chỉ các sản phẩm được chọn
-const getSeletedProductFromCartService = async({
+const getSeletedProductFromCartServiceV2 = async({
     userId,
     shopId,
     products
@@ -315,7 +315,7 @@ const getSeletedProductFromCartService = async({
     const cart = await getCartByUserId({ userId })
     if(!cart)
         throw new NotFoundError('Cart not found')
-    const shopInCart = cart.cart_products.find( shop => shop.shopId.toString() === shopId)
+    const shopInCart = await getShopInCart({ userId, shopId})
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
     const seletedProducts = {
@@ -329,6 +329,36 @@ const getSeletedProductFromCartService = async({
     })
     return seletedProducts
 }
+
+const getSeletedProductFromCartService = async({
+    userId,
+    shopId,
+    products
+}) => {
+    const cart = await getCartByUserId({ userId })
+    if(!cart)
+        throw new NotFoundError('Cart not found')
+    const shopInCart = await getShopInCart({ userId, shopId})
+    if(!shopInCart)
+        throw new NotFoundError('Shop in cart not found')
+    const seletedProducts = {
+        shopId,
+        products: []
+    }
+    seletedProducts.products = shopInCart.product_shop.filter(product =>
+        products.includes(product.productId)
+    )
+    let seletedProductIds = seletedProducts.products.map(product => product.productId)
+    const productData = await getAllSkuByListSkuId({ skuIds: seletedProductIds, selectData: ['skuId', 'sku_price'] })
+    const priceMap = new Map(productData.map(product => [product.skuId, product.sku_price]))
+    seletedProducts.products = seletedProducts.products.map(product => ({
+        ...product,
+        price: priceMap.get(product.productId) || 0
+    }))
+
+    return seletedProducts
+}
+
 
 
 module.exports = {
