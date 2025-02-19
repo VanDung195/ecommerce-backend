@@ -4,7 +4,7 @@ const { BadRequestError, NotFoundError } = require('../core/error.response')
 const { getCartByUserId, createCart, updateProductQuantity, removeFromCart, clearCart, updateCartCount, getListProductFromCart, selectProductFromCart, updateProductQuantityV2, removeCartShop, applyDiscountProductCart, updateDiscountProductCart, removeDiscountProductCart, getShopInCart } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode } = require('../models/repositories/discount.repo')
 const { findShopById, findShopByShopId } = require('../models/repositories/shop.repo')
-const { getOneSkuById, getAllSkuByListSkuId } = require('../models/repositories/sku.repo')
+const { getOneSkuById, getSkusByListSkuId } = require('../models/repositories/sku.repo')
 
 /*
     - product: 
@@ -330,33 +330,46 @@ const getSeletedProductFromCartServiceV2 = async({
     return seletedProducts
 }
 
-const getSeletedProductFromCartService = async({
+const getSelectedProductFromCartService = async({
     userId,
     shopId,
     products
 }) => {
-    const cart = await getCartByUserId({ userId })
-    if(!cart)
-        throw new NotFoundError('Cart not found')
     const shopInCart = await getShopInCart({ userId, shopId})
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
-    const seletedProducts = {
-        shopId,
+    const foundShop = await findShopByShopId(shopId)
+    if(!foundShop)
+        throw new NotFoundError('Shop not found')
+    let selectedProducts = {
+        shop: {
+            shopId: foundShop._id, 
+            name: foundShop.shop_name,
+            logo: foundShop.shop_logo
+        },
         products: []
     }
-    seletedProducts.products = shopInCart.product_shop.filter(product =>
+    selectedProducts.products = shopInCart.product_shop.filter(product =>
         products.includes(product.productId)
     )
-    let seletedProductIds = seletedProducts.products.map(product => product.productId)
-    const productData = await getAllSkuByListSkuId({ skuIds: seletedProductIds, selectData: ['skuId', 'sku_price'] })
-    const priceMap = new Map(productData.map(product => [product.skuId, product.sku_price]))
-    seletedProducts.products = seletedProducts.products.map(product => ({
-        ...product,
-        price: priceMap.get(product.productId) || 0
-    }))
+    const selectedProductIds = selectedProducts.products.map(product => product.productId);
+    const productData = await getSkusByListSkuId({ skuIds: selectedProductIds, selectData: ['skuId', 'sku_price', 'sku_tier_idx', 'sku_stock', 'productId'] })
+    const skuDataMap = productData.reduce((map, sku) => {
+        map.set(sku.skuId, sku);
+        return map;
+    }, new Map());
+    selectedProducts.products = selectedProducts.products.map(product => {
+        const sku = skuDataMap.get(product.productId) || {};
+        return {
+          ...product,
+          price: sku.sku_price,
+          tier_idx: sku.sku_tier_idx,
+          stock: sku.sku_stock,
+          product_info_id: sku.productId,
+        };
+      });
 
-    return seletedProducts
+    return selectedProducts
 }
 
 
@@ -367,5 +380,5 @@ module.exports = {
     removeFromCartService,
     clearCartService,
     listToCartService,
-    getSeletedProductFromCartService
+    getSelectedProductFromCartService
 }
