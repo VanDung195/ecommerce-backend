@@ -2346,7 +2346,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"shop\": \"679dd8efddf5bd2cc2cd5ba7\"\r\n}",
+					"raw": "{\r\n    \"shop\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n    \"products\": [\r\n        \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\",\r\n        \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2452,6 +2452,94 @@
 						"api",
 						"cart",
 						"remove_discount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (USER): checkout",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/checkout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"checkout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DISCOUNT (USER TESST): get discount amount TEST",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/discount/discount_amount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"discount",
+						"discount_amount"
 					]
 				}
 			},
