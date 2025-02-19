@@ -19,7 +19,6 @@ const getRecommendShopDiscountService = async({
     // const shopInCart = await getShopInCart({ userId, shopId})
     //lấy ra giá tiền và só lượng của sản phẩm
     const seletedProducts = await getSeletedProductFromCartService({ userId, shopId, products})
-    console.log(seletedProducts)
     const discount = await getRecommendDiscount({ userId, shopId, products: seletedProducts.products})
     return discount
 }
@@ -132,37 +131,6 @@ const getDiscountAmountService = async({
     const shopInCart = await getShopInCart({ userId, shopId })
     if(!shopInCart)
         throw new NotFoundError('Shop in cart not found')
-    const seletedProducts = {
-        shopId,
-        products: []
-    }
-    console.log(foundDiscount)
-    shopInCart.product_shop.map( product => {
-        if(products.includes(product.productId)){
-            seletedProducts.products.push(product)
-        }
-    })
-    //check product valid for discount
-    let eligibleProducts = []
-    if(foundDiscount.discount_applies_to === 'all')
-        eligibleProducts = shopInCart.product_shop.map(product => product)
-        
-    if(foundDiscount.discount_applies_to === 'specific'){
-        eligibleProducts = shopInCart.product_shop.filter(product => {
-            foundDiscount.discount_productIds.includes(product.productId)
-        })
-    }
-    if(eligibleProducts.length === 0)
-        throw new BadRequestError('No eligible product found for discount')
-
-    const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
-        return total + product.quantity * product.price
-    }, 0)
-
-    //check minimum amount
-    if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0){
-        throw new BadRequestError(`Order total doesn't meet the discount`)
-    }
     //check start date and end date valid
     const now = new Date()
     const startDate = new Date(foundDiscount.discount_start_date)
@@ -173,11 +141,40 @@ const getDiscountAmountService = async({
         throw new BadRequestError('Discount has expired')
     if(startDate > endDate)
         throw new BadRequestError('Start date must before end date')
+    if(foundDiscount.discount_uses_count === foundDiscount.discount_max_uses){
+        throw new BadRequestError('Disount code has reached its usage limit')
+    }
+    const seletedProducts = {
+        shopId,
+        products: []
+    }
+    shopInCart.product_shop.map( product => {
+        if(products.includes(product.productId)){
+            seletedProducts.products.push(product)
+        }
+    })
+    //check product valid for discount
+    let eligibleProducts = []
+    if(foundDiscount.discount_applies_to === 'all')
+        eligibleProducts = shopInCart.product_shop.map(product => product)
+    if(foundDiscount.discount_applies_to === 'specific'){
+        eligibleProducts = shopInCart.product_shop.filter(product => {
+            foundDiscount.discount_productIds.includes(product.productId)
+        })
+    }
+    if(eligibleProducts.length === 0)
+        throw new BadRequestError('No eligible product found for discount')
+    const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
+        return total + product.quantity * product.price
+    }, 0)
+    //check minimum amount
+    if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0){
+        throw new BadRequestError(`Order total doesn't meet the discount`)
+    }
     //select 1 product to apply discout (highest priced product)
     const productToDiscount = eligibleProducts.reduce( (pre, current) => {
         return (pre.price > current.price ? pre : current)
     })
-
     const discountType = foundDiscount.discount_type
     let discountValue = 0
     if(discountType === 'fixed_amount'){
