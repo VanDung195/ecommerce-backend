@@ -2,8 +2,10 @@
 
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart } = require("../models/repositories/cart.repo")
-const { checkSkuByServer, checkSkuByServerV2 } = require("../models/repositories/sku.repo")
-const { getSeletedProductFromCartService } = require("./cart.service")
+const { getShopByShopIds } = require("../models/repositories/shop.repo")
+const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
+const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
+const { getSelectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 
 //USER
@@ -93,12 +95,12 @@ const checkoutOrderReviewServiceV2 = async({
     for(let i = 0; i < shop_order_ids.length; i++){
         const shopId = shop_order_ids[i].shopId
         const products = shop_order_ids[i].item_products.map(product => product.productId);
-        const seletedProductFromCart = await getSeletedProductFromCartService({ userId, shopId, products })
+        const selectedProductFromCart = await getselectedProductFromCartService({ userId, shopId, products })
 
-        if(shop_order_ids[i].item_products.length !== seletedProductFromCart.products.length)
+        if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
             throw new BadRequestError('Some product invalid')
 
-        const checkProductServer = await checkSkuByServerV2({ listSku: seletedProductFromCart.products})
+        const checkProductServer = await checkSkuByServerV2({ listSku: selectedProductFromCart.products})
         //check product valid (price)
         const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
         if(hasUndefinedProduct){
@@ -111,7 +113,7 @@ const checkoutOrderReviewServiceV2 = async({
         if(discount.code !== null){
             discountAmount = await getDiscountAmountService({ userId, shopId: shopId, code: discount.code, products})
         }
-        let price_raw = seletedProductFromCart.products.reduce((acc, product) => {
+        let price_raw = selectedProductFromCart.products.reduce((acc, product) => {
             return acc + product.price * product.quantity
         }, 0)
         const price_apply_discount = price_raw - discountAmount
@@ -121,10 +123,10 @@ const checkoutOrderReviewServiceV2 = async({
             shop_discount: discount,
             price_raw,
             price_apply_discount,
-            item_products: seletedProductFromCart.products
+            item_products: selectedProductFromCart.products
         })
 
-        totalPrice += seletedProductFromCart.products.reduce((acc, product) => {
+        totalPrice += selectedProductFromCart.products.reduce((acc, product) => {
             return acc + product.price * product.quantity
         }, 0)   
         totalDiscount += discountAmount
@@ -141,7 +143,6 @@ const checkoutOrderReviewServiceV2 = async({
         item_checkout
     }
 }
-
 const checkoutOrderReviewService = async({
     userId,
     shop_order_ids = []
@@ -154,16 +155,17 @@ const checkoutOrderReviewService = async({
     let totalDiscount = 0
     let totalCheckout = 0
     let feeShip = 0
-
+    let productIds = [] //sku
+    let spuIds = new Set() //spu
     for(let i = 0; i < shop_order_ids.length; i++){
         const shopId = shop_order_ids[i].shopId
         const products = shop_order_ids[i].item_products.map(product => product.productId);
-        const seletedProductFromCart = await getSeletedProductFromCartService({ userId, shopId, products })
+        const selectedProductFromCart = await getSelectedProductFromCartService({ userId, shopId, products })
 
-        if(shop_order_ids[i].item_products.length !== seletedProductFromCart.products.length)
+        if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
             throw new BadRequestError('Some product invalid')
         
-        const checkProductServer = await checkSkuByServerV2({ listSku: seletedProductFromCart.products})
+        const checkProductServer = await checkSkuByServerV2({ listSku: selectedProductFromCart.products})
         //check product valid (price)
         const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
         if(hasUndefinedProduct){
@@ -176,20 +178,24 @@ const checkoutOrderReviewService = async({
                 throw new BadRequestError('Order wrong')
             discountAmount = await getDiscountAmountService({ userId, shopId: shopId, code: discount.code, products})
         }
-        let price_raw = seletedProductFromCart.products.reduce((acc, product) => {
+        let price_raw = selectedProductFromCart.products.reduce((acc, product) => {
             return acc + product.price * product.quantity
         }, 0)
         const price_apply_discount = price_raw - discountAmount
+
+        //get productIds
+        selectedProductFromCart.products.forEach(product => productIds.push(product.productId));
+
         //itemCheckout
         item_checkout.push({
-            shopId,
+            shop: selectedProductFromCart.shop,
             shop_discount: discount,
             price_raw,
             price_apply_discount,
-            item_products: seletedProductFromCart.products
+            item_products: selectedProductFromCart.products
         })
 
-        totalPrice += seletedProductFromCart.products.reduce((acc, product) => {
+        totalPrice += selectedProductFromCart.products.reduce((acc, product) => {
             return acc + product.price * product.quantity
         }, 0)   
         totalDiscount += discountAmount
@@ -201,9 +207,13 @@ const checkoutOrderReviewService = async({
         totalDiscount,
         totalCheckout
     }
+    const skus = await getSkusByListSkuId({ skuIds: productIds, selectData: ['skuId', 'productId'] })
+    skus.forEach(sku => spuIds.add(sku.productId.toString()))
+    const spus = await getSpusByListSpuId({ spuIds: [...spuIds], selectData: ['_id', 'product_name', 'product_thumb', 'product_shop', 'product_variations'] })
     return {
         checkout_order,
-        item_checkout
+        item_checkout,
+        product_info: spus,
     }
 }
 const cancelOrderService = async({
