@@ -1,6 +1,6 @@
 'use strict'
 
-const { getSelectData } = require('../../utils')
+const { getSelectData, convertToObjectIdMongodb } = require('../../utils')
 const SHOP = require('../shop.model')
 
 const createShop = async ({
@@ -48,9 +48,14 @@ const findShopByUserId = async({
 }
 
 const findShopById = async({
-    shopId
+    userId
 }) => {
-    const foundShop = await SHOP.findOne({ _id: shopId})
+    const foundShop = await SHOP.findOne({ userId: userId})
+    return foundShop
+}
+
+const findShopByShopId = async(id) => {
+    const foundShop = await SHOP.findOne({ _id: convertToObjectIdMongodb(id)})
     return foundShop
 }
 
@@ -75,6 +80,15 @@ const findALlShop = async({
     return shops
 }
 
+const getShopByShopIds = async({
+    shopIds = [],
+    selectData = []
+}) => {
+    const shops = await SHOP.find({ _id: { $in: shopIds}})
+                            .select(getSelectData(selectData)).lean()
+    return shops
+}
+
 module.exports = {
     createShop,
     findShopByUserId,
@@ -82,5 +96,7 @@ module.exports = {
     disableShop,
     verifyShop,
     findShopByEmail,
-    findALlShop
+    findALlShop,
+    findShopByShopId,
+    getShopByShopIds
 }
