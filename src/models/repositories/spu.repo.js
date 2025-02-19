@@ -93,6 +93,18 @@ const publishProductByShop = async({
     return modifiedCount
 }
 
+const getSpusByListSpuId = async({
+    spuIds = [],
+    selectData = []
+}) => {
+    const spus = await SPU.find({
+        _id: {
+            $in: spuIds
+        }
+    }).select(getSelectData(selectData)).lean()
+    return spus
+}
+
 const unPublishProductByShop = async({
     product
 }) => {
@@ -191,12 +203,11 @@ const updateInvenStockAndPrice = async({
     const spuObjectId = convertToObjectIdMongodb(productId)
     const result = await getTotalInvenStockAndPriceSku({ productId: spuObjectId})
 
-    let totalQuantity = 1
+    let totalQuantity = result.totalQuantity
     let minPrice = 1
     let maxPrice = 1
-    console.log(result);
     if(result !== undefined){
-        totalQuantity = result.totalQuantity
+        // totalQuantity = result.totalQuantity
         minPrice = result.minPrice
         maxPrice = result.maxPrice
     }
@@ -377,17 +388,20 @@ const deleteSpu = async({
 const updateVariationOptions = async({
     shopId,
     spuId,
-    variations
+    variationIdx,
+    variationName,
+    variationOptions
 }) => {
     const spuObjectId = convertToObjectIdMongodb(spuId)
     const result = await SPU.findOneAndUpdate(
         {
             _id: spuObjectId,
-            product_shop: shopId
+            product_shop: shopId,
+            [`product_variations.${variationIdx}.name`]: variationName
         }, 
         {
             $set: {
-                product_variations: variations
+                [`product_variations.${variationIdx}.options`]: variationOptions
             }
         },
         {
@@ -411,5 +425,6 @@ module.exports = {
     updateInvenStockAndPrice,
     deleteVariation,
     addVariation,
-    updateVariationOptions
+    updateVariationOptions,
+    getSpusByListSpuId
 }
