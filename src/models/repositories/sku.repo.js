@@ -54,11 +54,13 @@ const getAllSkuBySpuId = async({
     return sku
 }
 
-const getAllSkuByListSkuId = async({
+const getSkusByListSkuId = async({
     skuIds = [],
-    selectData = []
+    selectData = [],
 }) => {
-    const skus = await SKU.find({ skuId: { $in: skuIds}}).select(getSelectData(selectData)).lean()
+    const skus = await SKU.find({ skuId: { $in: skuIds}})
+            .select(getSelectData(selectData))
+            .lean()
     return skus
 }
 
@@ -474,5 +476,5 @@ module.exports = {
     unsetDefaultSku,
     updateSkuTierIdx,
     checkSkuByServerV2,
-    getAllSkuByListSkuId
+    getSkusByListSkuId
 }
