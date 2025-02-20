@@ -9,6 +9,7 @@ const COLLECTION_NAME = 'Orders'
 const checkoutSchema = new Schema({
     totalPrice: { type: Number, required: true },
     totalApplyDiscount: { type: Number, default: 0 },
+    totalCheckout: { type: Number, required: true, min: 1000},
     feeShip: { type: Number, default: 0 },
 }, { _id: false });
 
@@ -16,7 +17,7 @@ const shippingSchema = new Schema({
     street: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
-    country: { type: String, required: true },
+    country: { type: String, default: 'Viet Nam' },
 }, { _id: false });
 
 const paymentSchema = new Schema({
@@ -38,8 +39,7 @@ const orderProductSchema = new Schema({
 
 const cancellationSchema = new Schema({
     reason: { type: String, default: ''},
-    cancelledAt: { type: Date, default: Date.now},
-    cancelledBy: { type: Schema.Types.ObjectId, ref: 'User', required: true}
+    cancelledAt: { type: Date, default: null},
 })
 
 var orderSchema = new Schema({
