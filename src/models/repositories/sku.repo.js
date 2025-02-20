@@ -313,7 +313,7 @@ const updateSkuAfterAddingProductVariation = async({
             $push: {
                 'sku_tier_idx': -1
             }
-        }
+        },
     )
     return modifiedCount
 }
@@ -342,7 +342,7 @@ const updateSkuAfterRemovingProductVariation = async({ productId, idx }) => {
             $pull: { 
                 sku_tier_idx: null 
             } 
-        }
+        },
     );
 
     return modifiedCount;
@@ -417,10 +417,10 @@ const unsetDefaultSku = async({
     return sku
 }
 
-const updateSkuTierIdx = async({
+const updateSkuTierIdxV1 = async({
     productId,
     index,
-    listValue = []
+    listValue = [],
 }) => {
     
     const productObjectId = convertToObjectIdMongodb(productId)
@@ -437,9 +437,29 @@ const updateSkuTierIdx = async({
                     }
                 },
                 {
-                    new: true
+                    new: true,
                 }
             )
+        })
+    )
+    return updatedSkus
+}
+
+const updateSkuTierIdx = async({
+    productId,
+    variationIndex,
+    mapping
+}) => {
+    const skus = await SKU.find({ productId: convertToObjectIdMongodb(productId)})
+    const updatedSkus = await Promise.all(
+        skus.map(async (sku) => {
+            if(sku.sku_tier_idx && sku.sku_tier_idx.length > variationIndex){
+                const oldValue = sku.sku_tier_idx[variationIndex]
+                sku.sku_tier_idx[variationIndex] = mapping.hasOwnProperty(oldValue) ? mapping[oldValue] : -1;
+
+                return await sku.save();
+            }
+            return sku
         })
     )
     return updatedSkus
