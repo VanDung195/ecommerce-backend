@@ -3,11 +3,10 @@
 const { NotFoundError, BadRequestError } = require('../core/error.response')
 const { addStockToInventory } = require('../models/repositories/inventory.repo')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
-const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, updateSkuTierIdx, createOneSku } = require('../models/repositories/sku.repo')
+const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, createOneSku, updateSkuTierIdx } = require('../models/repositories/sku.repo')
 const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
-const mongoose = require('mongoose')
 
 const createSpuService = async({
     userId,
@@ -265,8 +264,6 @@ const deleteProductVariationService = async({
     variation_idx,
     variation_name
 }) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
     try {
         const foundProduct = await getOneSpuById({ 
             shop: shopId,
@@ -279,24 +276,21 @@ const deleteProductVariationService = async({
         const delVariation = await deleteVariation({
             shopId,
             spuId,
-            variation_name
-        }, { session })
+            variation_name,
+        })
         if(!delVariation) 
             throw new BadRequestError('Delete product variation failure')
     
         const deletedVariationIndex = foundProduct.product_variations.findIndex( variation => variation.name === variation_name) 
         const updateSku = await updateSkuAfterRemovingProductVariation({ 
             productId: spuId,
-            idx: deletedVariationIndex
-        }, { session })
+            idx: deletedVariationIndex,
+        })
         if(!updateSku)
             throw new BadRequestError('Update sku failure')
-        await session.commitTransaction()
         return delVariation
     } catch (error) {
-        await session.abortTransaction()
-    } finally {
-        session.endSession()
+        console.error(error)
     }
 }
 
@@ -307,9 +301,6 @@ const addProductVariationService = async({
     name,
     options
 }) => {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    
     try {
         const foundProduct = await getOneSpuById({
             shop: shopId,
@@ -323,32 +314,28 @@ const addProductVariationService = async({
             spuId,
             images,
             name,
-            options
-        }, { session })
+            options,
+        })
         
         if(!newSpuVariation) 
             throw new BadRequestError('Add variation failure')
         
         const updateSku = await updateSkuAfterAddingProductVariation({ 
-            productId: spuId
-        }, { session }); 
+            productId: spuId,
+        }); 
         
         if(!updateSku)
             throw new BadRequestError('Update sku failure');
         
-        await session.commitTransaction()
         return newSpuVariation;
     } catch (error) {
-        await session.abortTransaction()
         throw error;
-    } finally {
-        session.endSession()
-    }
+    } 
 }
 //trả về vị trí đã bị thay đổi
 const getChangedIndices = async({
     oldIndicies,
-    newIndicies
+    newIndicies,
 }) => {
     let indices = oldIndicies.reduce((acc, item, index) => {
         if (!newIndicies.includes(item)) {
@@ -365,27 +352,27 @@ const testNhe = async({
 }) => {
     const foundProduct = await getOneSpuById({ shop: shopId, spuId})
     let index = foundProduct.product_variations.findIndex( variation => variation.name === 'size')
-    console.log(index);
-    
-    // const t = foundProduct.product_variations.map( variation => {
-    //     if(variation.name.toLowerCase() === 'color'){
-    //         return
-    //     }
-    //     console.log(variation);
-        
-    // })
     //cái này là mảng cũ => so sánh với mảng mới => Lấy vị trí đã bị thay đổi => 
     //update tại vị trí đã bị thay đổi ở sku_tier_idx ở sku thành -1 nhé!!!
     for(let i = 0; i < foundProduct.product_variations.length; i++){
         const variation = foundProduct.product_variations[i]
         if(variation.name.toLowerCase() === 'color'){
             return variation.options
-            break
         }
     }
-
     return foundProduct
-    // return getChangedIndicesTest()
+}
+
+const getChangedIndicesV2 = async({
+    oldIndicies,
+    newIndicies
+}) => {
+    const mapping = {}
+    oldIndicies.forEach(( item, index ) => {
+        const newIndex = newIndicies.indexOf(item)
+        mapping[index] = newIndex >= 0 ? newIndex : -1
+    })
+    return mapping
 }
 
 const updateVariationOptionsService = async({
@@ -394,52 +381,43 @@ const updateVariationOptionsService = async({
     variation_name,
     variation_options
 }) => {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-        const foundProduct = await getOneSpuById({ shop: shopId, spuId})
-        if(!foundProduct) 
-            throw new NotFoundError('Product not found')
-        if(!foundProduct.product_shop.equals(shopId))
-            throw new BadRequestError('Invalid request')
+    const foundProduct = await getOneSpuById({ shop: shopId, spuId})
+    if(!foundProduct) 
+        throw new NotFoundError('Product not found')
+    if(!foundProduct.product_shop.equals(shopId))
+        throw new BadRequestError('Invalid request')
 
-        let variationOptions = {}
-        for(let i = 0; i < foundProduct.product_variations.length; i++){
-            const variation = foundProduct.product_variations[i]
-            if(variation.name.toLowerCase() === variation_name.toLowerCase()){
-                variationOptions.variations = variation.options
-                variationOptions.index = i 
-                break
-            }
+    let variationIndex
+    let oldOptions
+    foundProduct.product_variations.forEach(( variation, index) => {
+        if(variation.name.toLowerCase() === variation_name.toLowerCase()){
+            variationIndex = index
+            oldOptions = variation.options
         }
-        const updatedVariationOptions = await updateVariationOptions({
-            shopId,
-            spuId,
-            variationIdx: variationOptions.index,
-            variationName: variation_name,
-            variationOptions: variation_options
-        })
-        if(!updatedVariationOptions)
-            throw new BadRequestError('Update variation options failure')
-
-        const changedIndices = await getChangedIndices({
-            oldIndicies: variationOptions.variations,
-            newIndicies: variation_options
-        })
-        const updatedSkus = await updateSkuTierIdx({
-            productId: spuId,
-            index: variationOptions.index,
-            listValue: changedIndices
-        })
-        if(!updatedSkus) throw new BadRequestError('Update skus failure')
-        await session.commitTransaction()
-        return updatedSkus
-    } catch (error) {
-        await session.abortTransaction()
-    } finally {
-        session.endSession()
-    }
+    })
+    if(variationIndex === undefined)
+        throw new NotFoundError('Variation not found')
+    const updatedVariationOptions = await updateVariationOptions({ 
+        shopId, 
+        spuId,
+        variationIdx: variationIndex,
+        variationName: variation_name,
+        variationOptions: variation_options
+    })
+    if(!updatedVariationOptions)
+        throw new BadRequestError('Update variation options failure')
+    const mapping = await getChangedIndicesV2({
+        oldIndicies: oldOptions,
+        newIndicies: variation_options
+    })
+    const updatedSkuTierIdx = await updateSkuTierIdx({ 
+        productId: spuId,
+        variationIndex,
+        mapping
+    })
+    return updatedSkuTierIdx
 }
+
 const updateSpuService = async({
     shopId,
     productId,
