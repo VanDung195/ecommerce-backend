@@ -29,7 +29,8 @@ class DiscountController {
             message: 'OK',
             metadata: await getRecommendShopDiscountService({
                 userId: req.user.userId,
-                shopId: req.body.shop
+                shopId: req.body.shop,
+                products: req.body.products
             })
         }).send(res)
     }
