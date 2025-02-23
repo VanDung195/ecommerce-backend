@@ -8,5 +8,6 @@ const orderController = require('../../controllers/order.controller')
 
 router.use(authentication)
 router.post('/checkout', asyncHandler(orderController.checkout))
+router.post('/', asyncHandler(orderController.orderByUser))
 
 module.exports = router
