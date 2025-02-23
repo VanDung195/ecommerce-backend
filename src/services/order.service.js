@@ -2,11 +2,13 @@
 
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart } = require("../models/repositories/cart.repo")
+const { createOrder } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
-const { getSelectedProductFromCartService } = require("./cart.service")
+const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
+const { aquireLock, releaseLock } = require("./redis.service")
 
 //USER
 /*
@@ -22,7 +24,7 @@ const { getDiscountAmountService } = require("./discount.service")
             method: cash,
             transactionId (auto generate)
         },
-        orders: [
+        shop_order_ids: [
             {
                 shopId,
                 shop_discounts: [
@@ -44,19 +46,72 @@ const { getDiscountAmountService } = require("./discount.service")
     }
 */
 const createOrderService = async({
+    userId,
     user_address,
     user_payment,
-    orders
+    order_note = '',
+    shop_order_ids
 }) => {
-    
+    const { checkout_order, item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
+    const validProducts = []
+    //orderProductSchema
+    const orderProducts = []
+    const cartId = cart._id
+    const aquireProduct = []
+    for(let i = 0; i < item_checkout.length; i++){
+        const shop_order_id = item_checkout[i]
+
+        const orderProduct = {
+            shopId: shop_order_id.shop.shopId,
+            shop_discount: shop_order_id.shop_discount,
+            price_raw: shop_order_id.price_raw,
+            price_apply_discount: shop_order_id.price_apply_discount ? shop_order_id.price_apply_discount : 0
+        }
+        const item_products = []
+        for(let i = 0; i < shop_order_id.item_products.length; i++){
+            const product = shop_order_id.item_products[i]
+            const { productId, quantity } = product
+            // const keyLock = await aquireLock({ productId, quantity, cartId})
+            // aquireProduct.push(keyLock ? true : false)
+            // if(keyLock != null){
+            //     const { key, uniqueValue } = keyLock
+            //     validProducts.push(product)
+            //     await releaseLock({ keyLock: key, expectedValue: uniqueValue })
+            // }
+            item_products.push({
+                productId: product.productId,
+                price: product.price,
+                quantity: product.quantity,
+            })
+        }
+        orderProduct.item_products = item_products
+        console.log(orderProducts)
+        console.log(checkout_order)
+
+        orderProducts.push(orderProduct)
+    }
+    if(aquireProduct.includes(false))
+        throw new BadRequestError('Some product have been updated! Pls return to the cart!')
+    //checkoutSchema
+    const checkout = {
+        total_price: checkout_order.totalPrice,
+        total_apply_discount: checkout_order.totalDiscount,
+        total_checkout: checkout_order.totalCheckout,
+        fee_ship: checkout_order.feeShip
+    }
+    const order = await createOrder({
+        userId,
+        order_checkout: checkout,
+        shipping: user_address,
+        payment: user_payment,
+        order_products: orderProducts,
+        order_note
+    })
+    if(!order) 
+        throw new BadRequestError('Create order failure')
+
+    return order
 }
-
-const getOrderService = async({
-    orderId
-}) => {
-
-}
-
 /*
     {
         cartId,
@@ -79,70 +134,6 @@ const getOrderService = async({
         ]
     }
 */
-const checkoutOrderReviewServiceV2 = async({
-    userId,
-    shop_order_ids = []
-}) => {
-    const foundCart = await getCartByUserId({ userId })
-    if(!foundCart)
-        throw new NotFoundError('Cart not found')
-    const item_checkout = []
-    let totalPrice = 0
-    let totalDiscount = 0
-    let totalCheckout = 0
-    let feeShip = 0
-
-    for(let i = 0; i < shop_order_ids.length; i++){
-        const shopId = shop_order_ids[i].shopId
-        const products = shop_order_ids[i].item_products.map(product => product.productId);
-        const selectedProductFromCart = await getselectedProductFromCartService({ userId, shopId, products })
-
-        if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
-            throw new BadRequestError('Some product invalid')
-
-        const checkProductServer = await checkSkuByServerV2({ listSku: selectedProductFromCart.products})
-        //check product valid (price)
-        const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
-        if(hasUndefinedProduct){
-            throw new BadRequestError('Order wrong')
-        }
-        const discount = shop_order_ids[i].shop_discount
-        if(shopId !== discount.shopId)
-            throw new BadRequestError('Order wrong')
-        let discountAmount = 0
-        if(discount.code !== null){
-            discountAmount = await getDiscountAmountService({ userId, shopId: shopId, code: discount.code, products})
-        }
-        let price_raw = selectedProductFromCart.products.reduce((acc, product) => {
-            return acc + product.price * product.quantity
-        }, 0)
-        const price_apply_discount = price_raw - discountAmount
-        //itemCheckout
-        item_checkout.push({
-            shopId,
-            shop_discount: discount,
-            price_raw,
-            price_apply_discount,
-            item_products: selectedProductFromCart.products
-        })
-
-        totalPrice += selectedProductFromCart.products.reduce((acc, product) => {
-            return acc + product.price * product.quantity
-        }, 0)   
-        totalDiscount += discountAmount
-    }
-    totalCheckout = totalPrice - totalDiscount
-    const checkout_order = {
-        totalPrice,
-        feeShip,
-        totalDiscount,
-        totalCheckout
-    }
-    return {
-        checkout_order,
-        item_checkout
-    }
-}
 const checkoutOrderReviewService = async({
     userId,
     shop_order_ids = []
@@ -160,7 +151,7 @@ const checkoutOrderReviewService = async({
     for(let i = 0; i < shop_order_ids.length; i++){
         const shopId = shop_order_ids[i].shopId
         const products = shop_order_ids[i].item_products.map(product => product.productId);
-        const selectedProductFromCart = await getSelectedProductFromCartService({ userId, shopId, products })
+        const selectedProductFromCart = await getSeclectedProductFromCartService({ userId, shopId, products })
 
         if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
             throw new BadRequestError('Some product invalid')
@@ -214,8 +205,17 @@ const checkoutOrderReviewService = async({
         checkout_order,
         item_checkout,
         product_info: spus,
+        cart: foundCart
     }
 }
+
+
+const getOrderService = async({
+    orderId
+}) => {
+
+}
+
 const cancelOrderService = async({
 
 }) => {
@@ -254,5 +254,6 @@ const refundOrderService = async({
 }
 
 module.exports = {
-    checkoutOrderReviewService
+    checkoutOrderReviewService,
+    createOrderService
 }
