@@ -7,10 +7,10 @@ const COLLECTION_NAME = 'Orders'
 
 //sub-schema for checkout
 const checkoutSchema = new Schema({
-    totalPrice: { type: Number, required: true },
-    totalApplyDiscount: { type: Number, default: 0 },
-    totalCheckout: { type: Number, required: true, min: 1000},
-    feeShip: { type: Number, default: 0 },
+    total_price: { type: Number, required: true },
+    total_apply_discount: { type: Number, default: 0 },
+    total_checkout: { type: Number, required: true, min: 1000},
+    fee_ship: { type: Number, default: 0 },
 }, { _id: false });
 
 const shippingSchema = new Schema({
@@ -33,7 +33,7 @@ const orderProductSchema = new Schema({
     shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true},
     shop_discount: { type: Object, default: {}},
     price_raw: { type: Number, required: true},
-    price_apply_discount: { type: Number, required: true},
+    price_apply_discount: { type: Number, default: 0},
     item_products: { type: Array, required: true}
 }, { _id: false })
 
