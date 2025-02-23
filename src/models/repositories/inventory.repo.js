@@ -1,6 +1,7 @@
 'use strict'
 
 const INVENTORY = require('../inventory.model')
+const { convertToObjectIdMongodb } = require('../../utils/index')
 
 //Synchronize inventory when updating product or creating product
 const addStockToInventory = async({
@@ -71,9 +72,36 @@ const getInventory = async({
     })
 }
 
+const reservationInventory = async({ productId, quantity, cartId}) => {
+
+    const query = {
+        inven_productId: productId,
+        inven_stock: {
+            $gte: quantity
+        }
+    }, update = {
+        $inc: {
+            inven_stock: -quantity
+        },
+        $push: {
+            inven_reservations: {
+                quantity,
+                cartId,
+                createdOn: new Date()
+            }
+        }
+    }, options = { upsert: true}
+    return await INVENTORY.updateOne(query, update, options)
+}
+
+const unReservationInventory = async({ productId, quantity, cartId}) => {
+
+}
+
 module.exports = {
     addStockToInventory,
     updateInventorySold,
     checkInventoryStock,
-    getInventory
+    getInventory,
+    reservationInventory
 }
