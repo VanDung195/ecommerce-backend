@@ -284,41 +284,12 @@ const updateSimpleSpu = async({
     const spu = await SPU.findOneAndUpdate(filter, update, options)
     return spu
 }
-
-
-const updateVariableSpu = async({
-    shopId,
-    spuId,
-    name,
-    thumb,
-    description,
-    category
-}) => {
-    const shopObjectId = convertToObjectIdMongodb(shopId),
-        productObjectId = convertToObjectIdMongodb(spuId),
-        filter = {
-            _id: productObjectId,
-            product_shop: shopObjectId
-        },
-        update = {
-            product_name: name,
-            product_thumb: thumb,
-            product_description: description,
-            product_category: category,
-        },
-        options = {
-            new: true
-        }
-    const spu = await SPU.findOneAndUpdate(filter, update, options)
-    return spu
-}
-
 const addVariation = async({
     shopId,
     spuId,
     images,
     name,
-    options
+    options,
 }) => {
     const shopObjectId = convertToObjectIdMongodb(shopId),
         productObjectId = convertToObjectIdMongodb(spuId),
@@ -338,7 +309,7 @@ const addVariation = async({
             }
         },
         {
-            new: true
+            new: true,
         }
     )
     return spu
@@ -366,7 +337,7 @@ const deleteVariation = async({
             }
         },
         {
-            new: true
+            new: true,
         }
     )
     return delVariation
@@ -390,25 +361,25 @@ const updateVariationOptions = async({
     spuId,
     variationIdx,
     variationName,
-    variationOptions
+    variationOptions,
 }) => {
     const spuObjectId = convertToObjectIdMongodb(spuId)
-    const result = await SPU.findOneAndUpdate(
+    return await SPU.findOneAndUpdate(
         {
             _id: spuObjectId,
             product_shop: shopId,
             [`product_variations.${variationIdx}.name`]: variationName
-        }, 
+        },
         {
             $set: {
                 [`product_variations.${variationIdx}.options`]: variationOptions
             }
         },
         {
-            new: true
+            new: true,
+            runValidators: true
         }
     )
-    return result
 }
 
 module.exports = {
