@@ -53,7 +53,7 @@ const handlerEventConnection = (connectionRedis) => {
         isConnected = false
         handlerTimeoutError()
     })
-    connectionRedis.on(statusConnectionRedis.RECONNECT, () => {
+    connectionRedis.on(statusConnectionRedis.ERROR, () => {
         console.log(`connectionIORedis - Connection status: error`)
         isConnected = false
         handlerTimeoutError()
