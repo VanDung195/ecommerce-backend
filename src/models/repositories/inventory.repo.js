@@ -72,8 +72,8 @@ const getInventory = async({
     })
 }
 
-const reservationInventory = async({ productId, quantity, cartId}) => {
-
+const reservationInventory = async({ productId, quantity, cartId, orderId}) => {
+    console.log('======DEBUG=======')
     const query = {
         inven_productId: productId,
         inven_stock: {
@@ -85,17 +85,69 @@ const reservationInventory = async({ productId, quantity, cartId}) => {
         },
         $push: {
             inven_reservations: {
+                orderId,
                 quantity,
                 cartId,
                 createdOn: new Date()
             }
         }
-    }, options = { upsert: true}
+    }, options = { upsert: false }
     return await INVENTORY.updateOne(query, update, options)
 }
 
-const unReservationInventory = async({ productId, quantity, cartId}) => {
+/*
+    [
+        {
+            orderId,
+            productId,
+            quantity
+        }
+    ]
+*/
+const unReservationInventory = async({ products }) => {
+    return await Promise.all(
+        products.map( async product => {
+            const query = {
+                inven_productId: product.productId,
+                'inven_reservations.orderId': product.orderId
+            }, update = {
+                $inc: {
+                    inven_stock: product.quantity
+                },
+                $pull: {
+                    inven_reservations: { orderId: product.orderId}
+                }
+            }, option = { new: true}
+            const updateInven = await INVENTORY.findOneAndUpdate(query, update, option)
 
+            return updateInven
+        })
+    )
+}
+
+const getReservationInventoryByOrderId = async({ orderId }) => {
+    const reservation = INVENTORY.aggregate([
+        {
+            $match: {
+                'inven_reservations.orderId': orderId
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                orderId: '$inven_reservations.orderId',
+                productId: '$inven_productId',
+                quantity: '$inven_reservations.quantity'
+            }
+        },
+        {
+            $unwind: '$orderId'
+        },
+        {
+            $unwind: '$quantity'
+        }
+    ])
+    return reservation
 }
 
 module.exports = {
@@ -103,5 +155,7 @@ module.exports = {
     updateInventorySold,
     checkInventoryStock,
     getInventory,
-    reservationInventory
+    reservationInventory,
+    unReservationInventory,
+    getReservationInventoryByOrderId
 }
