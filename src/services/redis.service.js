@@ -5,7 +5,7 @@ const redisCache = getIORedis().instanceConnect
 const { v4: uuidv4} = require('uuid')
 const { reservationInventory } = require('../models/repositories/inventory.repo')
 
-const aquireLock = async({ productId, quantity, cartId}) => {
+const aquireLock = async({ productId, quantity, cartId, orderId}) => {
     const key = `lock_product_${productId}`
     const uniqueValue = uuidv4()
     const retryTimes = 10
@@ -14,13 +14,13 @@ const aquireLock = async({ productId, quantity, cartId}) => {
     for(let i = 0; i < retryTimes; i++){
         const result = await redisCache.set(key, uniqueValue, 'NX', 'PX', expireTime)
         if(result){
-            const isReservation = await reservationInventory({ productId, quantity, cartId})
-
+            const isReservation = await reservationInventory({ productId, quantity, cartId, orderId})
             if(isReservation.modifiedCount){
                 return { key, uniqueValue}
+            } else {
+                await releaseLock({ keyLock: key, expectedValue: uniqueValue})
+                return null
             }
-
-            return null
         } else {
             await new Promise((resolve) => setTimeout(resolve, 50))
         }
