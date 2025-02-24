@@ -1,15 +1,16 @@
 'use strict'
 
+const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart } = require("../models/repositories/cart.repo")
 const { createOrder } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
-const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
+const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
 const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
-
+const { getReservationInventoryByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
 //USER
 /*
     {
@@ -53,11 +54,14 @@ const createOrderService = async({
     shop_order_ids
 }) => {
     const { checkout_order, item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
+    //sử dụng để rollback khi 1 sản phẩm bị lỗi
     const validProducts = []
     //orderProductSchema
     const orderProducts = []
     const cartId = cart._id
     const aquireProduct = []
+    const orderObjectId = new mongoose.Types.ObjectId()
+
     for(let i = 0; i < item_checkout.length; i++){
         const shop_order_id = item_checkout[i]
 
@@ -71,13 +75,17 @@ const createOrderService = async({
         for(let i = 0; i < shop_order_id.item_products.length; i++){
             const product = shop_order_id.item_products[i]
             const { productId, quantity } = product
-            // const keyLock = await aquireLock({ productId, quantity, cartId})
-            // aquireProduct.push(keyLock ? true : false)
-            // if(keyLock != null){
-            //     const { key, uniqueValue } = keyLock
-            //     validProducts.push(product)
-            //     await releaseLock({ keyLock: key, expectedValue: uniqueValue })
-            // }
+            const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
+            aquireProduct.push(keyLock ? true : false)
+            if(keyLock != null){
+                const { key, uniqueValue } = keyLock
+                validProducts.push({
+                    orderId: orderObjectId,
+                    productId: product.productId,
+                    quantity: product.quantity
+                })
+                await releaseLock({ keyLock: key, expectedValue: uniqueValue })
+            }
             item_products.push({
                 productId: product.productId,
                 price: product.price,
@@ -85,13 +93,13 @@ const createOrderService = async({
             })
         }
         orderProduct.item_products = item_products
-        console.log(orderProducts)
-        console.log(checkout_order)
-
         orderProducts.push(orderProduct)
     }
-    if(aquireProduct.includes(false))
+    if(aquireProduct.includes(false)){
+        //hàm này khi có 3 sản phẩm mà sản phẩm thứ 3 không hợp lệ
+        await unReservationInventory({ products: validProducts })
         throw new BadRequestError('Some product have been updated! Pls return to the cart!')
+    }
     //checkoutSchema
     const checkout = {
         total_price: checkout_order.totalPrice,
@@ -100,6 +108,7 @@ const createOrderService = async({
         fee_ship: checkout_order.feeShip
     }
     const order = await createOrder({
+        _id: orderObjectId,
         userId,
         order_checkout: checkout,
         shipping: user_address,
@@ -110,8 +119,95 @@ const createOrderService = async({
     if(!order) 
         throw new BadRequestError('Create order failure')
 
+    //sync stock in sku
+    await updateSkusStock({ skus: validProducts, isIncrease: true})
+
     return order
 }
+
+const createOrderServiceV2 = async({
+    userId,
+    user_address,
+    user_payment,
+    order_note = '',
+    shop_order_ids
+}) => {
+    const { checkout_order, item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
+    const validProducts = []
+    //orderProductSchema
+    const orderProducts = []
+    const cartId = cart._id
+    const aquireProduct = []
+    const orderObjectId = new mongoose.Types.ObjectId()
+
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+        for(let i = 0; i < item_checkout.length; i++){
+            const shop_order_id = item_checkout[i]
+            const orderProduct = {
+                shopId: shop_order_id.shop.shopId,
+                shop_discount: shop_order_id.shop_discount,
+                price_raw: shop_order_id.price_raw,
+                price_apply_discount: shop_order_id.price_apply_discount ? shop_order_id.price_apply_discount : 0
+            }
+            const item_products = []
+            for(let i = 0; i < shop_order_id.item_products.length; i++){
+                const product = shop_order_id.item_products[i]
+                const { productId, quantity } = product
+                const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId, session})
+                aquireProduct.push(keyLock ? true : false)
+                if(keyLock != null){
+                    const { key, uniqueValue } = keyLock
+                    validProducts.push({
+                        orderId: orderObjectId,
+                        productId: product.productId,
+                        quantity: product.quantity
+                    })
+                    await releaseLock({ keyLock: key, expectedValue: uniqueValue })
+                }
+                item_products.push({
+                    productId: product.productId,
+                    price: product.price,
+                    quantity: product.quantity,
+                })
+            }
+            orderProduct.item_products = item_products
+            orderProducts.push(orderProduct)
+        }
+        if(aquireProduct.includes(false)){
+            throw new BadRequestError('Some product have been updated! Pls return to the cart!')
+            //unReservationInventory và trả lại số lượng tồn kho!!
+        }
+        //checkoutSchema
+        const checkout = {
+            total_price: checkout_order.totalPrice,
+            total_apply_discount: checkout_order.totalDiscount,
+            total_checkout: checkout_order.totalCheckout,
+            fee_ship: checkout_order.feeShip
+        }
+        const order = await createOrder({
+            _id: orderObjectId,
+            userId,
+            order_checkout: checkout,
+            shipping: user_address,
+            payment: user_payment,
+            order_products: orderProducts,
+            order_note
+        })
+        if(!order) 
+            throw new BadRequestError('Create order failure')
+
+        await session.commitTransaction()
+    } catch (error) {
+        await session.abortTransaction()
+        return error
+    } finally {
+        session.endSession()
+    }
+    return validProducts
+}
+
 /*
     {
         cartId,
@@ -208,8 +304,6 @@ const checkoutOrderReviewService = async({
         cart: foundCart
     }
 }
-
-
 const getOrderService = async({
     orderId
 }) => {
