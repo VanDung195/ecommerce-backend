@@ -4,6 +4,7 @@ const SKU = require('../sku.model')
 const { convertToObjectIdMongodb, unSelectData, getSelectData } = require('../../utils/index')
 const { addStockToInventory } = require('./inventory.repo')
 const { findOne } = require('../cart.model')
+const { query } = require('express')
 
 const createSku = async({
     spuId,
@@ -473,6 +474,33 @@ const getOneSkuById = async(skuId) => {
     .lean()
 }
 
+
+/*
+    [
+        {
+            orderId,
+            productId,
+            quantity
+        }
+    ]
+*/
+//sync with inventories model
+const updateSkusStock = async({ skus, isIncrease = true }) => {
+    return await Promise.all(
+        skus.map( async sku => {
+            const query = {
+                skuId: sku.productId
+            }, update = {
+                $inc: {
+                    sku_stock: isIncrease ? +sku.quantity : -sku.quantity
+                }
+            }, option = { new: true }
+            const updatedSku = await SKU.findOneAndUpdate(query, update, option)
+            return updatedSku
+        })
+    )
+}
+
 module.exports = {
     createSku,
     createOneSku,
@@ -496,5 +524,6 @@ module.exports = {
     unsetDefaultSku,
     updateSkuTierIdx,
     checkSkuByServerV2,
-    getSkusByListSkuId
+    getSkusByListSkuId,
+    updateSkusStock
 }
