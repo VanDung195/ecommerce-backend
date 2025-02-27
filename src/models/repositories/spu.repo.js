@@ -2,7 +2,7 @@
 
 const { convertToObjectIdMongodb, getSelectData, unSelectData } = require('../../utils')
 const SPU = require('../spu.model')
-const { getTotalInvenStockAndPriceSku } = require('./sku.repo')
+const { getTotalInvenStockAndPriceSku, getTotalInvenStock } = require('./sku.repo')
 
 const createSpu = async({
     shop,
@@ -46,7 +46,6 @@ const getOneSpuBySlug = async(slug) => {
     .lean()
     return spu
 }
-
 
 const getAllSpu = async({
     limit,
@@ -150,29 +149,6 @@ const queryProduct = async({
     }
 }
 
-//update khi sử số lượng hoặc giá của sku
-const updateInvenStockSpu = async({
-    productId,
-    quantity
-}) => {
-    const spuObjectId = convertToObjectIdMongodb(productId)
-    const spu = await SPU.findOneAndUpdate(
-        {
-            _id: spuObjectId
-        },
-        {
-            $set: {
-                product_quantity: quantity
-            }
-        },
-        {
-            new: true
-        }
-    )
-    return spu
-}
-
-
 const updatePriceRange = async({
     productId,
     min_price,
@@ -229,27 +205,20 @@ const updateInvenStockAndPrice = async({
     return spu
 }
 
-//Product has no variations
-const updateInventoryStockSpu = async({
-    shopId,
-    spuId,
-    stock
-}) => {
-    const shopObjectId = convertToObjectIdMongodb(shopId),
-        productObjectId = convertToObjectIdMongodb(spuId)
-    const filter = {
-        product_shop: shopObjectId,
-        _id: productObjectId
-    },
-    update = {
-        $set: {
-            inven_stock: stock
-        }
-    }, 
-    options = {
-        new: true
-    }
-    const spu = await SPU.findOneAndUpdate(filter, update, options)
+//only productId
+const updateInventoryStockSpuByProductId = async({ productId }) => {
+    const totalInvenStock = await getTotalInvenStock({ productId })
+    const spu = await SPU.findOneAndUpdate(
+        {
+            _id: convertToObjectIdMongodb(productId)
+        },
+        {
+            $set: {
+                product_quantity: totalInvenStock.totalQuantity
+            }
+        },
+        { new: true }
+    )
     return spu
 }
 
@@ -391,11 +360,11 @@ module.exports = {
     publishProductByShop,
     unPublishProductByShop,
     queryProduct,
-    updateInvenStockSpu,
+    updateInventoryStockSpuByProductId,
     updatePriceRange,
     updateInvenStockAndPrice,
     deleteVariation,
     addVariation,
     updateVariationOptions,
-    getSpusByListSpuId
+    getSpusByListSpuId,
 }
