@@ -470,7 +470,7 @@ const getOneSkuById = async(skuId) => {
     return await SKU.findOne({
             skuId
     })
-    .populate('productId', 'product_shop product_name -_id')
+    .populate('productId', 'product_shop product_name _id')
     .lean()
 }
 
@@ -478,7 +478,6 @@ const getOneSkuById = async(skuId) => {
 /*
     [
         {
-            orderId,
             productId,
             quantity
         }
