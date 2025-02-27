@@ -5,12 +5,13 @@ const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart } = require("../models/repositories/cart.repo")
 const { createOrder } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
-const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock } = require("../models/repositories/sku.repo")
+const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
 const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
 const { getReservationInventoryByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
+const { producerOrderMessage } = require("../queues/order.producer")
 //USER
 /*
     {
@@ -75,17 +76,17 @@ const createOrderService = async({
         for(let i = 0; i < shop_order_id.item_products.length; i++){
             const product = shop_order_id.item_products[i]
             const { productId, quantity } = product
-            const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
-            aquireProduct.push(keyLock ? true : false)
-            if(keyLock != null){
-                const { key, uniqueValue } = keyLock
-                validProducts.push({
-                    orderId: orderObjectId,
-                    productId: product.productId,
-                    quantity: product.quantity
-                })
-                await releaseLock({ keyLock: key, expectedValue: uniqueValue })
-            }
+            // const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
+            // aquireProduct.push(keyLock ? true : false)
+            // if(keyLock != null){
+            //     const { key, uniqueValue } = keyLock
+            //     validProducts.push({
+            //         orderId: orderObjectId,
+            //         productId: product.productId,
+            //         quantity: product.quantity
+            //     })
+            //     await releaseLock({ keyLock: key, expectedValue: uniqueValue })
+            // }
             item_products.push({
                 productId: product.productId,
                 price: product.price,
@@ -107,22 +108,23 @@ const createOrderService = async({
         total_checkout: checkout_order.totalCheckout,
         fee_ship: checkout_order.feeShip
     }
-    const order = await createOrder({
-        _id: orderObjectId,
-        userId,
-        order_checkout: checkout,
-        shipping: user_address,
-        payment: user_payment,
-        order_products: orderProducts,
-        order_note
-    })
-    if(!order) 
-        throw new BadRequestError('Create order failure')
+    // const order = await createOrder({
+    //     _id: orderObjectId,
+    //     userId,
+    //     order_checkout: checkout,
+    //     shipping: user_address,
+    //     payment: user_payment,
+    //     order_products: orderProducts,
+    //     order_note
+    // })
+    // if(!order) 
+    //     throw new BadRequestError('Create order failure')
 
     //sync stock in sku
-    await updateSkusStock({ skus: validProducts, isIncrease: true})
-
-    return order
+    // await updateSkusStock({ skus: validProducts, isIncrease: true})
+    //sync stock in spu
+    await producerOrderMessage({userId, orderProducts: orderProducts})
+    return checkout
 }
 
 const createOrderServiceV2 = async({
