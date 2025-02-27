@@ -1,5 +1,6 @@
 'use strict'
 
+const { convertToObjectIdMongodb } = require('../../utils')
 const ORDER = require('../order.model')
 
 const createOrder = async({
@@ -21,6 +22,14 @@ const createOrder = async({
     return order
 }
 
+const getOrderByUser = async({ userId, orderId }) => {
+    return await ORDER.findOne({
+        order_userId: userId,
+        _id: convertToObjectIdMongodb(orderId)
+    })
+} 
+
 module.exports = {
-    createOrder
+    createOrder,
+    getOrderByUser
 }
