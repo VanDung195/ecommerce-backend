@@ -83,7 +83,7 @@ const getRecommendShopDiscount = async ({ userId, shopId, products }) => {
                 discount_min_order_value: 1,
                 discount_applies_to: 1,
                 discount_productIds: 1,
-                products: 1,
+                // products: 1,
                 user_usage_count: 1,
                 is_valid: {
                     $lt: ["$user_usage_count", "$discount_max_use_per_user"]
@@ -211,7 +211,7 @@ const getRecommendDiscount = async({ userId, shopId, products}) => {
                 },
                 applicable_products: 1,
                 userId: 1,
-                products: 1,
+                // products: 1,
                 applicable_products_total_price: 1
                 // totalPrice: 1
             }
@@ -255,18 +255,32 @@ const checkDiscountCode = async({
 
 }
 
-const getDicountAmont = async({
+const updateDiscountForOrder = async({
     userId,
-    code,
     shopId,
-    product
+    discountId,
+    code
 }) => {
-    
+    const filter = {
+        discount_shopId: convertToObjectIdMongodb(shopId),
+        _id: convertToObjectIdMongodb(discountId),
+        discount_code: code
+    }, update = {
+        $inc: {
+            discount_uses_count: 1
+        },
+        $push: {
+            discount_user_used: userId
+        }
+    }, option = { new: true }
+    return await DISCOUNT.findOneAndUpdate(filter, update, option)
 }
+
 module.exports = {
     getOneDiscountCode,
     createDiscountByShop,
     getRecommendShopDiscount,
     getRecommendDiscount,
-    getAllDiscountByShop
+    getAllDiscountByShop,
+    updateDiscountForOrder
 }
