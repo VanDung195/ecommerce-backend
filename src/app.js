@@ -17,6 +17,7 @@ app.use(express.urlencoded({
 //init db
 require('./dbs/init.mongodb')
 const ioredis = require('./dbs/init.ioredis')
+const { consumerOrderFailed, consumerOrderNormal } = require('./queues/order.consumer')
 ioredis.init({
     IOREDIS_HOST: 'localhost',
     IOREDIS_PORT: 6379,
@@ -24,6 +25,9 @@ ioredis.init({
 })
 
 app.use('/', require('./routes'))
+
+consumerOrderNormal().catch(console.error)
+consumerOrderFailed().catch(console.error)
 
 //error handler
 app.use((req, res, next) => {
