@@ -36,11 +36,14 @@ const unSelectData = (unSelect = []) => {
     return Object.fromEntries(unSelect.map(el => [el, 0]))
 } 
 
+const getUniqueData = data => [...new Set(data)]
+
 module.exports = {
     generatorRandomToken,
     replacePlaceHolder,
     getInfoData,
     convertToObjectIdMongodb,
     getSelectData,
-    unSelectData
+    unSelectData,
+    getUniqueData
 }
