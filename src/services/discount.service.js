@@ -3,7 +3,7 @@
 const { NotFoundError, ConflictError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getShopInCart } = require("../models/repositories/cart.repo")
 const { getOneDiscountCode, createDiscountByShop, getRecommendDiscount, getAllDiscountByShop } = require("../models/repositories/discount.repo")
-const { getSeletedProductFromCartService } = require("./cart.service")
+const { getSeclectedProductFromCartService } = require("./cart.service")
 
 /*
     truyền vào các products của shopId và check xem discount_applies_to === 'specific' thì tiến hành check xem discount_productIds
@@ -18,7 +18,7 @@ const getRecommendShopDiscountService = async({
     //     throw new NotFoundError('Cart not found')
     // const shopInCart = await getShopInCart({ userId, shopId})
     //lấy ra giá tiền và só lượng của sản phẩm
-    const seletedProducts = await getSeletedProductFromCartService({ userId, shopId, products})
+    const seletedProducts = await getSeclectedProductFromCartService({ userId, shopId, products})
     const discount = await getRecommendDiscount({ userId, shopId, products: seletedProducts.products})
     return discount
 }
