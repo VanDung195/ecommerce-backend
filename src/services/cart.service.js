@@ -123,121 +123,6 @@ const updateCartQuantityService = async({
     return cart
 }
 
-/*
-    [
-        {
-            shopId,
-            product_shop: [
-                {
-                    productId,
-                    name,
-                    price,
-                    quantity,
-                }
-            ],
-        }
-    ]    
-*/
-/*
-const applyDiscountForShopProductService = async({
-    userId,
-    shopId,
-    discount_code
-}) => {
-    const foundDiscount = await getOneDiscountCode({ shopId, code: discount_code})
-    if(!foundDiscount)
-        throw new NotFoundError('Discount not found')
-    const foundCart = await getCartByUserId({ userId })
-    if(!foundCart)
-        throw new NotFoundError('Cart not found')
-    if(foundCart.cart_products.cart_count_product === 0)
-        throw new BadRequestError('Invalid request')
-    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
-    if(!shopInCart)
-        throw new NotFoundError('Shop in cart not found')
-
-    const shopTotalPrice = shopInCart.product_shop.reduce((total, product) => {
-        return total + (product.price * product.quantity);
-    }, 0);
-    
-    //check sản phẩm hợp lệ
-    let eligibleProducts = []
-    if(foundDiscount.discount_applies_to === 'all'){
-        eligibleProducts = shopInCart.product_shop.filter( product => product.isSelected)
-    }
-    if(foundDiscount.discount_applies_to === 'specific'){
-        eligibleProducts = shopInCart.product_shop.filter( product => 
-            product.isSelected && foundDiscount.discount_productIds.includes(product.productId)
-        )
-    }
-    //check số tiền tối thiểu (nếu bằng o thì bỏ qua)
-    if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0)
-        throw new BadRequestError(`Order total doesn't meet the discount minimum order value of ${foundDiscount.discount_min_order_value}.`)
-
-    //check start date and end date valid
-    const now = new Date()
-    const startDate = new Date(foundDiscount.discount_start_date)
-    const endDate = new Date(foundDiscount.discount_end_date)
-    if(isNaN(startDate) || isNaN(endDate))
-        throw new BadRequestError('Invalid start date or end date')
-    if(now > endDate)
-        throw new BadRequestError('Discount has expired')
-    if(startDate > endDate)
-        throw new BadRequestError('Start date must before end date')
-
-    if(eligibleProducts.length === 0)
-        throw new BadRequestError('No eliglible product found for discount')
-    
-    const discount = {
-        shopId: shopId,
-        discountId: foundDiscount._id,
-        code: foundDiscount.discount_code
-    }
-    const updatedCart = await applyDiscountProductCart({ userId, shopId, discount})
-
-    return updatedCart
-
-    //select 1 product to apply discount (highest priced product)
-    const productToDiscount = eligibleProducts.reduce( (prev, current) => {
-        return (prev.price > current.price ? prev : current)
-    })
-
-    const discountType = foundDiscount.discount_type
-    let discountValue = 0
-    
-    //get discount amount after apply discount
-    if (discountType === 'fixed_amount') {
-        discountValue = foundDiscount.discount_value
-    } else {
-        const percentageDiscount = (productToDiscount.price * foundDiscount.discount_value) / 100
-        const maxAmount = foundDiscount.discount_max_amount
-    
-        discountValue = (maxAmount !== 0 && percentageDiscount > maxAmount) ? maxAmount : percentageDiscount
-    }
-
-    return discountValue
-}
-
-const removeDiscountProductCartService = async({
-    userId,
-    shopId
-}) => {
-    const foundCart = await getCartByUserId({ userId })
-    if(!foundCart)
-        throw new NotFoundError('Cart not found')
-    if(foundCart.cart_products.cart_count_product === 0)
-        throw new BadRequestError('Invalid request')
-    const shopInCart = foundCart.cart_products.find( shop => shop.shopId.toString() === shopId)
-    if(!shopInCart)
-        throw new NotFoundError('Shop in cart not found')
-    const foundDiscount = await getOneDiscountCode({ shopId, code: shopInCart.shop_discount.code})
-    if(!foundDiscount)
-        throw new NotFoundError('Discount not found')
-    const rmDiscount = await removeDiscountProductCart({ userId, shopId })
-    return rmDiscount
-}
-*/
-
 //remove one product from cart
 const removeFromCartService = async({
     userId,
@@ -252,7 +137,6 @@ const removeFromCartService = async({
         throw new NotFoundError('Product not found')
     await updateCartCount({ userId, quantity: -1})
     const delCart = await removeFromCart({ userId, productId, shopId})
-
     const shopIndex = delCart.cart_products.findIndex( shop => shop.shopId.toString() === shopId)
     if(shopId !== -1){
         const shopProducts = delCart.cart_products[shopIndex].product_shop
@@ -283,29 +167,6 @@ const listToCartService = async({
         throw new NotFoundError('Cart not found')
     return foundCart
 }
-
-/*
-const toggleSelectionProductFromCartService = async({
-    userId,
-    shopId,
-    productId
-}) => {
-    const foundCart = await getCartByUserId({ userId })
-    if(!foundCart) 
-        throw new NotFoundError('Cart not found')
-    const foundProduct = await getOneSkuById(productId)
-    if(foundProduct.productId.product_shop.toString() !== shopId)
-        throw new BadRequestError('Invalid shop')
-    if(!foundProduct)
-        throw new NotFoundError('Product not found')
-    return await selectProductFromCart({
-        userId,
-        shopId,
-        productId
-    })
-}
-*/
-
 //lấy ra các sản phẩm trong giỏ hàng, chỉ các sản phẩm được chọn
 const getSeletedProductFromCartServiceV2 = async({
     userId,
@@ -330,7 +191,7 @@ const getSeletedProductFromCartServiceV2 = async({
     return seletedProducts
 }
 
-const getSelectedProductFromCartService = async({
+const getSeclectedProductFromCartService = async({
     userId,
     shopId,
     products
@@ -372,13 +233,11 @@ const getSelectedProductFromCartService = async({
     return selectedProducts
 }
 
-
-
 module.exports = {
     addToCartService,
     updateCartQuantityService,
     removeFromCartService,
     clearCartService,
     listToCartService,
-    getSelectedProductFromCartService
+    getSeclectedProductFromCartService
 }
