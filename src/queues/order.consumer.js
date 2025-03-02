@@ -2,6 +2,7 @@
 
 const { BadRequestError } = require('../core/error.response')
 const { connectToRabbitMQ } = require('../dbs/init.rabbit')
+const { updateCartCount, removeFromCart, removeCartShop } = require('../models/repositories/cart.repo')
 const { updateDiscountForOrder } = require('../models/repositories/discount.repo')
 const { updateSkusStock, getOneSkuById } = require('../models/repositories/sku.repo')
 const { updateInventoryStockSpuByProductId } = require('../models/repositories/spu.repo')
@@ -12,13 +13,14 @@ const consumerOrderNormal = async () => {
     try {
         const { connection, channel } = await connectToRabbitMQ()
         const orderQueue = 'orderQueueProcess'
-        console.log(`🔄 Order Consumer is listening on queue "${orderQueue}"...`);
+        console.log(`Order Consumer is listening on queue "${orderQueue}"...`);
         channel.consume(orderQueue, async msg => {
             try {
                 const payload = JSON.parse(msg.content.toString())
                 const orderProducts = payload.orderProducts
                 const userId = payload.userId
                 const spuIds = []
+                let countProduct = 0
 
                 for (const orderProduct of orderProducts) {
                     if(orderProduct.shop_discount){
@@ -39,7 +41,9 @@ const consumerOrderNormal = async () => {
                             }
                         ]
                      */
+                    const shopId = orderProduct.shopId
                     const skus = []
+                    let delProductFromCart
                     for (const product of orderProduct.item_products) {
                         const sku = await getOneSkuById(product.productId);
                         spuIds.push(sku.productId._id.toString());
@@ -47,19 +51,38 @@ const consumerOrderNormal = async () => {
                             productId: product.productId,
                             quantity: product.quantity
                         });
+                        delProductFromCart = await removeFromCart({ userId, productId: product.productId, shopId})
+                        countProduct++
                     }
+
+                    //delete shop in cart
+                    const shopIndex = delProductFromCart.cart_products.findIndex( shop => shop.shopId.toString() === shopId)
+                    if(shopIndex !== -1){
+                        const shopProducts = delProductFromCart.cart_products[shopIndex].product_shop
+                        if(shopProducts.length === 0){
+                            await removeCartShop({ userId, shopId })
+                        }
+                    }
+
                     const updatedStock = await updateSkusStock({ skus, isIncrease: false})
                     if(!updatedStock)
                         throw new BadRequestError('Update stock failed! Pls hotfix')
                 }
+                //updat cart count
+                await updateCartCount({
+                    userId,
+                    quantity: -countProduct
+                })
                 const uniqueArraySpuIds = getUniqueData(spuIds)
                 for(const spuId of uniqueArraySpuIds){
                     const updatedSpu = await updateInventoryStockSpuByProductId({ productId: spuId })
-                    if(updatedSpu)
+                    if(!updatedSpu)
                         throw new BadRequestError('Update spu stock failed! Pls hot fix')
                 }
+                console.log('DA ACKNOWLEDMENT ROI NHEEEEEEEE')
                 channel.ack(msg)
             } catch (error) {
+                console.error(error)
                 channel.ack(msg, false, false)
             }
         })
