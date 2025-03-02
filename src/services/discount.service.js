@@ -171,6 +171,12 @@ const getDiscountAmountService = async({
     if(foundDiscount.discount_min_order_value > shopTotalPrice && foundDiscount.discount_min_order_value !== 0){
         throw new BadRequestError(`Order total doesn't meet the discount`)
     }
+    //check max uses per user
+    if(foundDiscount.discount_max_use_per_user !== 0){
+        const count = foundDiscount.discount_user_used.filter(id => id === userId).length
+        if(count === foundDiscount.discount_max_use_per_user)
+            throw new BadRequestError('The usage limit for your discount has been reached')
+    }
     //select 1 product to apply discout (highest priced product)
     const productToDiscount = eligibleProducts.reduce( (pre, current) => {
         return (pre.price > current.price ? pre : current)
