@@ -2,7 +2,7 @@
 
 const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
-const { getCartByUserId, getListProductFromCart } = require("../models/repositories/cart.repo")
+const { getCartByUserId, getListProductFromCart, updateCartCount, removeFromCart, removeCartShop } = require("../models/repositories/cart.repo")
 const { createOrder } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
@@ -76,17 +76,17 @@ const createOrderService = async({
         for(let i = 0; i < shop_order_id.item_products.length; i++){
             const product = shop_order_id.item_products[i]
             const { productId, quantity } = product
-            // const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
-            // aquireProduct.push(keyLock ? true : false)
-            // if(keyLock != null){
-            //     const { key, uniqueValue } = keyLock
-            //     validProducts.push({
-            //         orderId: orderObjectId,
-            //         productId: product.productId,
-            //         quantity: product.quantity
-            //     })
-            //     await releaseLock({ keyLock: key, expectedValue: uniqueValue })
-            // }
+            const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
+            aquireProduct.push(keyLock ? true : false)
+            if(keyLock != null){
+                const { key, uniqueValue } = keyLock
+                validProducts.push({
+                    orderId: orderObjectId,
+                    productId: product.productId,
+                    quantity: product.quantity
+                })
+                await releaseLock({ keyLock: key, expectedValue: uniqueValue })
+            }
             item_products.push({
                 productId: product.productId,
                 price: product.price,
@@ -108,23 +108,21 @@ const createOrderService = async({
         total_checkout: checkout_order.totalCheckout,
         fee_ship: checkout_order.feeShip
     }
-    // const order = await createOrder({
-    //     _id: orderObjectId,
-    //     userId,
-    //     order_checkout: checkout,
-    //     shipping: user_address,
-    //     payment: user_payment,
-    //     order_products: orderProducts,
-    //     order_note
-    // })
-    // if(!order) 
-    //     throw new BadRequestError('Create order failure')
+    const order = await createOrder({
+        _id: orderObjectId,
+        userId,
+        order_checkout: checkout,
+        shipping: user_address,
+        payment: user_payment,
+        order_products: orderProducts,
+        order_note
+    })
+    if(!order) 
+        throw new BadRequestError('Create order failure')
 
-    //sync stock in sku
-    // await updateSkusStock({ skus: validProducts, isIncrease: true})
-    //sync stock in spu
+    // sync stock in spu and update discount, cart (message queue)
     await producerOrderMessage({userId, orderProducts: orderProducts})
-    return checkout
+    return orderProducts
 }
 
 const createOrderServiceV2 = async({
@@ -250,7 +248,6 @@ const checkoutOrderReviewService = async({
         const shopId = shop_order_ids[i].shopId
         const products = shop_order_ids[i].item_products.map(product => product.productId);
         const selectedProductFromCart = await getSeclectedProductFromCartService({ userId, shopId, products })
-
         if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
             throw new BadRequestError('Some product invalid')
         
