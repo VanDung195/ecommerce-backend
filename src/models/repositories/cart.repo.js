@@ -92,31 +92,6 @@ const updateCartCount = async ({
     )
 }
 
-// const removeFromCart = async ({
-//     userId,
-//     productId,
-//     shopId
-// }) => {
-//     const cart = await CART.findOneAndUpdate(
-//         {
-//             userId,
-//             'cart_products.productId': productId,
-//             'cart_products.shopId': shopId
-//         },
-//         {
-//             $pull: {
-//                 'cart_products': {
-//                     productId: productId
-//                 }
-//             }
-//         },
-//         {
-//             new: true
-//         }
-//     )
-//     return cart
-// }
-
 const removeFromCart = async ({
     userId,
     productId,
@@ -310,6 +285,7 @@ const getListProductFromCart = async({
                 'cart_products.product_shop.sku_info.isDeleted': 0,
                 'cart_products.product_shop.sku_info.createdAt': 0,
                 'cart_products.product_shop.sku_info.updatedAt': 0,
+                'cart_products.product_shop.price': 0,
                 'cart_products.product_shop.sku_info.__v': 0,
                 'cart_products.shop_info._id': 0,
                 'cart_products.shop_info.userId': 0,
@@ -406,63 +382,7 @@ const getListProductFromCart = async({
     ])
     return cart[0]
 }
-/*
-const selectProductFromCart = async ({ userId, shopId, productId }) => {
-    shopId = convertToObjectIdMongodb(shopId)
-    const cart = await CART.findOneAndUpdate(
-        {
-            userId,
-            'cart_products.shopId': shopId,
-            'cart_products.product_shop.productId': productId
-        },
-        [
-            {
-                $set: {
-                    cart_products: {
-                        $map: {
-                            input: "$cart_products",
-                            as: "shop",
-                            in: {
-                                $cond: {
-                                    if: { $eq: ["$$shop.shopId", shopId] },
-                                    then: {
-                                        $mergeObjects: [
-                                            "$$shop",
-                                            {
-                                                product_shop: {
-                                                    $map: {
-                                                        input: "$$shop.product_shop",
-                                                        as: "prod",
-                                                        in: {
-                                                            $cond: {
-                                                                if: { $eq: ["$$prod.productId", productId] },
-                                                                then: {
-                                                                    $mergeObjects: [
-                                                                        "$$prod",
-                                                                        { isSelected: { $not: ["$$prod.isSelected"] } }
-                                                                    ]
-                                                                },
-                                                                else: "$$prod"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    else: "$$shop"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        ],
-        { new: true }
-    )
-    return cart
-}
-*/
+
  /*
         [
             {
@@ -572,6 +492,7 @@ const getShopInCart = async({
     ])
     return shopInCart[0]
 }
+
 
 module.exports = {
     createCart,
