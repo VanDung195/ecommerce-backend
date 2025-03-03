@@ -18,7 +18,8 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
 
         //2. create queue
         const queueResult = await channel.assertQueue(orderQueue, {
-            exclusive: false,
+            durable: true,
+            exclusive: false, //không bị xoá khi client disconnect, cho phép nhiều consumer sử dụng
             deadLetterExchange: orderExchangeDLX,
             deadLetterRoutingKey: orderRoutingKeyDLX
         })
@@ -31,7 +32,7 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
             orderProducts
         }
         await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(payload)), {
-            expiration: 10000,
+            // expiration: 10000,
             persistent: true
         })
         setTimeout(() => {
@@ -41,6 +42,8 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
         console.error(error)
     }
 }
+
+
 
 module.exports = {
     producerOrderMessage
