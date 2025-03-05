@@ -38,8 +38,13 @@ const orderProductSchema = new Schema({
 }, { _id: false })
 
 const cancellationSchema = new Schema({
-    reason: { type: String, default: ''},
+    // reason: { type: String, default: ''},
+    reason: {
+        code: { type: String, enum: ['buyer_no_longer_wants', 'better_price_found', 'wrong_item_ordered', 'buyer_changed_mind', 'seller_no_response', 'seller_cannot_deliver_on_time', 'out_of_stock', 'seller_requested_cancellation', 'other'], required: true},
+        detail: { type: String, default: ''}
+    },
     cancelledAt: { type: Date, default: null},
+    shop_approval: { type: String, enum: ['pending', 'approved', 'reject'], default: 'pending'}
 })
 
 var orderSchema = new Schema({
