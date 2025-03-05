@@ -3,7 +3,7 @@
 const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart, updateCartCount, removeFromCart, removeCartShop } = require("../models/repositories/cart.repo")
-const { createOrder } = require("../models/repositories/order.repo")
+const { createOrder, getAllOrder, getOneOrderByUser } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
@@ -303,22 +303,27 @@ const checkoutOrderReviewService = async({
         cart: foundCart
     }
 }
-const getOrderService = async({
-    orderId
+const getAllOrderByUserService = async({
+    userId,
+    limit = 20,
+    page = 1
 }) => {
-
+    const orders = await getAllOrder({ userId, limit, page})
+    return orders
 }
 
 const cancelOrderService = async({
-
+    userId,
+    orderId
 }) => {
+    if(!orderId)
+        throw new BadRequestError('Order is required')
+    const foundOrder = await getOneOrderByUser({ userId, orderId })
+    if(!foundOrder)
+        throw new NotFoundError('Order not found')
 
-}
-
-const getAllOrderByUserService = async({
-    
-}) => {
-
+    const order_status = foundOrder.order_status
+    return foundOrder
 }
 
 //SHOP
@@ -348,5 +353,7 @@ const refundOrderService = async({
 
 module.exports = {
     checkoutOrderReviewService,
-    createOrderService
+    createOrderService,
+    getAllOrderByUserService,
+    cancelOrderService
 }
