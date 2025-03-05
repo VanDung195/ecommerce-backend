@@ -10,5 +10,5 @@ router.use(authentication)
 router.post('/checkout', asyncHandler(orderController.checkout))
 router.post('/', asyncHandler(orderController.orderByUser))
 router.get('/get_all_orders', asyncHandler(orderController.getAllOrderByUser))
-
+router.post('/cancel', asyncHandler(orderController.cancelOrderByUser))
 module.exports = router
