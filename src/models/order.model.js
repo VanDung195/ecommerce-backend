@@ -32,15 +32,24 @@ const paymentSchema = new Schema({
 const orderProductSchema = new Schema({
     shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true},
     shop_discount: { type: Object, default: {}},
-    price_raw: { type: Number, required: true},
-    price_apply_discount: { type: Number, default: 0},
+    // price_raw: { type: Number, required: true},
+    // price_apply_discount: { type: Number, default: 0},
     item_products: { type: Array, required: true}
 }, { _id: false })
 
 const cancellationSchema = new Schema({
-    // reason: { type: String, default: ''},
     reason: {
-        code: { type: String, enum: ['buyer_no_longer_wants', 'better_price_found', 'wrong_item_ordered', 'buyer_changed_mind', 'seller_no_response', 'seller_cannot_deliver_on_time', 'out_of_stock', 'seller_requested_cancellation', 'other'], required: true},
+        code: { type: String, enum: [
+            'buyer_no_longer_wants', 
+            'better_price_found', 
+            'wrong_item_ordered', 
+            'buyer_changed_mind', 
+            'seller_no_response', 
+            'seller_cannot_deliver_on_time', 
+            'out_of_stock', 
+            'seller_requested_cancellation', 
+            'other'
+        ], default: 'buyer_no_longer_wants'},
         detail: { type: String, default: ''}
     },
     cancelledAt: { type: Date, default: null},
@@ -52,8 +61,9 @@ var orderSchema = new Schema({
     order_checkout: { type: checkoutSchema, required: true},
     order_shipping: { type: shippingSchema, required: true},
     order_payment: { type: paymentSchema, required: true},
-    order_products: { type: [orderProductSchema], required: true},
-    order_status: { type: String, enum: ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered', 'returned'], default: 'pending'},
+    order_products: { type: orderProductSchema, required: true},
+    // order_status: { type: String, enum: ['pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'], default: 'pending'},
+    order_status: { type: String, enum: ['pending', 'shipping', 'pending_delivery', 'completed', 'cancelled', 'returned'], default: 'pending'},
     order_cancellation: { type: cancellationSchema, default: null},
     order_note: { type: String, default: ''}
 }, {
