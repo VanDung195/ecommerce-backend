@@ -47,7 +47,7 @@ const { producerOrderMessage } = require("../queues/order.producer")
         ]
     }
 */
-const createOrderService = async({
+const createOrderServiceV1 = async({
     userId,
     user_address,
     user_payment,
@@ -62,10 +62,8 @@ const createOrderService = async({
     const cartId = cart._id
     const aquireProduct = []
     const orderObjectId = new mongoose.Types.ObjectId()
-
     for(let i = 0; i < item_checkout.length; i++){
         const shop_order_id = item_checkout[i]
-
         const orderProduct = {
             shopId: shop_order_id.shop.shopId,
             shop_discount: shop_order_id.shop_discount,
@@ -119,94 +117,100 @@ const createOrderService = async({
     })
     if(!order) 
         throw new BadRequestError('Create order failure')
-
     // sync stock in spu and update discount, cart (message queue)
     await producerOrderMessage({userId, orderProducts: orderProducts})
     return orderProducts
 }
 
-const createOrderServiceV2 = async({
+//use transaction!!!!!
+const createOrderService = async({
     userId,
     user_address,
     user_payment,
     order_note = '',
     shop_order_ids
 }) => {
-    const { checkout_order, item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
-    const validProducts = []
-    //orderProductSchema
-    const orderProducts = []
+    const { item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
     const cartId = cart._id
-    const aquireProduct = []
-    const orderObjectId = new mongoose.Types.ObjectId()
+    for(let i = 0; i < item_checkout.length; i++){
+        let validProducts = []
+        const aquireProducts = []
+        const itemProducts = []
+        const orderObjectId = new mongoose.Types.ObjectId()
+        const shopOrderId = item_checkout[i]
+        const orderProducts = {
+            shopId: shopOrderId.shop.shopId,
+            shop_discount: shopOrderId.shop_discount
+        }
+        
+        for(let j = 0; j < shopOrderId.item_products.length; j++){
+            const product = shopOrderId.item_products[j]
+            const { productId, quantity } = product
+            const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
+            aquireProducts.push(keyLock ? true : false)
+            if(keyLock !== null){
+                const { key, uniqueValue } = keyLock
+                await releaseLock({ keyLock: key, expectedValue: uniqueValue })
 
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-        for(let i = 0; i < item_checkout.length; i++){
-            const shop_order_id = item_checkout[i]
-            const orderProduct = {
-                shopId: shop_order_id.shop.shopId,
-                shop_discount: shop_order_id.shop_discount,
-                price_raw: shop_order_id.price_raw,
-                price_apply_discount: shop_order_id.price_apply_discount ? shop_order_id.price_apply_discount : 0
-            }
-            const item_products = []
-            for(let i = 0; i < shop_order_id.item_products.length; i++){
-                const product = shop_order_id.item_products[i]
-                const { productId, quantity } = product
-                const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId, session})
-                aquireProduct.push(keyLock ? true : false)
-                if(keyLock != null){
-                    const { key, uniqueValue } = keyLock
-                    validProducts.push({
-                        orderId: orderObjectId,
-                        productId: product.productId,
-                        quantity: product.quantity
-                    })
-                    await releaseLock({ keyLock: key, expectedValue: uniqueValue })
-                }
-                item_products.push({
+                validProducts.push({
+                    orderId: orderObjectId,
                     productId: product.productId,
-                    price: product.price,
-                    quantity: product.quantity,
+                    quantity: product.quantity
                 })
             }
-            orderProduct.item_products = item_products
-            orderProducts.push(orderProduct)
+            itemProducts.push({
+                productId: productId,
+                price: product.price,
+                quantity: product.quantity
+            })
         }
-        if(aquireProduct.includes(false)){
-            throw new BadRequestError('Some product have been updated! Pls return to the cart!')
-            //unReservationInventory và trả lại số lượng tồn kho!!
-        }
-        //checkoutSchema
+        orderProducts.item_products = itemProducts
         const checkout = {
-            total_price: checkout_order.totalPrice,
-            total_apply_discount: checkout_order.totalDiscount,
-            total_checkout: checkout_order.totalCheckout,
-            fee_ship: checkout_order.feeShip
+            total_price: shopOrderId.price_raw,
+            total_apply_discount: shopOrderId.price_raw - shopOrderId.price_apply_discount,
+            total_checkout: shopOrderId.price_apply_discount,
+            fee_ship: 0
         }
-        const order = await createOrder({
-            _id: orderObjectId,
-            userId,
-            order_checkout: checkout,
-            shipping: user_address,
-            payment: user_payment,
-            order_products: orderProducts,
-            order_note
-        })
-        if(!order) 
-            throw new BadRequestError('Create order failure')
-
-        await session.commitTransaction()
-    } catch (error) {
-        await session.abortTransaction()
-        return error
-    } finally {
-        session.endSession()
+        if(aquireProducts.includes(false)){
+            await unReservationInventory({ products: validProducts })
+            const order = await createOrder({
+                _id: orderObjectId,
+                userId,
+                order_checkout: checkout,
+                shipping: user_address,
+                payment: user_payment,
+                order_products: orderProducts,
+                order_note,
+                order_cancellation: {
+                    reason: {
+                        code: 'out_of_stock',
+                        detail: 'Some product out of stock'
+                    },
+                    cancelledAt: new Date(),
+                    shop_approval: 'approved'
+                }
+            })
+            if(!order)
+                throw new BadRequestError('Create order failure')
+        } else {
+            const order = await createOrder({
+                _id: orderObjectId,
+                userId,
+                order_checkout: checkout,
+                shipping: user_address,
+                payment: user_payment,
+                order_products: orderProducts,
+                order_note
+            })
+            if(!order)
+                throw new BadRequestError('Create order failure')
+        }
+        await producerOrderMessage({userId, orderProducts: orderProducts})
     }
-    return validProducts
+    
+    return item_checkout
 }
+
 
 /*
     {
@@ -306,15 +310,27 @@ const checkoutOrderReviewService = async({
 const getAllOrderByUserService = async({
     userId,
     limit = 20,
-    page = 1
+    page = 1,
+    status = 6
 }) => {
-    const orders = await getAllOrder({ userId, limit, page})
+    const ORDER_STATUSES = {
+        9: 'pending',
+        7: 'shipping',
+        8: 'pending_delivery',
+        3: 'completed',
+        4: 'cancelled',
+        12: 'returned',
+        6: 'all'
+    }
+    const orders = await getAllOrder({ userId, status: ORDER_STATUSES[status], limit, page})
     return orders
 }
 
 const cancelOrderService = async({
     userId,
-    orderId
+    orderId,
+    code = 'other',
+    detail = ''
 }) => {
     if(!orderId)
         throw new BadRequestError('Order is required')
@@ -323,6 +339,14 @@ const cancelOrderService = async({
         throw new NotFoundError('Order not found')
 
     const order_status = foundOrder.order_status
+    console.log(order_status)
+    const cancellationInfo = {
+        reason: { code, detail }
+    }
+    if(order_status === 'pending'){
+        cancellationInfo.cancelledAt = new Date()
+        cancellationInfo.shop_approval = 'approved'
+    }
     return foundOrder
 }
 
@@ -330,6 +354,10 @@ const cancelOrderService = async({
 const confirmOrderService = async({
 
 }) => {
+
+}
+
+const confirmCancelOrderService = async({}) => {
 
 }
 
