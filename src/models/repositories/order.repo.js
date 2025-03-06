@@ -8,8 +8,9 @@ const createOrder = async({
     order_checkout,
     shipping,
     payment,
-    order_products = [],
-    order_note
+    order_products,
+    order_note,
+    order_cancellation = null
 }) => {
     const order = await ORDER.create({
         order_userId: userId,
@@ -58,9 +59,13 @@ const getOrderByUser = async({ userId, orderId }) => {
         //         }
         //     }
         // }
-const getAllOrder = async({ userId, limit, page }) => {
+const getAllOrder = async({ userId, status, limit, page }) => {
     const skip = (page - 1) * limit
     const filter = {order_userId: convertToObjectIdMongodb(userId)}
+    if(status !== 'all'){
+        filter.order_status = status
+    }
+    console.log(filter)
     const orders = await ORDER.aggregate([
         {
             $match: filter
@@ -313,13 +318,24 @@ const getOneOrderByUser = async({ userId, orderId }) => {
     })
 }
 
-const cancelOrder = async({ userId, orderId }) => {
+const cancelOrder = async({ userId, orderId, cancellation_info }) => {
+    const filter = {
+        order_userId: userId,
+        _id: convertToObjectIdMongodb(orderId)
+    }, update = {
+        $set: {
+            order_cancellation: cancellation_info
+        }
+    }, option = { new: true }
+    const cancelledOrder = await ORDER.findOneAndUpdate(filter, update, option)
 
+    return cancelledOrder
 }
 
 module.exports = {
     createOrder,
     getOrderByUser,
     getAllOrder,
-    getOneOrderByUser
+    getOneOrderByUser,
+    cancelOrder
 }
