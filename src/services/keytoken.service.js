@@ -3,7 +3,7 @@
 const { Types } = require('mongoose')
 const { findKeyTokenByUserId, createKeyToken } = require('../models/repositories/keytoken.repo')
 const { NotFoundError, BadRequestError } = require('../core/error.response')
-
+const { convertToObjectIdMongodb } = require('../utils/index')
 class KeyTokenService{
     createKeyToken = async ({ userId, privateKey, publicKey, refreshToken }) => {
         const keys = createKeyToken({

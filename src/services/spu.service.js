@@ -4,7 +4,7 @@ const { NotFoundError, BadRequestError } = require('../core/error.response')
 const { addStockToInventory } = require('../models/repositories/inventory.repo')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
 const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, createOneSku, updateSkuTierIdx } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, updateInvenStockSpu, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice } = require('../models/repositories/spu.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
 

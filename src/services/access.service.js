@@ -164,7 +164,7 @@ const handlerRefreshTokenV2 = async ({
             throw new ForbiddenError('Something went wrong! Pls relogin')
         }
 
-        if (keyStore.refreshToken != refreshToken)
+        if (keyStore.refreshToken !== refreshToken)
             throw new AuthFailureError('User not registed!')
 
 
