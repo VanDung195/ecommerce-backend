@@ -13,7 +13,7 @@ var roleSchema = new Schema({
     rol_description: { type: String, default: ''},
     rol_grants: [
         {
-            resourceId: { type: Schema.Types.ObjectId, ref: 'Resources', required: true},
+            resourceId: { type: Schema.Types.ObjectId, ref: 'Resource', required: [true, 'resourceId are required']},
             actions: { type: Array, required: true},
             attributes: { type: String, default: '*'}
         }

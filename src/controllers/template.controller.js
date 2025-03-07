@@ -8,10 +8,11 @@ class TemplateController{
         const { tem_name, tem_html} = req.body
         new SuccessResponse({
             message: 'New template',
-            metadata: await newTemplate({
-                tem_name,
-                tem_html
-            })
+            // metadata: await newTemplate({
+            //     tem_name,
+            //     tem_html
+            // })
+            metadata: 'Success'
         }).send(res)
     }
 }

@@ -73,7 +73,6 @@ const getInventory = async({
 }
 
 const reservationInventory = async({ productId, quantity, cartId, orderId}) => {
-    console.log('======DEBUG=======')
     const query = {
         inven_productId: productId,
         inven_stock: {

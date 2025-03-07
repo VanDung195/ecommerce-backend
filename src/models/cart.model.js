@@ -8,7 +8,7 @@ const COLLECTION_NAME = 'Carts'
 const productCartSchema = new Schema({
     shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true},
     shop_discount: { type: Object, default: null},
-    product_shop: { type: Array, default: []}
+    product_shop: { type: Array, default: []},
 }, { _id: 0 })
 
 const cartSchema = new Schema({
@@ -23,20 +23,14 @@ const cartSchema = new Schema({
         [
             {
                 shopId,
-                shop_discount: {
-                    shopId,
-                    discountId,
-                    codeId    
-                }
                 product_shop: [
                     {
                         productId,
                         name,
                         price,
                         quantity,
-                        isSelected
                     }
-                ]
+                ],
             }
         ]    
     */
