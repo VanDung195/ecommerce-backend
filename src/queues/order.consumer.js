@@ -21,7 +21,83 @@ const consumerOrderNormal = async () => {
                 const userId = payload.userId
                 const spuIds = []
                 let countProduct = 0
-
+                if(orderProducts.shop_discount){
+                    const updatedDiscount = await updateDiscountForOrder({
+                        userId, 
+                        shopId: orderProducts.shopId, 
+                        discountId: orderProducts.shop_discount.discountId, 
+                        code: orderProducts.shop_discount.code
+                    })
+                    if(!updatedDiscount)
+                        throw new BadRequestError('Update discount failed! Pls hotfix')
+                }
+                /*
+                    [
+                        {
+                            productId,
+                            quantity
+                        }
+                    ]
+                    */
+                const shopId = orderProducts.shopId
+                const skus = []
+                let delProductFromCart
+                for (const product of orderProducts.item_products) {
+                    const sku = await getOneSkuById(product.productId);
+                    spuIds.push(sku.productId._id.toString());
+                    skus.push({
+                        productId: product.productId,
+                        quantity: product.quantity
+                    });
+                    delProductFromCart = await removeFromCart({ userId, productId: product.productId, shopId})
+                    countProduct++
+                }
+                //delete shop in cart
+                const shopIndex = delProductFromCart.cart_products.findIndex( shop => shop.shopId.toString() === shopId)
+                if(shopIndex !== -1){
+                    const shopProducts = delProductFromCart.cart_products[shopIndex].product_shop
+                    if(shopProducts.length === 0){
+                        await removeCartShop({ userId, shopId })
+                    }
+                }
+                const updatedStock = await updateSkusStock({ skus, isIncrease: false})
+                if(!updatedStock)
+                    throw new BadRequestError('Update stock failed! Pls hotfix')
+                //updat cart count
+                await updateCartCount({
+                    userId,
+                    quantity: -countProduct
+                })
+                const uniqueArraySpuIds = getUniqueData(spuIds)
+                for(const spuId of uniqueArraySpuIds){
+                    const updatedSpu = await updateInventoryStockSpuByProductId({ productId: spuId })
+                    if(!updatedSpu)
+                        throw new BadRequestError('Update spu stock failed! Pls hot fix')
+                }
+                console.log('DA ACKNOWLEDMENT ROI NHE')
+                channel.ack(msg)
+            } catch (error) {
+                console.error(error)
+                channel.ack(msg, false, false)
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+const consumerOrderNormalV2 = async () => {
+    try {
+        const { connection, channel } = await connectToRabbitMQ()
+        const orderQueue = 'orderQueueProcess'
+        console.log(`Order Consumer is listening on queue "${orderQueue}"...`);
+        channel.consume(orderQueue, async msg => {
+            try {
+                const payload = JSON.parse(msg.content.toString())
+                const orderProducts = payload.orderProducts
+                const userId = payload.userId
+                const spuIds = []
+                let countProduct = 0
                 for (const orderProduct of orderProducts) {
                     if(orderProduct.shop_discount){
                         const updatedDiscount = await updateDiscountForOrder({
@@ -54,7 +130,6 @@ const consumerOrderNormal = async () => {
                         delProductFromCart = await removeFromCart({ userId, productId: product.productId, shopId})
                         countProduct++
                     }
-
                     //delete shop in cart
                     const shopIndex = delProductFromCart.cart_products.findIndex( shop => shop.shopId.toString() === shopId)
                     if(shopIndex !== -1){
@@ -91,6 +166,7 @@ const consumerOrderNormal = async () => {
         throw error
     }
 }
+
 
 
 const consumerOrderFailed = async () => {
