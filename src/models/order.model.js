@@ -1,11 +1,11 @@
 'use strict'
 
-const { Schema, model} = require('mongoose'); // Erase if already required
+const { Schema, model} = require('mongoose'); 
 
 const DOCUMENT_NAME = 'Order'
 const COLLECTION_NAME = 'Orders'
 
-//sub-schema for checkout
+//sub-schema
 const checkoutSchema = new Schema({
     total_price: { type: Number, required: true },
     total_apply_discount: { type: Number, default: 0 },
@@ -32,8 +32,6 @@ const paymentSchema = new Schema({
 const orderProductSchema = new Schema({
     shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true},
     shop_discount: { type: Object, default: {}},
-    // price_raw: { type: Number, required: true},
-    // price_apply_discount: { type: Number, default: 0},
     item_products: { type: Array, required: true}
 }, { _id: false })
 
@@ -52,9 +50,14 @@ const cancellationSchema = new Schema({
         ], default: 'buyer_no_longer_wants'},
         detail: { type: String, default: ''}
     },
-    cancelledAt: { type: Date, default: null},
-    shop_approval: { type: String, enum: ['pending', 'approved', 'reject'], default: 'pending'}
-})
+    cancelledAt: { type: Date, default: new Date()},
+    shop_approval: { type: String, enum: ['pending', 'approved', 'reject'], default: 'pending'},
+    approvedAt: { type: Date, default: null}
+}, { _id: false })
+var orderStatusHistorySchema = new Schema({
+    status: { type: String, enum: ['pending', 'confirmed', 'shipping', 'pending_delivery', 'completed', 'cancelled', 'returned'], default: 'pending'},
+    changedAt: { type: Date, default: new Date()}
+}, { _id: false })
 
 var orderSchema = new Schema({
     order_userId: { type: Schema.Types.ObjectId, required: true, ref: 'User'},
@@ -62,8 +65,8 @@ var orderSchema = new Schema({
     order_shipping: { type: shippingSchema, required: true},
     order_payment: { type: paymentSchema, required: true},
     order_products: { type: orderProductSchema, required: true},
-    // order_status: { type: String, enum: ['pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'returned'], default: 'pending'},
-    order_status: { type: String, enum: ['pending', 'shipping', 'pending_delivery', 'completed', 'cancelled', 'returned'], default: 'pending'},
+    order_status: { type: String, enum: ['pending', 'confirmed', 'shipping', 'pending_delivery', 'completed', 'cancelled', 'returned'], default: 'pending'},
+    order_status_history: { type: [orderStatusHistorySchema], default: [{ status: 'pending', changedAt: new Date()}]},
     order_cancellation: { type: cancellationSchema, default: null},
     order_note: { type: String, default: ''}
 }, {
