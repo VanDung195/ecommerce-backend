@@ -3,7 +3,7 @@
 const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart, updateCartCount, removeFromCart, removeCartShop } = require("../models/repositories/cart.repo")
-const { createOrder, getAllOrder, getOneOrderByUser } = require("../models/repositories/order.repo")
+const { createOrder, getAllOrder, getOneOrderByUser, cancelOrder, updateOrderStatusHistory } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
@@ -47,81 +47,6 @@ const { producerOrderMessage } = require("../queues/order.producer")
         ]
     }
 */
-const createOrderServiceV1 = async({
-    userId,
-    user_address,
-    user_payment,
-    order_note = '',
-    shop_order_ids
-}) => {
-    const { checkout_order, item_checkout, cart } = await checkoutOrderReviewService({ userId, shop_order_ids})
-    //sử dụng để rollback khi 1 sản phẩm bị lỗi
-    const validProducts = []
-    //orderProductSchema
-    const orderProducts = []
-    const cartId = cart._id
-    const aquireProduct = []
-    const orderObjectId = new mongoose.Types.ObjectId()
-    for(let i = 0; i < item_checkout.length; i++){
-        const shop_order_id = item_checkout[i]
-        const orderProduct = {
-            shopId: shop_order_id.shop.shopId,
-            shop_discount: shop_order_id.shop_discount,
-            price_raw: shop_order_id.price_raw,
-            price_apply_discount: shop_order_id.price_apply_discount ? shop_order_id.price_apply_discount : 0
-        }
-        const item_products = []
-        for(let i = 0; i < shop_order_id.item_products.length; i++){
-            const product = shop_order_id.item_products[i]
-            const { productId, quantity } = product
-            const keyLock = await aquireLock({ productId, quantity, cartId, orderId: orderObjectId})
-            aquireProduct.push(keyLock ? true : false)
-            if(keyLock != null){
-                const { key, uniqueValue } = keyLock
-                validProducts.push({
-                    orderId: orderObjectId,
-                    productId: product.productId,
-                    quantity: product.quantity
-                })
-                await releaseLock({ keyLock: key, expectedValue: uniqueValue })
-            }
-            item_products.push({
-                productId: product.productId,
-                price: product.price,
-                quantity: product.quantity,
-            })
-        }
-        orderProduct.item_products = item_products
-        orderProducts.push(orderProduct)
-    }
-    if(aquireProduct.includes(false)){
-        //hàm này khi có 3 sản phẩm mà sản phẩm thứ 3 không hợp lệ
-        await unReservationInventory({ products: validProducts })
-        throw new BadRequestError('Some product have been updated! Pls return to the cart!')
-    }
-    //checkoutSchema
-    const checkout = {
-        total_price: checkout_order.totalPrice,
-        total_apply_discount: checkout_order.totalDiscount,
-        total_checkout: checkout_order.totalCheckout,
-        fee_ship: checkout_order.feeShip
-    }
-    const order = await createOrder({
-        _id: orderObjectId,
-        userId,
-        order_checkout: checkout,
-        shipping: user_address,
-        payment: user_payment,
-        order_products: orderProducts,
-        order_note
-    })
-    if(!order) 
-        throw new BadRequestError('Create order failure')
-    // sync stock in spu and update discount, cart (message queue)
-    await producerOrderMessage({userId, orderProducts: orderProducts})
-    return orderProducts
-}
-
 //use transaction!!!!!
 const createOrderService = async({
     userId,
@@ -142,7 +67,6 @@ const createOrderService = async({
             shopId: shopOrderId.shop.shopId,
             shop_discount: shopOrderId.shop_discount
         }
-        
         for(let j = 0; j < shopOrderId.item_products.length; j++){
             const product = shopOrderId.item_products[j]
             const { productId, quantity } = product
@@ -204,14 +128,11 @@ const createOrderService = async({
             })
             if(!order)
                 throw new BadRequestError('Create order failure')
+            await producerOrderMessage({userId, orderProducts: orderProducts})
         }
-        await producerOrderMessage({userId, orderProducts: orderProducts})
     }
-    
     return item_checkout
 }
-
-
 /*
     {
         cartId,
@@ -315,6 +236,7 @@ const getAllOrderByUserService = async({
 }) => {
     const ORDER_STATUSES = {
         9: 'pending',
+        2: 'confirmed',
         7: 'shipping',
         8: 'pending_delivery',
         3: 'completed',
@@ -332,44 +254,67 @@ const cancelOrderService = async({
     code = 'other',
     detail = ''
 }) => {
-    if(!orderId)
-        throw new BadRequestError('Order is required')
+    if (!orderId) throw new BadRequestError('Order is required')
     const foundOrder = await getOneOrderByUser({ userId, orderId })
-    if(!foundOrder)
-        throw new NotFoundError('Order not found')
-
-    const order_status = foundOrder.order_status
-    console.log(order_status)
-    const cancellationInfo = {
-        reason: { code, detail }
+    if (!foundOrder) throw new NotFoundError('Order not found')
+    const { order_status } = foundOrder
+    const cancellationInfo = { reason: { code, detail } }
+    switch (order_status) {
+        case 'pending':
+            cancellationInfo.shop_approval = 'approved'
+            break
+        case 'confirmed':
+            cancellationInfo.shop_approval = 'pending'
+            break;
+        default:
+            throw new BadRequestError('Order status invalid')
     }
-    if(order_status === 'pending'){
-        cancellationInfo.cancelledAt = new Date()
-        cancellationInfo.shop_approval = 'approved'
-    }
-    return foundOrder
+    const cancelledOrder = await cancelOrder({ userId, orderId, cancellation_info: cancellationInfo, order_status })
+    if (!cancelledOrder) throw new BadRequestError('Cancel order failed!')
+    await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+    return cancelledOrder
 }
-
 //SHOP
-const confirmOrderService = async({
 
-}) => {
+const updateOrderStatusHistoryService = async({userId, orderId, validStatus, status }) => {
+    if(!orderId) throw new BadRequestError('Order is required')
+    const foundOrder = await getOneOrderByUser({ userId, orderId })
+    if(!foundOrder) throw new NotFoundError('Order not found')
+    const { order_status } = foundOrder
+    if(order_status !== validStatus)
+        throw new BadRequestError('Your request to confirm order is not valid')
+    const updatedOrderStatusHistory = await updateOrderStatusHistory({ userId, orderId, status})
+    if(!updatedOrderStatusHistory) throw new BadRequestError('Update order status failed')
 
+    return updatedOrderStatusHistory
 }
 
-const confirmCancelOrderService = async({}) => {
-
+const confirmOrderByShopService = async({
+    userId,
+    orderId
+}) => {
+    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'pending', status: 'confirmed'})
 }
 
-const shipOrderService  = async({
-
+const shippingOrderByShopService = async({
+    userId,
+    orderId
 }) => {
-
+    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'confirmed', status: 'shipping'})
 }
 
-const completeOrderService  = async({
+const deliveryOrderByShopService = async({ userId, orderId }) => {
+    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'shipping', status: 'pending_delivery'})
+}
 
+const completeOrderByShopService  = async({
+    userId,
+    orderId
 }) => {
+    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'pending_delivery', status: 'completed'})
+}
+
+const confirmCancelOrderByShopService = async({}) => {
 
 }
 
@@ -383,5 +328,9 @@ module.exports = {
     checkoutOrderReviewService,
     createOrderService,
     getAllOrderByUserService,
-    cancelOrderService
+    cancelOrderService,
+    confirmOrderByShopService,
+    shippingOrderByShopService,
+    deliveryOrderByShopService,
+    completeOrderByShopService
 }
