@@ -159,7 +159,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"token\": \"3375944745\",\r\n    \"username\": \"Hồ Văn Dũng SHOPPPPPPPPPPP\",\r\n    \"password\": \"vandung19052003\"\r\n}",
+					"raw": "{\r\n    \"token\": \"3375944745\",\r\n    \"username\": \"SHOPPPPPPPPPPP\",\r\n    \"password\": \"test\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -192,7 +192,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"gh438221@gmail.com\",\r\n    \"password\": \"vandung19052003\"\r\n}\r\n\r\n//shop\r\n// {\r\n//     \"email\": \"gas3436454@gmail.com\",\r\n//     \"password\": \"vandung19052003\"\r\n// }",
+					"raw": "{\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"test\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -951,7 +951,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3052/api/product/ao-thun-test-nhe.7346363486",
+					"raw": "http://localhost:3052/api/product/ao-thun-test-cho-shop.4718751563",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -960,7 +960,7 @@
 					"path": [
 						"api",
 						"product",
-						"ao-thun-test-nhe.7346363486"
+						"ao-thun-test-cho-shop.4718751563"
 					]
 				}
 			},
@@ -1934,7 +1934,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"spuId\": \"679de3b4cbb3728f5b3fd387\",\r\n    \"variation_name\": \"color\",\r\n    \"variation_options\": [\"cl1\", \"cl3\"]\r\n}",
+					"raw": "{\r\n    \"spuId\": \"679de3b4cbb3728f5b3fd387\",\r\n    \"variation_name\": \"color\",\r\n    \"variation_options\": [\"cl1\",\"cl22\", \"cl3\"]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1973,13 +1973,13 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "// {\r\n//     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\",\r\n//     \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n//     \"quantity\": 2\r\n// }\r\n//67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\r\n//67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\r\n//679dd8efddf5bd2cc2cd5ba7\r\n\r\n//shop2\r\n//67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\r\n//67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\r\n//67a848495fa5509c47c0c613\r\n{\r\n    \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\",\r\n    \"shopId\": \"67a848495fa5509c47c0c613\",\r\n    \"quantity\": 2\r\n}",
+					"raw": "// {\r\n//     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\",\r\n//     \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n//     \"quantity\": 2\r\n// }\r\n//67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\r\n//67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\r\n//679dd8efddf5bd2cc2cd5ba7\r\n\r\n//shop2\r\n//67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\r\n//67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\r\n//67a848495fa5509c47c0c613\r\n\r\n// {\r\n//     \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\",\r\n//     \"shopId\": \"67a848495fa5509c47c0c613\",\r\n//     \"quantity\": 2\r\n// }\r\n\r\n{\r\n    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\",\r\n    \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n    \"quantity\": 2\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2020,7 +2020,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
 						"type": "text"
 					}
 				],
@@ -2034,7 +2034,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3052/api/cart?limit=1&page=1",
+					"raw": "http://localhost:3052/api/cart?limit=4&page=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -2047,7 +2047,7 @@
 					"query": [
 						{
 							"key": "limit",
-							"value": "1"
+							"value": "4"
 						},
 						{
 							"key": "page",
@@ -2384,7 +2384,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
 						"type": "text"
 					}
 				],
@@ -2458,7 +2458,7 @@
 			"response": []
 		},
 		{
-			"name": "ORDER (USER): checkout",
+			"name": "ORDER (USER): checkout review",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -2472,13 +2472,13 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg5NDQ0NzcsImV4cCI6MTc0MTQ1MDA3N30.zskFGhDcCj2JjWb7QB6kfx3G3Q6V_SPT-Ax0AkRBz-GubZJ0VziYgHN9b4NtsLpTaQWU-fOArVPaAGsEa0cMfvzgaIwccTCxCwEYlJrYNwfta5ufjz-3c4LfTG4W7u-mUZx_jq3o4gqlXQcdpCsA_Y7LicwC-FupyXErlRR1KycHbAdH5pTL7fs4vy32UbaQZbq1_hCKbGNsgh6QM1s9849bmZSdsvkXNN9xZnTGLpvyVtIOqvniXBw34wc7RHMLX_0VMKrT5HOnVuvTaxGpk2DQxRxJIq-g8yOgclwLmHqD3Is1OyX1wH1Dh_4dfLyFteZHWQWNxLH8R4W74UbPlssh8ThnDEX9xIn3JzY4EJURlGRyDYMtQwFQQ0XXWQa5PRMYMhIZ5zvItpARWk0Wye4G9todbHPU1PmDvOULWhAOIywPO508n5L5R4vmeErXhXACznOXZi61voF6gOAHw1TOhxlDf-COYiisN03f0biFpB4WbmeCEHtjli0lyIT1BBQahDEJckQEJSSThCzePUxOpcAcIQXjsbsWsy_eJYpgBRFyDPDTad03hz48q9nfNw2zzet9bLm1vtAfY1vhz9HSc0QkDcdSlbje67N3sXiPYnlm95ODmZuvPwAUO9bVJ1F8p4HeMRRpYLAwra_jvYr3Vfnpx4nMIRxM5qO0g-s",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                },\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2540,6 +2540,851 @@
 						"api",
 						"discount",
 						"discount_amount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (USER): order by user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_address\": {\r\n        \"street\": \"128 Minh Mang\",\r\n        \"city\": \"Hue\",\r\n        \"state\": \"Thuan Hoa\"\r\n    },\r\n    \"user_payment\": {\r\n        \"method\": \"cash\"\r\n    },\r\n    \"order_note\": \"\",\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                // {\r\n                //      \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                // },\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (USER): get all orders by user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/get_all_orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"get_all_orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (USER): cancel order by USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\",\r\n    \"code\": \"other\",\r\n    \"detail\": \"Product is too bad\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/cancel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (SHOP): confirm order by shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\r\n//     \"orderId\": \"67cd5262434fb2490659013d\"\r\n// }\r\n{\r\n    \"orderId\": \"67cd5262434fb24906590136\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/confirm",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"confirm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (SHOP): shipping order by SHOP",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/shipping",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"shipping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (DELIVERY UNIT): delivery order by delivery unit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/delivery",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"delivery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (SHOP): complete order by SHOP",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/complete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"complete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (SHOP): confirm cancelled order by shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/confirm_cancelled_order",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"confirm_cancelled_order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (SHOP): get all orders by shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"type": "text"
+					},
+					{
+						"key": "x-client-id",
+						"value": "1",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "authorization",
+						"value": "2",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/get_all_orders_shop",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"get_all_orders_shop"
 					]
 				}
 			},
