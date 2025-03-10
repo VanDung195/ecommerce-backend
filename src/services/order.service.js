@@ -3,7 +3,7 @@
 const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart, updateCartCount, removeFromCart, removeCartShop } = require("../models/repositories/cart.repo")
-const { createOrder, getAllOrder, getOneOrderByUser, cancelOrder, updateOrderStatusHistory } = require("../models/repositories/order.repo")
+const { createOrder, getAllOrder, getOneOrderByUser, cancelOrder, updateOrderStatusHistory, getOneOrderByShop } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
@@ -244,7 +244,7 @@ const getAllOrderByUserService = async({
         12: 'returned',
         6: 'all'
     }
-    const orders = await getAllOrder({ userId, status: ORDER_STATUSES[status], limit, page})
+    const orders = await getAllOrder({ id: userId, role: 'user', status: ORDER_STATUSES[status], limit, page})
     return orders
 }
 
@@ -271,51 +271,64 @@ const cancelOrderService = async({
     }
     const cancelledOrder = await cancelOrder({ userId, orderId, cancellation_info: cancellationInfo, order_status })
     if (!cancelledOrder) throw new BadRequestError('Cancel order failed!')
-    await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+    if(order_status === 'pending'){
+        await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+    }
     return cancelledOrder
 }
-//SHOP
 
-const updateOrderStatusHistoryService = async({userId, orderId, validStatus, status }) => {
+////////////////
+//   SHOP    //
+//////////////
+const updateOrderStatusHistoryService = async({shopId, orderId, validStatus, status }) => {
     if(!orderId) throw new BadRequestError('Order is required')
-    const foundOrder = await getOneOrderByUser({ userId, orderId })
+    const foundOrder = await getOneOrderByShop({ shopId, orderId })
+    console.log(foundOrder)
     if(!foundOrder) throw new NotFoundError('Order not found')
+    const userId = foundOrder.order_userId
     const { order_status } = foundOrder
     if(order_status !== validStatus)
-        throw new BadRequestError('Your request to confirm order is not valid')
+        throw new BadRequestError('Current order status does not allow this action')
     const updatedOrderStatusHistory = await updateOrderStatusHistory({ userId, orderId, status})
     if(!updatedOrderStatusHistory) throw new BadRequestError('Update order status failed')
 
     return updatedOrderStatusHistory
 }
 
-const confirmOrderByShopService = async({
-    userId,
-    orderId
-}) => {
-    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'pending', status: 'confirmed'})
+const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, orderId }) => {
+    return updateOrderStatusHistoryService({ shopId, orderId, validStatus, status: newStatus})
 }
 
-const shippingOrderByShopService = async({
-    userId,
-    orderId
-}) => {
-    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'confirmed', status: 'shipping'})
+const confirmOrderByShopService = updateOrderStatusService('pending', 'confirmed');
+const shippingOrderByShopService = updateOrderStatusService('confirmed', 'shipping');
+const deliveryOrderByShopService = updateOrderStatusService('shipping', 'pending_delivery');
+const completeOrderByShopService = updateOrderStatusService('pending_delivery', 'completed');
+
+const getAllOrderByShopService = async({ shopId, limit = 20, page = 1, status = 6 }) => {
+    const ORDER_STATUSES = {
+        9: 'pending',
+        2: 'confirmed',
+        7: 'shipping',
+        8: 'pending_delivery',
+        3: 'completed',
+        4: 'cancelled',
+        12: 'returned',
+        6: 'all'
+    }
+    const orders = await getAllOrder({ id: shopId, role: 'shop', status: ORDER_STATUSES[status], limit, page})
+    return orders
 }
 
-const deliveryOrderByShopService = async({ userId, orderId }) => {
-    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'shipping', status: 'pending_delivery'})
-}
-
-const completeOrderByShopService  = async({
-    userId,
-    orderId
-}) => {
-    return await updateOrderStatusHistoryService({ userId, orderId, validStatus: 'pending_delivery', status: 'completed'})
-}
-
-const confirmCancelOrderByShopService = async({}) => {
-
+const confirmCancelledOrderByShopService = async({ shopId, orderId }) => {
+    if(!orderId)
+        throw new BadRequestError('Invalid order')
+    const foundOrder = await getOneOrderByShop({ shopId, orderId})
+    if(!foundOrder)
+        throw new NotFoundError('Order not found')
+    const { order_status, order_cancellation } = foundOrder
+    if(order_status !== 'cancelled' && order_cancellation === null)
+        throw new BadRequestError('Current order status does not allow this action')
+    return order_cancellation
 }
 
 const refundOrderService = async({
@@ -332,5 +345,7 @@ module.exports = {
     confirmOrderByShopService,
     shippingOrderByShopService,
     deliveryOrderByShopService,
-    completeOrderByShopService
+    completeOrderByShopService,
+    confirmCancelledOrderByShopService,
+    getAllOrderByShopService
 }
