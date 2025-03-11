@@ -11,5 +11,8 @@ module.exports = {
         4: 'cancelled',
         12: 'returned',
         6: 'all'
+    },
+    CACHE_PRODUCT: {
+        'PRODUCT_DETAIL': 'product:detail:',
     }
 }
