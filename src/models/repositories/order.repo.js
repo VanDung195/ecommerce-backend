@@ -29,10 +29,9 @@ const getOrderByUser = async({ userId, orderId }) => {
         _id: convertToObjectIdMongodb(orderId)
     })
 } 
-const getAllOrder = async({ id, role = 'user', status, limit, page }) => {
+const getAllOrderByUser = async({ userId, status, limit, page }) => {
     const skip = (page - 1) * limit
-    const filterKey = role === 'shop' ? 'order_products.shopId' : 'order_userId'
-    const filter = {[filterKey]: convertToObjectIdMongodb(id)}
+    const filter = {order_userId: convertToObjectIdMongodb(userId)}
     if(status !== 'all'){
         filter.order_status = status
     }
@@ -52,31 +51,13 @@ const getAllOrder = async({ id, role = 'user', status, limit, page }) => {
             }
         },
         {
-            $addFields: {
-                role: role
-            }  
-        },
-        {
             $project: {
                 order_note: 0,
                 modifiedOn: 0,
                 __v: 0,
+                order_userId :0
             }
         }, 
-        {
-            $addFields: {
-                order_userId: {
-                    $cond: {
-                        if: { $eq: ['$role', 'shop']},
-                        then: '$order_userId',
-                        else: '$$REMOVE'
-                    }
-                }
-            }
-        },
-        {
-            $unset: 'role'
-        },
         {
             $lookup: {
                 from: 'Shops',
@@ -86,30 +67,18 @@ const getAllOrder = async({ id, role = 'user', status, limit, page }) => {
             }
         },
         {
-            $addFields: {
-                order_products: {
-                    $mergeObjects: [
-                        '$order_products',
-                        {
-                            shop_info: {
-                                $arrayElemAt: [
-                                    {
-                                        $filter: {
-                                            input: '$shop_info',
-                                            as: 'shop',
-                                            cond: { $eq: ['$$shop._id', '$order_products.shopId']}
-                                        }
-                                    },
-                                    0
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
+            $unset: 'shop_info'
         },
         {
-            $unset: 'shop_info'
+            $addFields: {
+                shop_info: {
+                    $cond: {
+                        if: { $eq: ['$role', 'shop']},
+                        then: '$$REMOVE',
+                        else: '$shop_info'
+                    }
+                }
+            }
         },
         {
             $project: {
@@ -248,7 +217,6 @@ const getAllOrder = async({ id, role = 'user', status, limit, page }) => {
                 'order_products.item_products.updatedAt': 0,
                 'order_products.item_products.__v': 0,
                 'order_products.item_products.product_variations.images': 0,
-                order_status_history: 0
             }
         },
         { $skip: skip },
@@ -261,6 +229,62 @@ const getAllOrder = async({ id, role = 'user', status, limit, page }) => {
         page,
         totalPages: Math.ceil(totalOrders / limit)
     }
+}
+
+const getAllOrderByShop = async({ shopId, status, limit, page }) => {
+    const skip = (page - 1) * limit
+    const filter = { 'order_products.shopId': shopId}
+    if(status !== 'all'){
+        filter.order_status = status
+    }   
+    const orders = await ORDER.aggregate([
+        {
+            $match: filter
+        },
+        {
+            $lookup: {
+                from: 'Users',
+                localField: 'order_userId',
+                foreignField: '_id',
+                as: 'user_info'
+            }
+        },
+        {
+            $unwind: '$user_info'
+        },
+        {
+            $project: {
+                order_userId: 0,
+                order_note: 0,
+                order_status_history: 0,
+                modifiedOn: 0,
+                __v: 0,
+                'user_info.usr_email': 0,
+                'user_info.usr_password': 0,
+                'user_info.usr_sex': 0,
+                'user_info.usr_avatar': 0,
+                'user_info.usr_day_of_birth': 0,
+                'user_info.usr_role': 0,
+                'user_info.usr_status': 0,
+                'user_info.createdAt': 0,
+                'user_info.updatedAt': 0,
+                'user_info.usr_slug': 0,
+                'user_info.__v': 0,
+            }
+        },
+        {
+            $addFields: {
+                first_two_products: { $slice: ['$order_products.item_products', 2]},
+                remaining_products: { $subtract: [{ $size: '$order_products.item_products'}, 2]}
+            }
+        },
+        {
+            $project: {
+                order_products: 0
+            }
+        }
+    ])
+    return orders
 }
 
 const getOneOrderByUser = async({ userId, orderId }) => {
@@ -321,9 +345,10 @@ const updateOrderStatusHistory = async({ userId, orderId, status }) => {
 module.exports = {
     createOrder,
     getOrderByUser,
-    getAllOrder,
+    getAllOrderByUser,
     getOneOrderByUser,
     cancelOrder,
     updateOrderStatusHistory,
-    getOneOrderByShop
+    getOneOrderByShop,
+    getAllOrderByShop
 }
