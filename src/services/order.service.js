@@ -3,7 +3,7 @@
 const mongoose  = require("mongoose")
 const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { getCartByUserId, getListProductFromCart, updateCartCount, removeFromCart, removeCartShop } = require("../models/repositories/cart.repo")
-const { createOrder, getAllOrder, getOneOrderByUser, cancelOrder, updateOrderStatusHistory, getOneOrderByShop } = require("../models/repositories/order.repo")
+const { createOrder, getOneOrderByUser, cancelOrder, updateOrderStatusHistory, getOneOrderByShop, getAllOrderByUser, getAllOrderByShop } = require("../models/repositories/order.repo")
 const { getShopByShopIds } = require("../models/repositories/shop.repo")
 const { checkSkuByServer, checkSkuByServerV2, getSkusByListSkuId, updateSkusStock, getOneSkuById } = require("../models/repositories/sku.repo")
 const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
@@ -12,6 +12,7 @@ const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
 const { getReservationInventoryByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
 const { producerOrderMessage } = require("../queues/order.producer")
+const { ORDER_STATUSES } = require("../configs/constant")
 //USER
 /*
     {
@@ -234,17 +235,7 @@ const getAllOrderByUserService = async({
     page = 1,
     status = 6
 }) => {
-    const ORDER_STATUSES = {
-        9: 'pending',
-        2: 'confirmed',
-        7: 'shipping',
-        8: 'pending_delivery',
-        3: 'completed',
-        4: 'cancelled',
-        12: 'returned',
-        6: 'all'
-    }
-    const orders = await getAllOrder({ id: userId, role: 'user', status: ORDER_STATUSES[status], limit, page})
+    const orders = await getAllOrderByUser({ userId, status: ORDER_STATUSES[status], limit, page})
     return orders
 }
 
@@ -305,17 +296,7 @@ const deliveryOrderByShopService = updateOrderStatusService('shipping', 'pending
 const completeOrderByShopService = updateOrderStatusService('pending_delivery', 'completed');
 
 const getAllOrderByShopService = async({ shopId, limit = 20, page = 1, status = 6 }) => {
-    const ORDER_STATUSES = {
-        9: 'pending',
-        2: 'confirmed',
-        7: 'shipping',
-        8: 'pending_delivery',
-        3: 'completed',
-        4: 'cancelled',
-        12: 'returned',
-        6: 'all'
-    }
-    const orders = await getAllOrder({ id: shopId, role: 'shop', status: ORDER_STATUSES[status], limit, page})
+    const orders = await getAllOrderByShop({ shopId, status: ORDER_STATUSES[status], limit, page})
     return orders
 }
 
