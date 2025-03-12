@@ -1,4 +1,4 @@
-# 🚀 My Project
+# Ecommerce Backend
 
 ## Tech Stack
 - Language: Javascript (Node.js)
@@ -6,6 +6,9 @@
 - Authentication: JWT
 - Authorize: Role base access control
 - Cache & Queue: Redis, RabbitMQ
+
+## Key Features
+
 
 ## Project Structure
 📂 ecommerce-backend  
@@ -28,6 +31,4 @@
 ├── 📄 .gitignore  
 ├── 📄 package.json  
 ├── 📄 README.md  
-├── 📄 server.js  
-└── 📄 docker-compose.yml  
-
+└── server.js
