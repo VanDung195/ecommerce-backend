@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { checkoutOrderReviewService, createOrderService, getAllOrderByUserService, cancelOrderService, confirmOrderByShopService, shippingOrderByShopService, deliveryOrderByShopService, completeOrderByShopService, confirmCancelledOrderByShopService, getAllOrderByShopService } = require("../services/order.service")
+const { checkoutOrderReviewService, createOrderService, getAllOrderByUserService, cancelOrderService, confirmOrderByShopService, shippingOrderByShopService, deliveryOrderByShopService, completeOrderByShopService, confirmCancelledOrderByShopService, getAllOrderByShopService, getOrderDetailByUserService } = require("../services/order.service")
 
 class OrderController{
     checkout = async(req, res, next) => {
@@ -20,6 +20,16 @@ class OrderController{
             metadata: await createOrderService({
                 userId: req.user.userId,
                 ...req.body
+            })
+        }).send(res)
+    }
+
+    getOrderDetailByUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await getOrderDetailByUserService({
+                userId: req.user.userId,
+                ...req.params
             })
         }).send(res)
     }
