@@ -2,9 +2,6 @@
 
 const SKU = require('../sku.model')
 const { convertToObjectIdMongodb, unSelectData, getSelectData } = require('../../utils/index')
-const { addStockToInventory } = require('./inventory.repo')
-const { findOne } = require('../cart.model')
-const { query } = require('express')
 
 const createSku = async({
     spuId,

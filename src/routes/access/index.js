@@ -6,7 +6,7 @@ const AccessController = require('../../controllers/access.controller')
 const {authentication} = require('../../auth/authUtils')
 const router = express.Router()
 
-router.post('/user/login', asyncHandler(AccessController.login))
+// router.post('/user/login', asyncHandler(AccessController.login))
 
 router.use(authentication)
 

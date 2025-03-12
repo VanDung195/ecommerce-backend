@@ -58,7 +58,7 @@ const createSpuService = async({
             if(!sku) throw new BadRequestError('Create sku failed')
         }
     }
-    if(spu && variations.length === 0){
+    if(spu && variations === null || variations.length === 0){
         try {
             const sku = await createOneSku({
                 shopId: shop,
@@ -86,8 +86,8 @@ const getOneSpuService = async({
     if(!foundSpu) throw new NotFoundError('Spu not found')
     if(foundSpu.isDeleted) throw new BadRequestError('This product has been deleted') 
     const productId = foundSpu._id
-    const listSku = await getAllSkuBySpuId({ spuId: productId})
-    
+    let listSku = await getAllSkuBySpuId({ spuId: productId})
+    listSku = listSku.filter(sku => !sku.isDeleted); 
     if(!listSku) throw new NotFoundError('Sku not found')
 
     return {

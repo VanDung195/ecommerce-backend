@@ -26,8 +26,8 @@ ioredis.init({
 
 app.use('/', require('./routes'))
 
-consumerOrderNormal().catch(console.error)
-consumerOrderFailed().catch(console.error)
+// consumerOrderNormal().catch(console.error)
+// consumerOrderFailed().catch(console.error)
 
 //error handler
 app.use((req, res, next) => {

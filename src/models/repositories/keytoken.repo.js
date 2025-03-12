@@ -35,7 +35,8 @@ const createKeyToken = async ({
             $set: {
                 privateKey: privateKey,
                 publicKey: publicKey,
-                refreshToken: refreshToken
+                refreshToken: refreshToken,
+                // refreshTokenUsed: []
             },
             $setOnInsert: {
                 refreshTokenUsed: []

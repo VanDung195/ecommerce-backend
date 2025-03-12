@@ -62,6 +62,15 @@ const getResourceById = async(id) => {
     }).lean()
 }
 
+const updateResource = async(id) => {
+
+}
+
+const deleteResource = async({
+
+}) => {
+    
+}
 module.exports = {
     createResource,
     listResources,

@@ -12,5 +12,6 @@ router.post('/create', checkShopPermission, asyncHandler(discountController.newD
 router.get('/:code', checkShopPermission, asyncHandler(discountController.getOneDiscount))
 router.post('/get_recommend_discount', asyncHandler(discountController.getRecommendDiscount))
 router.get('/', checkShopPermission, asyncHandler(discountController.getAllDiscount))
+router.post('/discount_amount', asyncHandler(discountController.getDiscountAmount))
 
 module.exports = router
