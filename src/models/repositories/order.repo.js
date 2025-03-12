@@ -275,16 +275,167 @@ const getAllOrderByShop = async({ shopId, status, limit, page }) => {
         {
             $addFields: {
                 first_two_products: { $slice: ['$order_products.item_products', 2]},
-                remaining_products: { $subtract: [{ $size: '$order_products.item_products'}, 2]}
+                total_products: { $size: '$order_products.item_products'},
+                remaining_products: { $subtract: [{ $size: '$order_products.item_products'}, 2]},
             }
         },
         {
             $project: {
                 order_products: 0
             }
-        }
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: 'first_two_products.productId', //skuId
+                foreignField: 'skuId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                first_two_products: {
+                    $map: {
+                        input: '$first_two_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: '$sku_info',
+                                                as: 'sku',
+                                                cond: { $eq: ['$$product.productId', '$$sku.skuId']}
+                                            }
+                                        },
+                                        0
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        { $unset: 'sku_info' },
+        {
+            $project: {
+                'first_two_products._id': 0,
+                'first_two_products.sku_default': 0,
+                'first_two_products.sku_price': 0,
+                'first_two_products.sku_stock': 0,
+                'first_two_products.isDraft': 0,
+                'first_two_products.isPublished': 0,
+                'first_two_products.isDeleted': 0,
+                'first_two_products.createdAt': 0,
+                'first_two_products.updatedAt': 0,
+                'first_two_products.__v': 0,
+                'first_two_products.sku_slug': 0,
+
+            }
+        },
+        {
+            $lookup: {
+                from: 'Spus',
+                localField: 'first_two_products.productId', //spuId
+                foreignField: '_id',
+                as: 'spu_info'
+            }
+        },
+        {
+            $addFields: {
+                first_two_products: {
+                    $map: {
+                        input: '$first_two_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: '$spu_info',
+                                                as: 'spu',
+                                                cond: { $eq: ['$$product.productId', '$$spu._id']}
+                                            }
+                                        },
+                                        0
+                                    ]
+                                },
+                            ]
+                        }
+                    }
+                },
+            }
+        }, 
+        {
+            $addFields: {
+                first_two_products: {
+                    $map: {
+                        input: '$first_two_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    seleted_options: {
+                                        $map: {
+                                            input: { $range: [0, { $size: "$$product.product_variations" }] }, // Lặp qua từng index
+                                            as: "i",
+                                            in: {
+                                                tier_id: {
+                                                    $arrayElemAt: ["$$product.product_variations.name", "$$i"]
+                                                },
+                                                tier_value: {
+                                                    $arrayElemAt: [
+                                                        { $arrayElemAt: ["$$product.product_variations.options", "$$i"] },
+                                                        { $arrayElemAt: ["$$product.sku_tier_idx", "$$i"] }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        { $unset: 'spu_info'},
+        {
+            $project: {
+                'first_two_products._id': 0,
+                'first_two_products.product_description': 0,
+                'first_two_products.product_price': 0,
+                'first_two_products.product_min_price': 0,
+                'first_two_products.product_max_price': 0,
+                'first_two_products.product_category': 0,
+                'first_two_products.product_quantity': 0, //total_quantity
+                'first_two_products.product_shop': 0,
+                'first_two_products.product_variations.images': 0,
+                'first_two_products.isDraft': 0,
+                'first_two_products.isPublished': 0,
+                'first_two_products.createdAt': 0,
+                'first_two_products.updatedAt': 0,
+                'first_two_products.isDeleted': 0,
+                'first_two_products.__v': 0,
+
+            }
+        },
+        { $skip: skip },
+        { $limit: limit }
     ])
-    return orders
+    const totalOrders = await ORDER.countDocuments(filter)
+    return {
+        data: orders,
+        limit,
+        page,
+        totalPages: Math.ceil(totalOrders / limit)
+    }
 }
 
 const getOneOrderByUser = async({ userId, orderId }) => {
@@ -333,6 +484,27 @@ const updateOrderStatusHistory = async({ userId, orderId, status }) => {
     }
     return await ORDER.findOneAndUpdate(filter, update, option)
 }
+
+const getOrderDetailByUser = async({ userId, orderId }) => {
+    const filter = {
+        order_userId: convertToObjectIdMongodb(userId),
+        _id: convertToObjectIdMongodb(orderId)
+    }
+    const order = await ORDER.aggregate([
+        {
+            $match: filter
+        },
+        {
+            $project: {
+                _id: 0,
+                order_userId: 0,
+                modifiedOn: 0,
+                __v: 0
+            }
+        }
+    ])
+    return order
+}
 // const confirmCancelledOrder = async({ shopId, orderId }) => {
 //     const filter = {
 //         'order_products.shopId': shopId,
@@ -350,5 +522,6 @@ module.exports = {
     cancelOrder,
     updateOrderStatusHistory,
     getOneOrderByShop,
-    getAllOrderByShop
+    getAllOrderByShop,
+    getOrderDetailByUser
 }
