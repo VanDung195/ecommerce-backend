@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { checkoutOrderReviewService, createOrderService, getAllOrderByUserService, cancelOrderService, confirmOrderByShopService, shippingOrderByShopService, deliveryOrderByShopService, completeOrderByShopService, confirmCancelledOrderByShopService, getAllOrderByShopService, getOrderDetailByUserService } = require("../services/order.service")
+const { checkoutOrderReviewService, createOrderService, getAllOrderByUserService, cancelOrderService, confirmOrderByShopService, shippingOrderByShopService, deliveryOrderByShopService, completeOrderByShopService, confirmCancelledOrderByShopService, getAllOrderByShopService, getOrderDetailByUserService, getOrderDetailByShopService, confirmOrderCancellationByShopService, rejectOrderCancellationByShopService } = require("../services/order.service")
 
 class OrderController{
     checkout = async(req, res, next) => {
@@ -94,10 +94,20 @@ class OrderController{
         }).send(res)
     }
 
-    confirmCancelledOrderByShop = async(req, res, next) => {
+    confirmOrderCancellationByShop = async(req, res, next) => {
         new SuccessResponse({
             message: 'Success',
-            metadata: await confirmCancelledOrderByShopService({
+            metadata: await confirmOrderCancellationByShopService({
+                shopId: req.shop._id,
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    rejectOrderCancellationByShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await rejectOrderCancellationByShopService({
                 shopId: req.shop._id,
                 ...req.body
             })
@@ -110,6 +120,16 @@ class OrderController{
             metadata: await getAllOrderByShopService({
                 shopId: req.shop._id,
                 ...req.query
+            })
+        }).send(res)
+    }
+
+    getOrderDetailByShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await getOrderDetailByShopService({
+                shopId: req.shop._id,
+                ...req.params
             })
         }).send(res)
     }
