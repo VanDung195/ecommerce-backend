@@ -244,6 +244,12 @@
 					{
 						"key": "x-client-id",
 						"value": "67a4da90e055cb086aa622e2",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-client-id",
+						"value": "67a848015fa5509c47c0c608",
 						"type": "text"
 					}
 				],
@@ -380,7 +386,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"DSHOP2222222222\",\r\n    \"email\": \"hovandung23214t@gmail.com\",\r\n    \"address\": \"6/128 Minh Mạng\",\r\n    \"phone\": \"0942324214\"\r\n}\r\n",
+					"raw": "{\r\n    \"name\": \"DSHOP2222222222\",\r\n    \"email\": \"\",\r\n    \"address\": \"123 ABC\",\r\n    \"phone\": \"abc\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -951,7 +957,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3052/api/product/ao-thun-test-cho-shop.4718751563",
+					"raw": "http://localhost:3052/api/product/may-gat-sungsam-the-he-x.9260389367",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -960,7 +966,7 @@
 					"path": [
 						"api",
 						"product",
-						"ao-thun-test-cho-shop.4718751563"
+						"may-gat-sungsam-the-he-x.9260389367"
 					]
 				}
 			},
@@ -993,13 +999,13 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJyb2xlIjoidXNlciIsImVtYWlsIjoidmR1bmczMDAyNTE5QGdtYWlsLmNvbSIsImlhdCI6MTczOTA4MTczMSwiZXhwIjoxNzM5MTY4MTMxfQ.A_CReYDwc3rBd86sLMgAtvawJasa8E11O094BKL46Afp2oYCdckXilasridw7PdzMy3_YKW8T3jdlo1Q3R40OmF3Ul8bxPKgjEZsUgDG7VrkycxUHCp_mut_A8PfJB_ve00tjVffu0yocrGcvL6u21ogFfXtDjITJijjb2xgFEZBwdq-jA21qGENgI3XDh7J3D0U6zhkCPYcDnvW_btNX_m9Dy1jtvxuYAvQXW6kLv-jJialgJe5uBKj2UNilsQJxk3Ej2n6lLgSJggTSXd0ZJ-G-84PpmzTAaJ4bUrNSojE7BEP7hIhiwMcDesCtXEKQ00SRbR8TPdJcxluh8liq3QFfF5qTe9nq_lLY1nIJmit2yzwPPv1tX6jF50u4afJSiPJk1Pnfcd56sZmmO5JIpC3KRAb1p8N7ZpP0yy91BbFQWhOSydEbX9W5X_LWoKn7r0HjkHXpfQAZVLMpx8XX3YCSezi3rkLL5-pxqm6-2ic8QNzvlh2TL1h0ndCEgTeCEqBvEvVpVf0h910Ylneo_sE6coGB1l3fMPGxw_uh_ZHA48A_-yNL7ScgjxNwYOOUFYYUkNjvrnUvFrGkijI6Z2Wo9ziyDiryvqfn_WGS75BxjHqQ82QrC0O2jRY_5wWI8coqdNvzK-8nEDaSNdFvaT6mUKLNN75vNWOQYJCT6o",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE2OTgyNTksImV4cCI6MTc0NDIwMzg1OX0.EJc9feIrY5PPMUO0QJtFoppsh9aC8DPDwis0qtO9cKWlXC3tPALqeep8_J-IfgV_Ijq4nxI90jx34pWzTKqLRRpeAOa8b21gyWTsBvSELVGNC5gTPUZCKSNHPpCfosTl_dTuS9ojSQ6zjDV6i0Uw3l0_Quy5xGMIWVT_x2ZGiOO8yQbny67aIcAo5fW6ycXXeq2_PcJVOujj6q_ifoirZmdlmgFWlWsxrEsCJ8ylpPRyf5R42vauim48V2GmeQZSB0Enm22wxqlrkTfWY4WXjLee8nlC94Rw3ofUeCUyTQoIPxJPRcGT95WGfP7qSLkEb5e4F5v0-JmpXOJukmb7lzT5o6lHkFAA2Pc7duPQFpv7o0q049rgpHxEDCSo3TiZ-e1DOIXxNz80fB0cMLn8IHuSR6qfrK2Hq7Plg1r_l4MiML1eUilGxORz-77IYGbFBSOlhcbJhZmnwlhKwRPe3ippRsdBfVmD3bHz8lAPrHgmKMAzJw9ojs9iSQX9fzObHyzLd8qdicQFtU_4PAaINtYrMAacsPjkTTTWLc5PO2n4ZezUCZgGRw0hc_dh3FV4L_CMUMCTOpel5QsAdtPiQWhMWd9RscZBNrz51ulkkUmyUtJ5ij7bNqgj_J6R2zJ8hyH3x81qApi1eP-ifQ-ZEsxaZ5mGvChMqTcbUeEGeKk",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "// {\r\n//     \"name\": \"Áo thun test nhé\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 123,\r\n//     \"category\": [\"1\", \"2\", \"3\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ]\r\n// }\r\n\r\n\r\n// {\r\n//     \"name\": \"Áo thun test giá và có biến thể\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 1233,\r\n//     \"category\": [\"1\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ],\r\n//     \"sku_list\": [\r\n//         {\r\n//             \"sku_tier_idx\": [0, 0],\r\n//             \"sku_default\": true,\r\n//             \"sku_price\": 120000,\r\n//             \"sku_stock\": 20\r\n//         },\r\n//         {\r\n//             \"sku_tier_idx\": [0, 1],\r\n//             \"sku_default\": false,\r\n//             \"sku_price\": 10000,\r\n//             \"sku_stock\": 25\r\n//         },\r\n//         {\r\n//             \"sku_tier_idx\": [1, 1],\r\n//             \"sku_default\": true,\r\n//             \"sku_price\": 13000,\r\n//             \"sku_stock\": 30\r\n//         }\r\n//     ]\r\n// }\r\n{\r\n    \"name\": \"Áo thun của shop thứ 2!!!!!!!\",\r\n    \"thumb\": \"https://test.com/image123123\",\r\n    \"description\": \"Áo thun để test thôi mày\",\r\n    \"price\": 1233,\r\n    \"category\": [\"1\"],\r\n    \"quantity\": 5,\r\n    \"variations\": [\r\n        {\r\n            \"images\": [\"123\", \"1234\", \"12345\"],\r\n            \"name\": \"color\",\r\n            \"options\": [\"red\", \"green\", \"blue\"]\r\n        },\r\n        {\r\n            \"images\": [\"444\", \"333\", \"222\"],\r\n            \"name\": \"size\",\r\n            \"options\": [\"S\", \"M\", \"XL\"]\r\n        }\r\n    ],\r\n    \"sku_list\": [\r\n        {\r\n            \"sku_tier_idx\": [0, 0],\r\n            \"sku_price\": 120000,\r\n            \"sku_stock\": 20\r\n        },\r\n        {\r\n            \"sku_tier_idx\": [0, 1],\r\n            \"sku_price\": 10000,\r\n            \"sku_stock\": 25\r\n        }\r\n    ]\r\n}",
+					"raw": "// {\r\n//     \"name\": \"Áo thun test nhé\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 123,\r\n//     \"category\": [\"1\", \"2\", \"3\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ]\r\n// }\r\n\r\n\r\n// {\r\n//     \"name\": \"Áo thun test giá và có biến thể\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 1233,\r\n//     \"category\": [\"1\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ],\r\n//     \"sku_list\": [\r\n//         {\r\n//             \"sku_tier_idx\": [0, 0],\r\n//             \"sku_default\": true,\r\n//             \"sku_price\": 120000,\r\n//             \"sku_stock\": 20\r\n//         },\r\n//         {\r\n//             \"sku_tier_idx\": [0, 1],\r\n//             \"sku_default\": false,\r\n//             \"sku_price\": 10000,\r\n//             \"sku_stock\": 25\r\n//         },\r\n//         {\r\n//             \"sku_tier_idx\": [1, 1],\r\n//             \"sku_default\": true,\r\n//             \"sku_price\": 13000,\r\n//             \"sku_stock\": 30\r\n//         }\r\n//     ]\r\n// }\r\n// {\r\n//     \"name\": \"Áo thun của shop thứ 2!!!!!!!\",\r\n//     \"thumb\": \"https://test.com/image123123\",\r\n//     \"description\": \"Áo thun để test thôi mày\",\r\n//     \"price\": 1233,\r\n//     \"category\": [\"1\"],\r\n//     \"quantity\": 5,\r\n//     \"variations\": [\r\n//         {\r\n//             \"images\": [\"123\", \"1234\", \"12345\"],\r\n//             \"name\": \"color\",\r\n//             \"options\": [\"red\", \"green\", \"blue\"]\r\n//         },\r\n//         {\r\n//             \"images\": [\"444\", \"333\", \"222\"],\r\n//             \"name\": \"size\",\r\n//             \"options\": [\"S\", \"M\", \"XL\"]\r\n//         }\r\n//     ],\r\n//     \"sku_list\": [\r\n//         {\r\n//             \"sku_tier_idx\": [0, 0],\r\n//             \"sku_price\": 120000,\r\n//             \"sku_stock\": 20\r\n//         },\r\n//         {\r\n//             \"sku_tier_idx\": [0, 1],\r\n//             \"sku_price\": 10000,\r\n//             \"sku_stock\": 25\r\n//         }\r\n//     ]\r\n// }\r\n\r\n{\r\n    \"name\": \"Máy gặt SungSam thế hệ X\",\r\n    \"thumb\": \"https://test.com/image123123\",\r\n    \"description\": \"Máy giặt SungSam\",\r\n    \"price\": 1233,\r\n    \"category\": [\"1\"],\r\n    \"quantity\": 5,\r\n    \"variations\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2566,7 +2572,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user_address\": {\r\n        \"street\": \"128 Minh Mang\",\r\n        \"city\": \"Hue\",\r\n        \"state\": \"Thuan Hoa\"\r\n    },\r\n    \"user_payment\": {\r\n        \"method\": \"cash\"\r\n    },\r\n    \"order_note\": \"\",\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                // {\r\n                //      \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                // },\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"user_address\": {\r\n        \"street\": \"11 ABC\",\r\n        \"city\": \"ABC\",\r\n        \"state\": \"BCD\"\r\n    },\r\n    \"user_payment\": {\r\n        \"method\": \"cash\"\r\n    },\r\n    \"order_note\": \"\",\r\n    \"shop_order_ids\": [\r\n        {\r\n            \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n            \"shop_discount\": {\r\n                \"shopId\": \"679dd8efddf5bd2cc2cd5ba7\",\r\n                \"discountId\": \"67ab7076517c3b74194406c4\",\r\n                \"code\": \"PPP\"\r\n            },\r\n            \"item_products\": [\r\n                {\r\n                     \"productId\": \"67a5bd55936d645bcc8f62ee811-679dd8efddf5bd2cc2cd5ba7\"\r\n                },\r\n                {\r\n                    \"productId\": \"67a5bd55936d645bcc8f62ee892-679dd8efddf5bd2cc2cd5ba7\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"shopId\": \"67a848495fa5509c47c0c613\",\r\n            \"shop_discount\": null,\r\n            \"item_products\": [\r\n                // {\r\n                //      \"productId\": \"67a848a55fa5509c47c0c61d786-67a848495fa5509c47c0c613\"\r\n                // },\r\n                {\r\n                     \"productId\": \"67a848a55fa5509c47c0c61d712-67a848495fa5509c47c0c613\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2856,7 +2862,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE2OTgyNTksImV4cCI6MTc0NDIwMzg1OX0.EJc9feIrY5PPMUO0QJtFoppsh9aC8DPDwis0qtO9cKWlXC3tPALqeep8_J-IfgV_Ijq4nxI90jx34pWzTKqLRRpeAOa8b21gyWTsBvSELVGNC5gTPUZCKSNHPpCfosTl_dTuS9ojSQ6zjDV6i0Uw3l0_Quy5xGMIWVT_x2ZGiOO8yQbny67aIcAo5fW6ycXXeq2_PcJVOujj6q_ifoirZmdlmgFWlWsxrEsCJ8ylpPRyf5R42vauim48V2GmeQZSB0Enm22wxqlrkTfWY4WXjLee8nlC94Rw3ofUeCUyTQoIPxJPRcGT95WGfP7qSLkEb5e4F5v0-JmpXOJukmb7lzT5o6lHkFAA2Pc7duPQFpv7o0q049rgpHxEDCSo3TiZ-e1DOIXxNz80fB0cMLn8IHuSR6qfrK2Hq7Plg1r_l4MiML1eUilGxORz-77IYGbFBSOlhcbJhZmnwlhKwRPe3ippRsdBfVmD3bHz8lAPrHgmKMAzJw9ojs9iSQX9fzObHyzLd8qdicQFtU_4PAaINtYrMAacsPjkTTTWLc5PO2n4ZezUCZgGRw0hc_dh3FV4L_CMUMCTOpel5QsAdtPiQWhMWd9RscZBNrz51ulkkUmyUtJ5ij7bNqgj_J6R2zJ8hyH3x81qApi1eP-ifQ-ZEsxaZ5mGvChMqTcbUeEGeKk",
 						"type": "text"
 					}
 				],
@@ -3349,7 +3355,7 @@
 					},
 					{
 						"key": "authorization",
-						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzkxNjcsImV4cCI6MTc0MTY2NTU2N30.Esv3LrNwXdxQpQfG6duDjmKifawAbFzHfKu36YTLsvVytu7jW6wmM-T1wkVkZx3ZDxTNMb8qZ8H05bRKXRDYXNpyGM6tAEFMmMO47JwG-X4ZLbF7gPn0tbwUuGX8AwtyStz0B8x1-LeKuFQ9CQAubVQtwWVhIdRFL3cvChdnl95W_VcPIKhIFRGGKvJyI4A6gAqcreqVC1phf_ZNStnLBpvLpE6wMmXFBPLxTlaN2fDMSDtdRjfYU827mbEdUeqpq3F3zA-OLyOwhLh9O59SONwIny4rqJcYlSa4M1suZOt9PCxppwws4-YH_wGOda9hSumoXzlf55TIY1jjSizxC_14_xgau9TjO3FWOSeaebyKRerzNUBa0NtQHrtTmihoxVuL_MenLiROTrkS940fYBF5BiD3ylo1BK2QBAFK8hIIKcATaLkOKLbhJOwhSu-wYno2y4HUt4ELm41Y3eo6s8DGBTfh91LXfe7MuL8q8Ab6I4lZVrqaQWk_Z1PuKM0KnrLcrKtVh0l1JtkWK4eVxfCMa1jtnF5k6EMd-4LO_fedwgvBTLkZUH8mR8HtFbl_yflSbE4M_nBbecZjWq1jjaNs2zSFX6Zk81wJLXTA7hABDrSzCr9QY2RmC6za409z6dTgQDBvdn5SeR3Of-p5SJ7-1bJVcq0xVEybxEQoNPE",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E4NDgwMTVmYTU1MDljNDdjMGM2MDgiLCJlbWFpbCI6InZkdW5nMzAwMjUxOUBnbWFpbC5jb20iLCJpYXQiOjE3NDE2OTgyNTksImV4cCI6MTc0NDIwMzg1OX0.EJc9feIrY5PPMUO0QJtFoppsh9aC8DPDwis0qtO9cKWlXC3tPALqeep8_J-IfgV_Ijq4nxI90jx34pWzTKqLRRpeAOa8b21gyWTsBvSELVGNC5gTPUZCKSNHPpCfosTl_dTuS9ojSQ6zjDV6i0Uw3l0_Quy5xGMIWVT_x2ZGiOO8yQbny67aIcAo5fW6ycXXeq2_PcJVOujj6q_ifoirZmdlmgFWlWsxrEsCJ8ylpPRyf5R42vauim48V2GmeQZSB0Enm22wxqlrkTfWY4WXjLee8nlC94Rw3ofUeCUyTQoIPxJPRcGT95WGfP7qSLkEb5e4F5v0-JmpXOJukmb7lzT5o6lHkFAA2Pc7duPQFpv7o0q049rgpHxEDCSo3TiZ-e1DOIXxNz80fB0cMLn8IHuSR6qfrK2Hq7Plg1r_l4MiML1eUilGxORz-77IYGbFBSOlhcbJhZmnwlhKwRPe3ippRsdBfVmD3bHz8lAPrHgmKMAzJw9ojs9iSQX9fzObHyzLd8qdicQFtU_4PAaINtYrMAacsPjkTTTWLc5PO2n4ZezUCZgGRw0hc_dh3FV4L_CMUMCTOpel5QsAdtPiQWhMWd9RscZBNrz51ulkkUmyUtJ5ij7bNqgj_J6R2zJ8hyH3x81qApi1eP-ifQ-ZEsxaZ5mGvChMqTcbUeEGeKk",
 						"type": "text"
 					},
 					{
@@ -3385,6 +3391,108 @@
 						"api",
 						"order",
 						"get_all_orders_shop"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ORDER (USER): get order detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Order Status</th>\r",
+							"        <th>Total Price</th>\r",
+							"        <th>Total Apply Discount</th>\r",
+							"        <th>Total Checkout</th>\r",
+							"        <th>Shipping Street</th>\r",
+							"        <th>Shipping City</th>\r",
+							"        <th>Shipping State</th>\r",
+							"        <th>Shipping Country</th>\r",
+							"        <th>Payment Method</th>\r",
+							"        <th>Transaction ID</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    <tr>\r",
+							"        <td>{{metadata.[0].order_status}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_price}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_apply_discount}}</td>\r",
+							"        <td>{{metadata.[0].order_checkout.total_checkout}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.street}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.city}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.state}}</td>\r",
+							"        <td>{{metadata.[0].order_shipping.country}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.method}}</td>\r",
+							"        <td>{{metadata.[0].order_payment.transactionId}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-client-id",
+						"value": "67a4da90e055cb086aa622e2",
+						"type": "text"
+					},
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2E0ZGE5MGUwNTVjYjA4NmFhNjIyZTIiLCJlbWFpbCI6InZhbmR1bmcyMDAwM0BnbWFpbC5jb20iLCJpYXQiOjE3NDE1NzU2MDMsImV4cCI6MTc0NDA4MTIwM30.QgkmJv2ytmMWTLXaW3ncwVQiOOaXGNYnujjAJ3Bn_qUU_-iJbY_fprKUbtBVC8XNGIkYMChYMoslaT-elFb8LEo3r0-Tp3E4dHZemaPrUbD6teWcjgQ6LPd-l3_2mLqEjAedkr6jdPhBPnOlWVjMxte60FPIbD_9NTAxspjnnnJR6CSM6E0laLqeE_0jBpK6HkgvVsk8F4yXmH4Run2MtyoIsOT5KZ7mER234-XQBqm6ZFUIIBwrR3NJ4r734w0tzJwHeZqlyn_oAVeP6dVKsrwzr17TR94IurT_qKmReD8V4gBb8KqpVdIRrQAnN-4ZSNC5EeBamHVGnKgji13RbFg-FSG4LT9CBsTEV7R8Qvob3KskmQdttqBpeM1p9LZ75pBEev3PnQIh0aF-mtfrJnBy0SppSPv4PrMurYMYqOtgfCk-xW3iRSTl3AoW9cqFB6bK-l9HThfsgEIqiw2IngpK-ne7p24ais4u5J9eC_bCaflCzG6ydhW0aG86YYqq5LuQUuswU4Y7PQ8m5zqpZkis_tCoVIh_eET6ZztcyogFinFow5BnHL14MSQ4z_a5uogUU9POtw_JUCHmI-OTaUZYGr_1sR5o1f0jEI7S5f9M5IYb3lZGB5_AVsbNc7zfLVzvJpXXSe03ts4Vh5atRGZbO0-Bw_8XdFbinZUKjWw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"67cd5262434fb2490659013d\",\r\n    \"code\": \"other\",\r\n    \"detail\": \"Product is too bad\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3052/api/order/detail/67cd5262434fb2490659013d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3052",
+					"path": [
+						"api",
+						"order",
+						"detail",
+						"67cd5262434fb2490659013d"
 					]
 				}
 			},
