@@ -50,8 +50,17 @@ const cancellationSchema = new Schema({
         ], default: 'buyer_no_longer_wants'},
         detail: { type: String, default: ''}
     },
-    cancelledAt: { type: Date, default: new Date()},
+    cancelledAt: { type: Date, default: () => new Date()},
     shop_approval: { type: String, enum: ['pending', 'approved', 'reject'], default: 'pending'},
+    shop_reason: {
+        code: { type: String, enum: [
+            'order_already_processed',
+            'buyer_confirmed_receipt',
+            'custom_order_cannot_cancel',
+            'other'
+        ], default: null},
+        detail: { type: String, default: ''}
+    },
     approvedAt: { type: Date, default: null}
 }, { _id: false })
 var orderStatusHistorySchema = new Schema({
