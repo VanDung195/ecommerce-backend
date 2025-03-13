@@ -381,18 +381,18 @@ const getAllOrderByShop = async({ shopId, status, limit, page }) => {
                             $mergeObjects: [
                                 '$$product',
                                 {
-                                    seleted_options: {
+                                    selected_options: {
                                         $map: {
-                                            input: { $range: [0, { $size: "$$product.product_variations" }] }, // Lặp qua từng index
-                                            as: "i",
+                                            input: { $range: [0, { $size: '$$product.product_variations' }] }, // Lặp qua từng index
+                                            as: 'i',
                                             in: {
                                                 tier_id: {
-                                                    $arrayElemAt: ["$$product.product_variations.name", "$$i"]
+                                                    $arrayElemAt: ['$$product.product_variations.name', '$$i']
                                                 },
                                                 tier_value: {
                                                     $arrayElemAt: [
-                                                        { $arrayElemAt: ["$$product.product_variations.options", "$$i"] },
-                                                        { $arrayElemAt: ["$$product.sku_tier_idx", "$$i"] }
+                                                        { $arrayElemAt: ['$$product.product_variations.options', '$$i'] },
+                                                        { $arrayElemAt: ['$$product.sku_tier_idx', '$$i'] }
                                                     ]
                                                 }
                                             }
@@ -501,18 +501,428 @@ const getOrderDetailByUser = async({ userId, orderId }) => {
                 modifiedOn: 0,
                 __v: 0
             }
+        },
+        {
+            $lookup: {
+                from: 'Shops',
+                localField: 'order_products.shopId',
+                foreignField: '_id',
+                as: 'shop_info'
+            }
+        },
+        {
+            $project: {
+                'order_products.shopId': 0,
+                'shop_info.userId': 0,
+                'shop_info.shop_email': 0,
+                'shop_info.shop_phone': 0,
+                'shop_info.shop_verify': 0,
+                'shop_info.shop_status': 0,
+                'shop_info.shop_description': 0,
+                'shop_info.shop_type': 0,
+                'shop_info.shop_rattings': 0,
+                'shop_info.createdAt': 0,
+                'shop_info.updatedAt': 0,
+                'shop_info.__v': 0,
+            }
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: 'order_products.item_products.productId', //skuId
+                foreignField: 'skuId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                $arrayElemAt: [
+                                                    {
+                                                        $filter: {
+                                                            input: '$sku_info',
+                                                            as: 'sku',
+                                                            cond: { $eq: ['$$product.productId', '$$sku.skuId']}
+                                                        }
+                                                    },
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        { $unset: 'sku_info'},
+        {
+            $project: {
+                'order_products.item_products._id': 0,
+                'order_products.item_products.sku_default': 0,
+                'order_products.item_products.sku_slug': 0,
+                'order_products.item_products.sku_price': 0,
+                'order_products.item_products.sku_stock': 0,
+                'order_products.item_products.isDraft': 0,
+                'order_products.item_products.isPublished': 0,
+                'order_products.item_products.isDeleted': 0,
+                'order_products.item_products.createdAt': 0,
+                'order_products.item_products.updatedAt': 0,
+                'order_products.item_products.__v': 0,
+            }
+        },
+        {
+            $lookup: {
+                from: 'Spus',
+                localField: 'order_products.item_products.productId', //spuId
+                foreignField: '_id',
+                as: 'spu_info'
+            }
+        },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                $arrayElemAt: [
+                                                    {
+                                                        $filter: {
+                                                            input: '$spu_info',
+                                                            as: 'spu',
+                                                            cond: { $eq: ['$$product.productId', '$$spu._id']}
+                                                        }
+                                                    },
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        { $unset: 'spu_info' },
+        {
+            $project: {
+                'order_products.item_products._id': 0,
+                'order_products.item_products.product_description': 0,
+                'order_products.item_products.product_price': 0,
+                'order_products.item_products.product_min_price': 0,
+                'order_products.item_products.product_max_price': 0,
+                'order_products.item_products.product_category': 0,
+                'order_products.item_products.product_quantity': 0,
+                'order_products.item_products.product_shop': 0,
+                'order_products.item_products.product_variations.images': 0,
+                'order_products.item_products.isDraft': 0,
+                'order_products.item_products.isPublished': 0,
+                'order_products.item_products.createdAt': 0,
+                'order_products.item_products.updatedAt': 0,
+                'order_products.item_products.__v': 0,
+            }
+        },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                selected_options: {
+                                                    $map: {
+                                                        input: { $range: [0, { $size: '$$product.product_variations'}]},
+                                                        as: 'i',
+                                                        in: {
+                                                            tier_id: {
+                                                                $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                            },
+                                                            tier_value: {
+                                                                $arrayElemAt: [
+                                                                    { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
+                                                                    { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
         }
     ])
     return order
 }
-// const confirmCancelledOrder = async({ shopId, orderId }) => {
-//     const filter = {
-//         'order_products.shopId': shopId,
-//         _id: convertToObjectIdMongodb(orderId)
-//     }, update = {
 
-//     }
-// }
+const getOrderDetailByShop = async({ shopId, orderId }) => {
+    const filter = {
+        'order_products.shopId': shopId,
+        _id: convertToObjectIdMongodb(orderId)
+    }
+    const order = await ORDER.aggregate([
+        {
+            $match: filter,
+        },
+        {
+            $lookup: {
+                from: 'Users',
+                localField: 'order_userId',
+                foreignField: '_id',
+                as: 'user_info'
+            }
+        },
+        {
+            $project: {
+                order_userId: 0,
+                modifiedOn: 0,
+                __v: 0,
+                'order_products.shopId': 0,
+                'user_info.usr_email': 0, 
+                'user_info.usr_password': 0, 
+                'user_info.usr_phone': 0, 
+                'user_info.usr_sex': 0, 
+                'user_info.usr_avatar': 0, 
+                'user_info.usr_day_of_birth': 0, 
+                'user_info.usr_role': 0, 
+                'user_info.usr_status': 0, 
+                'user_info.createdAt': 0, 
+                'user_info.updatedAt': 0, 
+                'user_info.__v': 0, 
+                'user_info._id': 0, 
+            }
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: 'order_products.item_products.productId',
+                foreignField: 'skuId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                $arrayElemAt: [
+                                                    {
+                                                        $filter: {
+                                                            input: '$sku_info',
+                                                            as: 'sku',
+                                                            cond: { $eq: ['$$sku.skuId', '$$product.productId']}
+                                                        }
+                                                    },
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        { $unset: 'sku_info'},
+        {
+            $project: {
+                'order_products.item_products._id': 0,
+                'order_products.item_products.sku_default': 0,
+                'order_products.item_products.sku_slug': 0,
+                'order_products.item_products.sku_price': 0,
+                'order_products.item_products.sku_stock': 0,
+                'order_products.item_products.isDraft': 0,
+                'order_products.item_products.isPublished': 0,
+                'order_products.item_products.isDeleted': 0,
+                'order_products.item_products.createdAt': 0,
+                'order_products.item_products.updatedAt': 0,
+                'order_products.item_products.__v': 0,
+            }
+        },
+        { 
+            $lookup: {
+                from: 'Spus',
+                localField: 'order_products.item_products.productId',
+                foreignField: '_id',
+                as: 'spu_info'
+            }
+        },
+        {
+            $addFields: {
+               order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                $arrayElemAt: [
+                                                    {
+                                                        $filter: {
+                                                            input: '$spu_info',
+                                                            as: 'spu',
+                                                            cond: { $eq: ['$$spu._id', '$$product.productId']}
+                                                        }
+                                                    },
+                                                    0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+               } 
+            }
+        },
+        { $unset: 'spu_info'},
+        {
+            $project: {
+                'order_products.item_products._id': 0,
+                'order_products.item_products.product_description': 0,
+                'order_products.item_products.product_price': 0,
+                'order_products.item_products.product_min_price': 0,
+                'order_products.item_products.product_max_price': 0,
+                'order_products.item_products.product_category': 0,
+                'order_products.item_products.product_quantity': 0,
+                'order_products.item_products.product_shop': 0,
+                'order_products.item_products.product_variations.images': 0,
+                'order_products.item_products.isDraft': 0,
+                'order_products.item_products.isPublished': 0,
+                'order_products.item_products.createdAt': 0,
+                'order_products.item_products.updatedAt': 0,
+                'order_products.item_products.__v': 0,
+            }
+        },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                seleted_options: {
+                                                    $map: {
+                                                        input: { $range: [0, { $size: '$$product.product_variations'}]},
+                                                        as: 'i',
+                                                        in: {
+                                                            tier_id: {
+                                                                $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                            },
+                                                            tier_value: {
+                                                                $arrayElemAt: [
+                                                                    { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
+                                                                    { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ])
+    return order
+}
+const confirmOrderCancellation = async({ shopId, orderId }) => {
+    const filter = {
+        'order_products.shopId': shopId,
+        _id: convertToObjectIdMongodb(orderId)
+    }, update = {
+        $set: {
+            order_status: 'cancelled',
+            'order_cancellation.shop_approval': 'approved',
+            'order_cancellation.approvedAt': new Date,
+        },
+        $addToSet: {
+            order_status_history: {
+                status: 'cancelled',
+                changedAt: new Date()
+            }
+        }
+    }, option = { new: true }
+    return await ORDER.findOneAndUpdate(filter, update, option)
+}
+
+const rejectOrderCancellation = async({ shopId, orderId, code, detail }) => {
+    const filter = {
+        'order_products.shopId': shopId,
+        _id: convertToObjectIdMongodb(orderId)
+    }, update = {
+        $set: {
+            'order_cancellation.shop_approval': 'reject',
+            'shop_reason.code': code,
+            'shop_reason.detail': detail
+        }
+    }, option = { new: true }
+    return await ORDER.findOneAndUpdate(filter, update, option)
+}
 
 module.exports = {
     createOrder,
@@ -523,5 +933,8 @@ module.exports = {
     updateOrderStatusHistory,
     getOneOrderByShop,
     getAllOrderByShop,
-    getOrderDetailByUser
+    getOrderDetailByUser,
+    getOrderDetailByShop,
+    confirmOrderCancellation,
+    rejectOrderCancellation
 }
