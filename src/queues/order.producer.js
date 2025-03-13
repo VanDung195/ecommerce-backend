@@ -33,7 +33,7 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
         }
         await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(payload)), {
             // expiration: 10000,
-            persistent: true
+            persistent: true //lưu msg trong disk chứ không phải trên ram, giúp không mất dữ liệu khi sập
         })
         setTimeout(() => {
             connection.close()
@@ -43,8 +43,37 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
     }
 }
 
-
+const produceOrderCancellationEvent = async({ orderId, userId, shopId }) => {
+    try {
+        const {connection, channel} = await connectToRabbitMQ()
+        const cancelOrderQueue = 'cancelOrderQueueProcess'
+        const cancelOrderExchange = 'cancelOrderEx'
+        const orderExchangeDLX = 'orderExDLX'
+        const orderRoutingKeyDLX = 'orderRoutingKeyDLX'
+        
+        await channel.assertExchange(cancelOrderExchange, 'direct', {
+            durable: true
+        })
+        const queueResult = await channel.assertQueue(cancelOrderQueue, {
+            durable: true,
+            exclusive: false,
+            deadLetterExchange: orderExchangeDLX,
+            deadLetterRoutingKey: orderRoutingKeyDLX
+        })
+        await channel.bindQueue(queueResult.queue, cancelOrderExchange)
+        const payload = { orderId, userId, shopId }
+        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(payload)), {
+            persistent: true
+        })
+        setTimeout(() => {
+            connection.close()
+        }, 500)
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 module.exports = {
-    producerOrderMessage
+    producerOrderMessage,
+    produceOrderCancellationEvent
 }
