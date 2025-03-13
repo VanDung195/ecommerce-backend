@@ -1,6 +1,8 @@
 'use strict'
 
+const { CACHE_PRODUCT } = require('../configs/constant')
 const { NotFoundError, BadRequestError } = require('../core/error.response')
+const { setCacheExpiration } = require('../models/repositories/cache.repo')
 const { addStockToInventory } = require('../models/repositories/inventory.repo')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
 const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, createOneSku, updateSkuTierIdx } = require('../models/repositories/sku.repo')
@@ -90,10 +92,17 @@ const getOneSpuService = async({
     listSku = listSku.filter(sku => !sku.isDeleted); 
     if(!listSku) throw new NotFoundError('Sku not found')
 
-    return {
+    const productDetail = {
         spu: foundSpu,
         sku: listSku
     }
+    const productDetailCache = `${CACHE_PRODUCT.PRODUCT_DETAIL}${slug}`
+    setCacheExpiration({
+        key: productDetailCache,
+        value: JSON.stringify(productDetail),
+        expiration: 20
+    }).then()
+    return productDetail
 }
 
 //this service for shop
