@@ -7,8 +7,9 @@ const ProductController = require('../../controllers/product.controller')
 const { authentication } = require('../../auth/authUtils')
 const { grantAccess } = require('../../middleware/rbac')
 const { checkShopPermission } = require('../../middleware/shop.middleware')
+const { readProductCache } = require('../../middleware/cache.middleware')
 
-router.get('/:slug', asyncHandler(ProductController.oneSpu))
+router.get('/:slug', readProductCache, asyncHandler(ProductController.oneSpu))
 
 router.use(authentication)
 
