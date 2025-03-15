@@ -8,9 +8,10 @@ const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
 const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
-const { getReservationInventoryByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
+const { getReservationByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
 const { producerOrderMessage } = require("../queues/order.producer")
 const { ORDER_STATUSES } = require("../configs/constant")
+const { checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
 //USER
 /*
     {
@@ -96,6 +97,7 @@ const createOrderService = async({
         }
         if(aquireProducts.includes(false)){
             await unReservationInventory({ products: validProducts })
+            const now = () => new Date()
             const order = await createOrder({
                 _id: orderObjectId,
                 userId,
@@ -105,13 +107,14 @@ const createOrderService = async({
                 order_products: orderProducts,
                 order_note,
                 order_cancellation: {
-                    reason: {
+                    shop_reason: {
                         code: 'out_of_stock',
                         detail: 'Some product out of stock'
                     },
-                    cancelledAt: new Date(),
-                    shop_approval: 'approved'
-                }
+                    cancelledAt: now,
+                    shop_approval: 'approved',
+                    approvedAt: now
+                },
             })
             if(!order)
                 throw new BadRequestError('Create order failure')
@@ -123,7 +126,8 @@ const createOrderService = async({
                 shipping: user_address,
                 payment: user_payment,
                 order_products: orderProducts,
-                order_note
+                order_note,
+                order_cancellation: null
             })
             if(!order)
                 throw new BadRequestError('Create order failure')
@@ -174,7 +178,6 @@ const checkoutOrderReviewService = async({
         const selectedProductFromCart = await getSeclectedProductFromCartService({ userId, shopId, products })
         if(shop_order_ids[i].item_products.length !== selectedProductFromCart.products.length)
             throw new BadRequestError('Some product invalid')
-        
         const checkProductServer = await checkSkuByServerV2({ listSku: selectedProductFromCart.products})
         //check product valid (price)
         const hasUndefinedProduct = checkProductServer.some( element => element === undefined)
@@ -280,7 +283,7 @@ const updateOrderStatusHistoryService = async({shopId, orderId, validStatus, sta
     if(!orderId) throw new BadRequestError('Order is required')
     const foundOrder = await getOneOrderByShop({ shopId, orderId })
     if(!foundOrder) throw new NotFoundError('Order not found')
-    if(foundOrder.order_cancellation)
+    if(foundOrder.order_cancellation && foundOrder.order_cancellation.shop_approval === 'pending')
         throw new BadRequestError('Current order status does not allow this action')
     const userId = foundOrder.order_userId
     const { order_status } = foundOrder
@@ -288,8 +291,14 @@ const updateOrderStatusHistoryService = async({shopId, orderId, validStatus, sta
         throw new BadRequestError('Current order status does not allow this action')
     const updatedOrderStatusHistory = await updateOrderStatusHistory({ userId, orderId, status})
     if(!updatedOrderStatusHistory) throw new BadRequestError('Update order status failed')
-
+    if(status === 'conpleted'){
+        //un reservation in inventories model
+    }
     return updatedOrderStatusHistory
+}
+
+const getReservationProductTest = async({ orderId }) => {
+    return await getReservationByOrderId({ orderId })
 }
 
 const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, orderId }) => {
@@ -299,7 +308,16 @@ const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, ord
 const confirmOrderByShopService = updateOrderStatusService('pending', 'confirmed');
 const shippingOrderByShopService = updateOrderStatusService('confirmed', 'shipping');
 const deliveryOrderByShopService = updateOrderStatusService('shipping', 'pending_delivery');
-const completeOrderByShopService = updateOrderStatusService('pending_delivery', 'completed');
+const completeOrderByShopServiceV2 = updateOrderStatusService('pending_delivery', 'completed');
+const completeOrderByShopService = async() => {
+    const validStatus = 'pending_delivery'
+    const newStatus = 'completed'
+    const updatedOrderStatus = updateOrderStatusService(validStatus, newStatus)
+    if(!updatedOrderStatus)
+        throw new BadRequestError('Failed to complete order')
+    
+    return updatedOrderStatus
+}
 
 const getAllOrderByShopService = async({ shopId, limit = 20, page = 1, status = 6 }) => {
     const orders = await getAllOrderByShop({ shopId, status: ORDER_STATUSES[status], limit, page})
@@ -362,5 +380,6 @@ module.exports = {
     getAllOrderByShopService,
     getOrderDetailByUserService,
     getOrderDetailByShopService,
-    rejectOrderCancellationByShopService
+    rejectOrderCancellationByShopService,
+    getReservationProductTest
 }
