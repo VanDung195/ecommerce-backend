@@ -4,20 +4,23 @@ const { convertToObjectIdMongodb } = require('../../utils')
 const ORDER = require('../order.model')
 
 const createOrder = async({
+    _id,
     userId,
     order_checkout,
     shipping,
     payment,
     order_products,
     order_note,
-    order_cancellation = null
+    order_cancellation
 }) => {
     const order = await ORDER.create({
+        _id,
         order_userId: userId,
         order_checkout,
         order_shipping: shipping,
         order_payment: payment,
         order_products,
+        order_cancellation,
         order_note
     })
     return order
@@ -219,6 +222,55 @@ const getAllOrderByUser = async({ userId, status, limit, page }) => {
                 'order_products.item_products.product_variations.images': 0,
             }
         },
+        {
+            $addFields: {
+                order_products: {
+                    $mergeObjects: [
+                        '$order_products',
+                        {
+                            item_products: {
+                                $map: {
+                                    input: '$order_products.item_products',
+                                    as: 'product',
+                                    in: {
+                                        $mergeObjects: [
+                                            '$$product',
+                                            {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{ $size: { $ifNull: ['$$product.product_variations', []] }}, 0]
+                                                    },
+                                                    then: {
+                                                        seleted_options: {
+                                                            $map: {
+                                                                input: { $range: [0, { $size: '$$product.product_variations'}]},
+                                                                as: 'i',
+                                                                in: {
+                                                                    tier_id: {
+                                                                        $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                                    },
+                                                                    tier_value: {
+                                                                        $arrayElemAt: [
+                                                                            { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
+                                                                            { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    else: {}
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
         { $skip: skip },
         { $limit: limit }
     ]);
@@ -371,40 +423,6 @@ const getAllOrderByShop = async({ shopId, status, limit, page }) => {
                 },
             }
         }, 
-        {
-            $addFields: {
-                first_two_products: {
-                    $map: {
-                        input: '$first_two_products',
-                        as: 'product',
-                        in: {
-                            $mergeObjects: [
-                                '$$product',
-                                {
-                                    selected_options: {
-                                        $map: {
-                                            input: { $range: [0, { $size: '$$product.product_variations' }] }, // Lặp qua từng index
-                                            as: 'i',
-                                            in: {
-                                                tier_id: {
-                                                    $arrayElemAt: ['$$product.product_variations.name', '$$i']
-                                                },
-                                                tier_value: {
-                                                    $arrayElemAt: [
-                                                        { $arrayElemAt: ['$$product.product_variations.options', '$$i'] },
-                                                        { $arrayElemAt: ['$$product.sku_tier_idx', '$$i'] }
-                                                    ]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         { $unset: 'spu_info'},
         {
             $project: {
@@ -424,6 +442,48 @@ const getAllOrderByShop = async({ shopId, status, limit, page }) => {
                 'first_two_products.isDeleted': 0,
                 'first_two_products.__v': 0,
 
+            }
+        },
+        {
+            $addFields: {
+                first_two_products: {
+                    $map: {
+                        input: '$first_two_products',
+                        as: 'product',
+                        in: {
+                            $mergeObjects: [
+                                '$$product',
+                                {
+                                    $cond: {
+                                        if: {
+                                            $gt: [{ $size: { $ifNull: ['$$product.product_variations', []]}}, 0]
+                                        },
+                                        then: {
+                                            selected_options: {
+                                                $map: {
+                                                    input: { $range: [0, { $size: '$$product.product_variations' }] }, // Lặp qua từng index
+                                                    as: 'i',
+                                                    in: {
+                                                        tier_id: {
+                                                            $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                        },
+                                                        tier_value: {
+                                                            $arrayElemAt: [
+                                                                { $arrayElemAt: ['$$product.product_variations.options', '$$i'] },
+                                                                { $arrayElemAt: ['$$product.sku_tier_idx', '$$i'] }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        else: {}
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         },
         { $skip: skip },
@@ -659,22 +719,30 @@ const getOrderDetailByUser = async({ userId, orderId }) => {
                                         $mergeObjects: [
                                             '$$product',
                                             {
-                                                selected_options: {
-                                                    $map: {
-                                                        input: { $range: [0, { $size: '$$product.product_variations'}]},
-                                                        as: 'i',
-                                                        in: {
-                                                            tier_id: {
-                                                                $arrayElemAt: ['$$product.product_variations.name', '$$i']
-                                                            },
-                                                            tier_value: {
-                                                                $arrayElemAt: [
-                                                                    { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
-                                                                    { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
-                                                                ]
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{ $size: { $ifNull: ['$$product.product_variations', []] }}, 0]
+                                                    },
+                                                    then: {
+                                                        seleted_options: {
+                                                            $map: {
+                                                                input: { $range: [0, { $size: '$$product.product_variations'}]},
+                                                                as: 'i',
+                                                                in: {
+                                                                    tier_id: {
+                                                                        $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                                    },
+                                                                    tier_value: {
+                                                                        $arrayElemAt: [
+                                                                            { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
+                                                                            { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
+                                                                        ]
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    },
+                                                    else: {}
                                                 }
                                             }
                                         ]
@@ -860,22 +928,30 @@ const getOrderDetailByShop = async({ shopId, orderId }) => {
                                         $mergeObjects: [
                                             '$$product',
                                             {
-                                                seleted_options: {
-                                                    $map: {
-                                                        input: { $range: [0, { $size: '$$product.product_variations'}]},
-                                                        as: 'i',
-                                                        in: {
-                                                            tier_id: {
-                                                                $arrayElemAt: ['$$product.product_variations.name', '$$i']
-                                                            },
-                                                            tier_value: {
-                                                                $arrayElemAt: [
-                                                                    { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
-                                                                    { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
-                                                                ]
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{ $size: { $ifNull: ['$$product.product_variations', []] }}, 0]
+                                                    },
+                                                    then: {
+                                                        seleted_options: {
+                                                            $map: {
+                                                                input: { $range: [0, { $size: '$$product.product_variations'}]},
+                                                                as: 'i',
+                                                                in: {
+                                                                    tier_id: {
+                                                                        $arrayElemAt: ['$$product.product_variations.name', '$$i']
+                                                                    },
+                                                                    tier_value: {
+                                                                        $arrayElemAt: [
+                                                                            { $arrayElemAt: ['$$product.product_variations.options', '$$i']},
+                                                                            { $arrayElemAt: ['$$product.sku_tier_idx', '$$i']}
+                                                                        ]
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    },
+                                                    else: {}
                                                 }
                                             }
                                         ]
