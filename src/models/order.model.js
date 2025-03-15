@@ -44,7 +44,6 @@ const cancellationSchema = new Schema({
             'buyer_changed_mind', 
             'seller_no_response', 
             'seller_cannot_deliver_on_time', 
-            'out_of_stock', 
             'seller_requested_cancellation', 
             'other'
         ], default: 'buyer_no_longer_wants'},
@@ -57,6 +56,7 @@ const cancellationSchema = new Schema({
             'order_already_processed',
             'buyer_confirmed_receipt',
             'custom_order_cannot_cancel',
+            'out_of_stock', 
             'other'
         ], default: null},
         detail: { type: String, default: ''}

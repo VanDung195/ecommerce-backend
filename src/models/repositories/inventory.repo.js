@@ -124,7 +124,7 @@ const unReservationInventory = async({ products }) => {
     )
 }
 
-const getReservationInventoryByOrderId = async({ orderId }) => {
+const getReservationByOrderId = async({ orderId }) => {
     const reservation = INVENTORY.aggregate([
         {
             $match: {
@@ -156,5 +156,5 @@ module.exports = {
     getInventory,
     reservationInventory,
     unReservationInventory,
-    getReservationInventoryByOrderId
+    getReservationByOrderId
 }
