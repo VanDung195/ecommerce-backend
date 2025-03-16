@@ -3,9 +3,11 @@
 const { BadRequestError } = require('../core/error.response')
 const { connectToRabbitMQ } = require('../dbs/init.rabbit')
 const { updateCartCount, removeFromCart, removeCartShop } = require('../models/repositories/cart.repo')
-const { updateDiscountForOrder } = require('../models/repositories/discount.repo')
+const { updateDiscountForOrder, getOneDiscountCode, findOneDiscountWithoutLean } = require('../models/repositories/discount.repo')
+const { unReservationInventory } = require('../models/repositories/inventory.repo')
+const { cancelOrder } = require('../models/repositories/order.repo')
 const { updateSkusStock, getOneSkuById } = require('../models/repositories/sku.repo')
-const { updateInventoryStockSpuByProductId } = require('../models/repositories/spu.repo')
+const { updateInventoryStockSpuByProductId, increaseInventoryStockSpuBySpuId } = require('../models/repositories/spu.repo')
 const { getUniqueData } = require('../utils')
 
 //update cart and sync inventories, update discount
@@ -20,7 +22,7 @@ const consumerOrderNormal = async () => {
                 const orderProducts = payload.orderProducts
                 const userId = payload.userId
                 const spuIds = []
-                let countProduct = 0
+                let countProducts = 0
                 if(orderProducts.shop_discount){
                     const updatedDiscount = await updateDiscountForOrder({
                         userId, 
@@ -50,7 +52,7 @@ const consumerOrderNormal = async () => {
                         quantity: product.quantity
                     });
                     delProductFromCart = await removeFromCart({ userId, productId: product.productId, shopId})
-                    countProduct++
+                    countProducts++
                 }
                 //delete shop in cart
                 const shopIndex = delProductFromCart.cart_products.findIndex( shop => shop.shopId.toString() === shopId)
@@ -66,7 +68,7 @@ const consumerOrderNormal = async () => {
                 //updat cart count
                 await updateCartCount({
                     userId,
-                    quantity: -countProduct
+                    quantity: -countProducts
                 })
                 const uniqueArraySpuIds = getUniqueData(spuIds)
                 for(const spuId of uniqueArraySpuIds){
@@ -86,6 +88,57 @@ const consumerOrderNormal = async () => {
         throw error
     }
 }
+
+const consumerOrderCancellation = async() => {
+    try {
+        const { connection, channel } = await connectToRabbitMQ()
+        const cancelOrderQueue = 'cancelOrderQueueProcess'
+        console.log(`Cancel order consumer is listening on queue ${cancelOrderQueue}........`)
+        channel.consume(cancelOrderQueue, async msg => {
+            try {
+                const order = JSON.parse(msg.content.toString())
+                //restore discount
+                const orderId = order._id
+                const products = order.order_products.item_products
+                const formattedProducts = []
+                await Promise.all(
+                    products.map( async product => {
+                        const sku = await getOneSkuById(product.productId)
+                        const spuId = sku.productId._id //populate('productId', 'product_shop product_name _id')
+                        console.log(sku) 
+                        formattedProducts.push({
+                            orderId,
+                            productId: product.productId, //skuId
+                            quantity: product.quantity
+                        })
+                        // await increaseInventoryStockSpuBySpuId({ productId: spuId, quantity: product.quantity })
+                    })
+                )
+                console.log(order)
+                const userId = order.order_userId
+                if(order.order_products.shop_discount !== null){
+                    //restore discount
+                    const discount = order.order_products.shop_discount
+                    console.log(discount)
+                    const foundDiscount = await findOneDiscountWithoutLean({ shopId: discount.shopId, discountId: discount.discountId, code: discount.code})
+                    if(!foundDiscount)
+                        throw new BadRequestError('Discount not found')
+                }
+                //un reservation in inventories model
+                // await unReservationInventory({ products: formattedProducts })
+                //update skus stock
+                // await updateSkusStock({ skus: formattedProducts, isIncrease: true })
+                console.log('ACKNOWLEDMENT')
+                channel.ack(msg)
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 const consumerOrderNormalV2 = async () => {
     try {
         const { connection, channel } = await connectToRabbitMQ()
@@ -199,5 +252,6 @@ const consumerOrderFailed = async () => {
 
 module.exports = {
     consumerOrderNormal,
-    consumerOrderFailed
+    consumerOrderFailed,
+    consumerOrderCancellation
 }
