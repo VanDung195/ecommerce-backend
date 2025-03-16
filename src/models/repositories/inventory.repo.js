@@ -103,7 +103,7 @@ const reservationInventory = async({ productId, quantity, cartId, orderId}) => {
         }
     ]
 */
-const unReservationInventory = async({ products }) => {
+const releaseReservedInventory = async({ products }) => {
     return await Promise.all(
         products.map( async product => {
             const query = {
@@ -155,6 +155,6 @@ module.exports = {
     checkInventoryStock,
     getInventory,
     reservationInventory,
-    unReservationInventory,
+    releaseReservedInventory ,
     getReservationByOrderId
 }
