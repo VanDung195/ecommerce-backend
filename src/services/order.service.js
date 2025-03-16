@@ -8,10 +8,11 @@ const { getSpusByListSpuId } = require("../models/repositories/spu.repo")
 const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
-const { getReservationByOrderId, unReservationInventory } = require("../models/repositories/inventory.repo")
-const { producerOrderMessage } = require("../queues/order.producer")
+const { getReservationByOrderId, releaseReservedInventory  } = require("../models/repositories/inventory.repo")
+const { producerOrderMessage, producerOrderCancellationEvent } = require("../queues/order.producer")
 const { ORDER_STATUSES } = require("../configs/constant")
 const { checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
+const { convertToObjectIdMongodb } = require("../utils")
 //USER
 /*
     {
@@ -96,7 +97,7 @@ const createOrderService = async({
             fee_ship: 0
         }
         if(aquireProducts.includes(false)){
-            await unReservationInventory({ products: validProducts })
+            await releaseReservedInventory ({ products: validProducts })
             const now = () => new Date()
             const order = await createOrder({
                 _id: orderObjectId,
@@ -265,6 +266,11 @@ const cancelOrderService = async({
     if (!cancelledOrder) throw new BadRequestError('Cancel order failed!')
     if(order_status === 'pending'){
         await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+        //un reservations product in inventories model
+        const reservationProducts = await getReservationByOrderId({ orderId })
+        if(!reservationProducts)
+            throw new NotFoundError('Reservation products not found')
+        await releaseReservedInventory ({ products: reservationProducts })
     }
     return cancelledOrder
 }
@@ -293,12 +299,20 @@ const updateOrderStatusHistoryService = async({shopId, orderId, validStatus, sta
     if(!updatedOrderStatusHistory) throw new BadRequestError('Update order status failed')
     if(status === 'conpleted'){
         //un reservation in inventories model
+        const reservationProducts = await getReservationByOrderId({ orderId })
+        if(!reservationProducts)
+            throw new NotFoundError('Reservation products not found')
+        await releaseReservedInventory ({ products: reservationProducts })
     }
     return updatedOrderStatusHistory
 }
 
 const getReservationProductTest = async({ orderId }) => {
-    return await getReservationByOrderId({ orderId })
+    console.log(orderId)
+    const order = await getOneOrderByShop({ shopId: convertToObjectIdMongodb('67a848495fa5509c47c0c613'), orderId})
+    await producerOrderCancellationEvent({ order })
+    return order
+    // return await getReservationByOrderId({ orderId })
 }
 
 const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, orderId }) => {
@@ -308,14 +322,13 @@ const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, ord
 const confirmOrderByShopService = updateOrderStatusService('pending', 'confirmed');
 const shippingOrderByShopService = updateOrderStatusService('confirmed', 'shipping');
 const deliveryOrderByShopService = updateOrderStatusService('shipping', 'pending_delivery');
-const completeOrderByShopServiceV2 = updateOrderStatusService('pending_delivery', 'completed');
-const completeOrderByShopService = async() => {
+const completeOrderByShopService = updateOrderStatusService('pending_delivery', 'completed');
+const completeOrderByShopServiceV2 = async() => {
     const validStatus = 'pending_delivery'
     const newStatus = 'completed'
     const updatedOrderStatus = updateOrderStatusService(validStatus, newStatus)
     if(!updatedOrderStatus)
         throw new BadRequestError('Failed to complete order')
-    
     return updatedOrderStatus
 }
 
@@ -343,6 +356,10 @@ const confirmOrderCancellationByShopService = async({ shopId, orderId }) => {
     const updatedOrder = await confirmOrderCancellation({ shopId, orderId })
     if(!updatedOrder)
         throw new BadRequestError('Confirm order cancellation failure')
+    const reservationProducts = await getReservationByOrderId({ orderId })
+    if(!reservationProducts)
+        throw new NotFoundError('Reservation products not found')
+    await releaseReservedInventory ({ products: reservationProducts })
     return updatedOrder
 }
 
@@ -361,9 +378,7 @@ const rejectOrderCancellationByShopService = async({ shopId, orderId, code = 'ot
     return updatedOrder
 }
 
-const refundOrderService = async({
-
-}) => {
+const refundOrderService = async({ shopId, orderId, code = 'other', detail = '' }) => {
 
 }
 
