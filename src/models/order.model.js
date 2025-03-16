@@ -31,7 +31,7 @@ const paymentSchema = new Schema({
 
 const orderProductSchema = new Schema({
     shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true},
-    shop_discount: { type: Object, default: {}},
+    shop_discount: { type: Object, default: null},
     item_products: { type: Array, required: true}
 }, { _id: false })
 

@@ -43,7 +43,7 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
     }
 }
 
-const produceOrderCancellationEvent = async({ orderId, userId, shopId }) => {
+const producerOrderCancellationEvent = async({ order }) => {
     try {
         const {connection, channel} = await connectToRabbitMQ()
         const cancelOrderQueue = 'cancelOrderQueueProcess'
@@ -61,8 +61,7 @@ const produceOrderCancellationEvent = async({ orderId, userId, shopId }) => {
             deadLetterRoutingKey: orderRoutingKeyDLX
         })
         await channel.bindQueue(queueResult.queue, cancelOrderExchange)
-        const payload = { orderId, userId, shopId }
-        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(payload)), {
+        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(order)), {
             persistent: true
         })
         setTimeout(() => {
@@ -75,5 +74,5 @@ const produceOrderCancellationEvent = async({ orderId, userId, shopId }) => {
 
 module.exports = {
     producerOrderMessage,
-    produceOrderCancellationEvent
+    producerOrderCancellationEvent
 }

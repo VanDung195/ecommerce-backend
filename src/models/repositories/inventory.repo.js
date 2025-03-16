@@ -128,7 +128,7 @@ const getReservationByOrderId = async({ orderId }) => {
     const reservation = INVENTORY.aggregate([
         {
             $match: {
-                'inven_reservations.orderId': orderId
+                'inven_reservations.orderId': convertToObjectIdMongodb(orderId)
             }
         },
         {
