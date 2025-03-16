@@ -276,11 +276,21 @@ const updateDiscountForOrder = async({
     return await DISCOUNT.findOneAndUpdate(filter, update, option)
 }
 
+const findOneDiscountWithoutLean = async({ shopId, discountId, code }) => {
+    const filter = {
+        discount_shopId: convertToObjectIdMongodb(shopId),
+        _id: convertToObjectIdMongodb(discountId),
+        discount_code: code
+    }
+    return await DISCOUNT.findOne(filter)
+}
+
 module.exports = {
     getOneDiscountCode,
     createDiscountByShop,
     getRecommendShopDiscount,
     getRecommendDiscount,
     getAllDiscountByShop,
-    updateDiscountForOrder
+    updateDiscountForOrder,
+    findOneDiscountWithoutLean
 }
