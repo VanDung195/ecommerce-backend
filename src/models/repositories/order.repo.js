@@ -536,12 +536,10 @@ const updateOrderStatusHistory = async({ userId, orderId, status }) => {
                 status,
                 changedAt: new Date()
             }
+        }, $set: {
+            order_status: status
         }
     }, option = { new: true }
-    //status = cancelled
-    if(status === 'pending'){
-        update.$set.order_status = status
-    }
     return await ORDER.findOneAndUpdate(filter, update, option)
 }
 
@@ -974,7 +972,7 @@ const confirmOrderCancellation = async({ shopId, orderId }) => {
         $set: {
             order_status: 'cancelled',
             'order_cancellation.shop_approval': 'approved',
-            'order_cancellation.approvedAt': new Date,
+            'order_cancellation.approvedAt': new Date(),
         },
         $addToSet: {
             order_status_history: {
@@ -993,8 +991,8 @@ const rejectOrderCancellation = async({ shopId, orderId, code, detail }) => {
     }, update = {
         $set: {
             'order_cancellation.shop_approval': 'reject',
-            'shop_reason.code': code,
-            'shop_reason.detail': detail
+            'order_cancellation.shop_reason.code': code,
+            'order_cancellation.shop_reason.detail': detail
         }
     }, option = { new: true }
     return await ORDER.findOneAndUpdate(filter, update, option)
