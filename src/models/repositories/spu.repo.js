@@ -205,9 +205,9 @@ const updateInvenStockAndPrice = async({
     return spu
 }
 
-//only productId
+//only productId 
 const updateInventoryStockSpuByProductId = async({ productId }) => {
-    const totalInvenStock = await getTotalInvenStock({ productId })
+    const totalInvenStock = await getTotalInvenStock({ productId }) //total inventory stock of skus
     const spu = await SPU.findOneAndUpdate(
         {
             _id: convertToObjectIdMongodb(productId)
@@ -220,6 +220,17 @@ const updateInventoryStockSpuByProductId = async({ productId }) => {
         { new: true }
     )
     return spu
+}
+
+const increaseInventoryStockSpuBySpuId = async({ productId, quantity }) => {
+    const filter = {
+        _id: convertToObjectIdMongodb(productId),
+    }, update = {
+        $inc: {
+            product_quantity: quantity
+        }
+    }, option = { new: true }
+    return await SPU.findOneAndUpdate(filter, update, option)
 }
 
 //update simple product
@@ -367,4 +378,5 @@ module.exports = {
     addVariation,
     updateVariationOptions,
     getSpusByListSpuId,
+    increaseInventoryStockSpuBySpuId
 }
