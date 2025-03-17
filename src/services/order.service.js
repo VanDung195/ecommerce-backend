@@ -9,7 +9,7 @@ const { getSeclectedProductFromCartService } = require("./cart.service")
 const { getDiscountAmountService } = require("./discount.service")
 const { aquireLock, releaseLock } = require("./redis.service")
 const { getReservationByOrderId, releaseReservedInventory  } = require("../models/repositories/inventory.repo")
-const { producerOrderMessage, producerOrderCancellationEvent } = require("../queues/order.producer")
+const { producerOrderMessage, producerOrderCancellationEvent, producerOrderRefundEvent } = require("../queues/order.producer")
 const { ORDER_STATUSES } = require("../configs/constant")
 const { checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
 const { convertToObjectIdMongodb } = require("../utils")
@@ -112,7 +112,7 @@ const createOrderService = async({
                         code: 'out_of_stock',
                         detail: 'Some product out of stock'
                     },
-                    cancelledAt: now,
+                    requestedAt: now,
                     shop_approval: 'approved',
                     approvedAt: now
                 },
@@ -265,12 +265,15 @@ const cancelOrderService = async({
     const cancelledOrder = await cancelOrder({ userId, orderId, cancellation_info: cancellationInfo, order_status })
     if (!cancelledOrder) throw new BadRequestError('Cancel order failed!')
     if(order_status === 'pending'){
-        await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+        const discount = foundOrder.order_products.shop_discount
+        const shopId = foundOrder.order_products.shopId
+        // await updateOrderStatusHistory({ userId, orderId, status: 'cancelled'})
+        await confirmOrderCancellation({ shopId, orderId })
         //un reservations product in inventories model
-        const reservationProducts = await getReservationByOrderId({ orderId })
-        if(!reservationProducts)
+        const reservedProducts = await getReservationByOrderId({ orderId })
+        if(!reservedProducts)
             throw new NotFoundError('Reservation products not found')
-        await releaseReservedInventory ({ products: reservationProducts })
+        await producerOrderCancellationEvent({ reservedProducts, userId, discount })
     }
     return cancelledOrder
 }
@@ -308,11 +311,15 @@ const updateOrderStatusHistoryService = async({shopId, orderId, validStatus, sta
 }
 
 const getReservationProductTest = async({ orderId }) => {
-    console.log(orderId)
     const order = await getOneOrderByShop({ shopId: convertToObjectIdMongodb('67a848495fa5509c47c0c613'), orderId})
-    await producerOrderCancellationEvent({ order })
+    // await producerOrderRefundEvent({ order })
+    // return orderId
+    const reservated_products = await getReservationByOrderId({ orderId })
+    const discount = order.order_products.shop_discount
+    // await producerOrderCancellationEvent({ })
+    console.log(reservated_products)
+    console.log(discount)
     return order
-    // return await getReservationByOrderId({ orderId })
 }
 
 const updateOrderStatusService = (validStatus, newStatus) => async({ shopId, orderId }) => {
@@ -377,7 +384,7 @@ const rejectOrderCancellationByShopService = async({ shopId, orderId, code = 'ot
         throw new BadRequestError('Reject order cancellation failure')
     return updatedOrder
 }
-
+//viết thêm hàm này nhé!!!!!!!
 const refundOrderService = async({ shopId, orderId, code = 'other', detail = '' }) => {
 
 }
