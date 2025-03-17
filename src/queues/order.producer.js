@@ -43,7 +43,36 @@ const producerOrderMessage = async ({userId, orderProducts}) => {
     }
 }
 
-const producerOrderCancellationEvent = async({ order }) => {
+const producerOrderRefundEvent = async({ order }) => {
+    try {
+        const {connection, channel} = await connectToRabbitMQ()
+        const refundOrderQueue = 'refundOrderQueueProcess'
+        const refundOrderExchange = 'refundOrderEx'
+        const orderExchangeDLX = 'orderExDLX'
+        const orderRoutingKeyDLX = 'orderRoutingKeyDLX'
+        
+        await channel.assertExchange(refundOrderExchange, 'direct', {
+            durable: true
+        })
+        const queueResult = await channel.assertQueue(refundOrderQueue, {
+            durable: true,
+            exclusive: false,
+            deadLetterExchange: orderExchangeDLX,
+            deadLetterRoutingKey: orderRoutingKeyDLX
+        })
+        await channel.bindQueue(queueResult.queue, refundOrderExchange)
+        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(order)), {
+            persistent: true
+        })
+        setTimeout(() => {
+            connection.close()
+        }, 500)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+const producerOrderCancellationEvent = async({ reservedProducts, userId, discount = null }) => {
     try {
         const {connection, channel} = await connectToRabbitMQ()
         const cancelOrderQueue = 'cancelOrderQueueProcess'
@@ -61,7 +90,8 @@ const producerOrderCancellationEvent = async({ order }) => {
             deadLetterRoutingKey: orderRoutingKeyDLX
         })
         await channel.bindQueue(queueResult.queue, cancelOrderExchange)
-        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(order)), {
+        const payload = { reservedProducts, userId, discount }
+        await channel.sendToQueue(queueResult.queue, Buffer.from(JSON.stringify(payload)), {
             persistent: true
         })
         setTimeout(() => {
@@ -74,5 +104,6 @@ const producerOrderCancellationEvent = async({ order }) => {
 
 module.exports = {
     producerOrderMessage,
+    producerOrderRefundEvent,
     producerOrderCancellationEvent
 }
