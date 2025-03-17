@@ -108,13 +108,13 @@ const releaseReservedInventory = async({ products }) => {
         products.map( async product => {
             const query = {
                 inven_productId: product.productId,
-                'inven_reservations.orderId': product.orderId
+                'inven_reservations.orderId': convertToObjectIdMongodb(product.orderId)
             }, update = {
                 $inc: {
                     inven_stock: product.quantity
                 },
                 $pull: {
-                    inven_reservations: { orderId: product.orderId}
+                    inven_reservations: { orderId: convertToObjectIdMongodb(product.orderId)}
                 }
             }, option = { new: true}
             const updateInven = await INVENTORY.findOneAndUpdate(query, update, option)
