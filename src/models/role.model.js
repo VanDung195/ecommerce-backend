@@ -7,7 +7,7 @@ const COLLECTION_NAME = 'Roles'
 
 
 var roleSchema = new Schema({
-    rol_name: { type: String, default: 'user', enum: ['user', 'shop', 'admin']},
+    rol_name: { type: String, default: 'user', enum: ['user', 'shop', 'affiliate', 'admin']},
     rol_slug: { type: String, required: true},
     rol_status: { type: String, default: 'active', enum: ['active', 'inactive']},
     rol_description: { type: String, default: ''},

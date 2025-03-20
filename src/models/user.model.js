@@ -17,7 +17,8 @@ var userSchema = new Schema({
     usr_avatar: { type: String, default: ''},
     usr_day_of_birth: { type: Date, default: ''},
     // usr_role: { type: Schema.Types.ObjectId, ref: 'Role'},
-    usr_role: { type: String, default: 'user'},
+    // usr_role: { type: String, default: 'user'},
+    usr_role: { type: Array, default: ['user']},
     usr_status: { type: String, default: 'active', enum: ['active', 'block']}
 }, {
     timestamps: true,
