@@ -13,13 +13,14 @@ const grantAccess = (action, resource) => {
             const userId = req.user.userId
             const foundUser = await findUserById(userId) 
             if(!foundUser) throw new AuthFailureError('User not registed')
-            const role_name = foundUser.usr_role
-            
-            const permission = rbac.can(role_name)[action](resource)
-            if (!permission || !permission.granted) {
-                throw new AuthFailureError('Permission denied');
+            const role_names = foundUser.usr_role
+            for(const role of role_names){
+                const permission = await rbac.can(role)[action](resource)
+                if(permission.granted){
+                    return next()
+                }
             }
-            next()
+            throw new AuthFailureError('Permission denied')
         } catch (error) {
             next(error)
         }
