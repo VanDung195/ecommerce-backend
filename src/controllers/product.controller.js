@@ -2,7 +2,7 @@
 
 const { SuccessResponse } = require('../core/success.response')
 const { updateOneSkuService, updateListSkuService, publishSkuService, unPublishSkuService, setDefaultSkuService, unsetDefaultSkuService, createOneSkuService, createListSkuService } = require('../services/sku.service')
-const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService, deleteProductVariationService, addProductVariationService, testNhe, updateVariationOptionsService } = require('../services/spu.service')
+const { createSpuService, getOneSpuService, getListSkuBySpuIdService, getOneSkuService, getAllSpuService, publishProductByShopService, unPublishProductByShopService, getAllDraftsForShopService, getAllPublicForShopService, getAllProductForShopService, deleteProductVariationService, addProductVariationService, testNhe, updateVariationOptionsService, getOneSpuDetailByShopService } = require('../services/spu.service')
 
 class ProductController {
     newSpu = async(req, res, next) => {
@@ -200,6 +200,16 @@ class ProductController {
             metadata: await updateVariationOptionsService({
                 shopId: req.shop._id,
                 ...req.body
+            })
+        }).send(res)
+    }
+
+    getOneSpuDetail = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await getOneSpuDetailByShopService({
+                shopId: req.shop._id,
+                spuId: req.params.spuId
             })
         }).send(res)
     }
