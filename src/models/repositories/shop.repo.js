@@ -43,7 +43,10 @@ const verifyShop = async({
 const findShopByUserId = async({
     userId
 }) => {
-    const foundShop = await SHOP.findOne({ userId})
+    const foundShop = await SHOP.findOne({ 
+        userId,
+        shop_status: 'active'
+    })
     return foundShop
 }
 
@@ -84,11 +87,23 @@ const getShopByShopIds = async({
     shopIds = [],
     selectData = []
 }) => {
-    const shops = await SHOP.find({ _id: { $in: shopIds}})
-                            .select(getSelectData(selectData)).lean()
+    const shops = await SHOP.find({ 
+        _id: { 
+            $in: shopIds
+        }
+    }).select(getSelectData(selectData)).lean()
     return shops
 }
 
+const deleteShopByUser = async({ shopId, userId }) => {
+    const filter = {
+        _id: shopId,
+        userId
+    }, update = {
+        shop_status: 'deleted'
+    }, option = { new: true }
+    return await SHOP.findOneAndUpdate(filter, update, option)
+}
 module.exports = {
     createShop,
     findShopByUserId,
@@ -98,5 +113,6 @@ module.exports = {
     findShopByEmail,
     findALlShop,
     findShopByShopId,
-    getShopByShopIds
+    getShopByShopIds,
+    deleteShopByUser
 }
