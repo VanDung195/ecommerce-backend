@@ -1,7 +1,7 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { newShop, getShopByUserId, getAllShop } = require("../services/shop.service")
+const { newShop, getShopByUserId, getAllShop, deleteShopByUserService } = require("../services/shop.service")
 
 class ShopController{
     newShop = async(req, res, next) => {
@@ -23,6 +23,16 @@ class ShopController{
             message: 'Get shop success',
             metadata: await getShopByUserId({
                 userId: req.user.userId
+            })
+        }).send(res)
+    }
+
+    deleteShopByUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Delete shop successfuly',
+            metadata: await deleteShopByUserService({
+                userId: req.user.userId,
+                shopId: req.shop._id
             })
         }).send(res)
     }
