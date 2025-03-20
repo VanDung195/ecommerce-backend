@@ -33,6 +33,30 @@ const updateShopRole = async ({
     return user
 }
 
+const addRole = async({ userId, role = 'user'}) => {
+    const filter = {
+        _id: userId
+    }, update = {
+        $addToSet: {
+            usr_role: role
+        }
+    }, option = { new: true }
+
+    return await USER.findOneAndUpdate(filter, update, option)
+}
+
+const deleteRole = async({ userId, role = 'affiliate'}) => {
+    const filter = {
+        _id: userId
+    }, update = {
+        $pull: {
+            usr_role: role
+        }
+    }, option = { new: true }
+
+    return await USER.findOneAndUpdate(filter, update, option)
+}
+
 const blockUser = async({
     userId,
     status
@@ -57,5 +81,7 @@ module.exports = {
     findUserByEmail,
     updateShopRole,
     blockUser,
-    findUserById
+    findUserById,
+    addRole,
+    deleteRole
 }
