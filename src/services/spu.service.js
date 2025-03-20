@@ -6,7 +6,7 @@ const { setCacheExpiration } = require('../models/repositories/cache.repo')
 const { addStockToInventory } = require('../models/repositories/inventory.repo')
 const { findShopById, findShopByUserId } = require("../models/repositories/shop.repo")
 const { createSku, getAllSkuBySpuId, getOneSku, updateSkuAfterAddingProductVariation, updateSkuAfterRemovingProductVariation, createOneSku, updateSkuTierIdx } = require('../models/repositories/sku.repo')
-const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice } = require('../models/repositories/spu.repo')
+const { createSpu, getOneSpuBySlug, getAllSpu, getOneSpuById, publishProductByShop, unPublishProductByShop, queryProduct, addVariation, deleteVariation, updateVariationOptions, updateInvenStockAndPrice, getOneSpuDetailByShop } = require('../models/repositories/spu.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require("../utils")
 
@@ -91,7 +91,6 @@ const getOneSpuService = async({
     let listSku = await getAllSkuBySpuId({ spuId: productId})
     listSku = listSku.filter(sku => !sku.isDeleted); 
     if(!listSku) throw new NotFoundError('Sku not found')
-
     const productDetail = {
         spu: foundSpu,
         sku: listSku
@@ -265,6 +264,13 @@ const getAllProductForShopService = async({
     })
     if(!spus.data.length > 0) return "List product not found"
     return spus
+}
+
+const getOneSpuDetailByShopService = async({ shopId, spuId }) => {
+    const spuDetail = await getOneSpuDetailByShop({ shopId, spuId })
+    if(!spuDetail)
+        throw new NotFoundError('Product not found')
+    return spuDetail
 }
 
 const deleteProductVariationService = async({
@@ -471,5 +477,6 @@ module.exports = {
     deleteProductVariationService,
     addProductVariationService,
     updateVariationOptionsService,
+    getOneSpuDetailByShopService,
     testNhe
 }
