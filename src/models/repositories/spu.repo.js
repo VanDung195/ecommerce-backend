@@ -362,6 +362,48 @@ const updateVariationOptions = async({
     )
 }
 
+const getOneSpuDetailByShop = async({ shopId, spuId }) => {
+    const spuDetail = await SPU.aggregate([
+        {
+            $match: {
+                _id: convertToObjectIdMongodb(spuId),
+                product_shop: shopId,
+                isDeleted: false
+            },
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: '_id',
+                foreignField: 'productId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $project: {
+                isDraft: 0,
+                isPublished: 0,
+                isDeleted: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0,
+                'sku_info._id': 0,
+                'sku_info.skuId': 0,
+                'sku_info.sku_default': 0,
+                'sku_info.productId': 0,
+                'sku_info.isDraft': 0,
+                'sku_info.isPublished': 0,
+                'sku_info.isDeleted': 0,
+                'sku_info.createdAt': 0,
+                'sku_info.updatedAt': 0,
+                'sku_info.__v': 0,
+
+            }
+        }
+    ])
+    return spuDetail
+}
+
 module.exports = {
     createSpu,
     deleteSpu,
@@ -378,5 +420,6 @@ module.exports = {
     addVariation,
     updateVariationOptions,
     getSpusByListSpuId,
-    increaseInventoryStockSpuBySpuId
+    increaseInventoryStockSpuBySpuId,
+    getOneSpuDetailByShop
 }
