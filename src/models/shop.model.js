@@ -17,6 +17,7 @@ var shopSchema = new Schema({
     shop_description: { type: String, default: ''},
     shop_type: { type: String, default: 'individual', enum: ['individual', 'corporate']},
     shop_ratings: { type: Number, default: 0},
+    verifiedAt: { type: Date, default: null}
 }, { 
    timestamps: true,
    collection: COLLECTION_NAME 
