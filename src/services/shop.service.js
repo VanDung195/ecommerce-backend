@@ -1,8 +1,8 @@
 'use strict'
 
 const { BadRequestError, NotFoundError } = require("../core/error.response")
-const { createShop, findShopByUserId, findShopById, disableShop, verifyShop, findShopByEmail, findALlShop } = require("../models/repositories/shop.repo")
-const { updateShopRole } = require("../models/repositories/user.repo")
+const { createShop, findShopByUserId, disableShop, verifyShop, findShopByEmail, findALlShop, deleteShopByUser, findShopByShopId } = require("../models/repositories/shop.repo")
+const { updateShopRole, addRole } = require("../models/repositories/user.repo")
 
 class ShopService{
     newShop = async({
@@ -15,7 +15,7 @@ class ShopService{
         if(!userId) throw new BadRequestError('User ID is required')
 
         try {
-            const foundShop = await findShopByUserId({ userId})
+            const foundShop = await findShopByUserId({ userId })
             if(foundShop) throw new BadRequestError('Shop already exists')
             const foundShopByEmail = await findShopByEmail({ email })
             if(foundShopByEmail) throw new BadRequestError('Email aldready exists')
@@ -28,11 +28,10 @@ class ShopService{
                 shop_phone: phone
             })
             if(!newShop) throw new BadRequestError('A system error occurred. Please try again later')
-    
-            const updateRole = await updateShopRole({ userId, role: 'shop'})
-            if(!updateRole) throw new BadRequestError('Failed to update user role.')
-    
-            return newShop
+            const updatedRole = await addRole({ userId, role: 'shop'})
+            if(!updatedRole) throw new BadRequestError('Failed to update user role.')
+
+                return newShop
         } catch (error) {
             console.error(error)
             throw error
@@ -63,7 +62,7 @@ class ShopService{
         if(!shopId) throw new BadRequestError('Shop ID is required')
 
         try {
-            const foundShop = await findShopById({ shopId})
+            const foundShop = await findShopByShopId(shopId)
             if(!foundShop) throw new NotFoundError('Shop not found')
             
             const shop = await disableShop({shopId})
@@ -80,9 +79,8 @@ class ShopService{
         shopId
     }) => {
         if(!shopId) throw new BadRequestError('Shop ID is required')
-
         try {
-            const foundShop = await findShopById({ shopId})
+            const foundShop = await findShopByShopId(shopId)
             if(!foundShop) throw new NotFoundError('Shop not found')
             
             const shop = await verifyShop({ shopId})
@@ -96,18 +94,22 @@ class ShopService{
     }
 
     getAllShop = async({
-        limit,
-        page,
+        limit = 30,
+        page = 1,
+        type = ''
     }) => {
         try {
-            const shops = findALlShop({
+            const filter = {
+                shop_status: { $ne: 'deleted' }
+            } 
+            if(type !== ''){
+                filter.shop_verify = type === 'verified' ? true : false
+            }
+            const shops = await findALlShop({
                 limit: +limit,
                 page: +page,
                 sort: 'ctime',
-                filter: {
-                    shop_status: 'active',
-                    shop_verify: true
-                },
+                filter,
                 select: ['shop_name', 'shop_email', 'shop_address', 'shop_phone', 'shop_logo', 'shop_type'],
             })
 
@@ -118,13 +120,15 @@ class ShopService{
         }
     }
 
-    deleteShop = async({
+    deleteShopByUserService = async({
+        userId,
         shopId
     }) => {
         try {
-            
+            return await deleteShopByUser({ shopId, userId })
         } catch (error) {
-            
+            console.error(error)
+            throw error   
         }
     }
 }
