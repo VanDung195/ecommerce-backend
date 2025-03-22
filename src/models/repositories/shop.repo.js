@@ -34,7 +34,12 @@ const verifyShop = async({
     shopId
 }) => {
     const filter = { _id: shopId},
-            update = { shop_verify: true},
+            update = { 
+                $set: {
+                    shop_verify: true,
+                    verifiedAt: new Date()
+                }
+            },
             options = { new: true}
     const shop = await SHOP.updateOne(filter, update, options)
     return shop
@@ -50,15 +55,10 @@ const findShopByUserId = async({
     return foundShop
 }
 
-const findShopById = async({
-    userId
-}) => {
-    const foundShop = await SHOP.findOne({ userId: userId})
-    return foundShop
-}
-
 const findShopByShopId = async(id) => {
-    const foundShop = await SHOP.findOne({ _id: convertToObjectIdMongodb(id)})
+    const foundShop = await SHOP.findOne({ 
+        _id: convertToObjectIdMongodb(id)
+    })
     return foundShop
 }
 
@@ -107,7 +107,6 @@ const deleteShopByUser = async({ shopId, userId }) => {
 module.exports = {
     createShop,
     findShopByUserId,
-    findShopById,
     disableShop,
     verifyShop,
     findShopByEmail,
