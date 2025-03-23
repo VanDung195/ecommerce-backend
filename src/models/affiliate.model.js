@@ -7,9 +7,15 @@ const COLLECTION_NAME = 'Affiliates'
 
 var affiliateSchema = new Schema({
     userId: { type: Types.ObjectId, ref: 'Users', required: true },
-    commision_rate: { type: Number, default: 0.2}, //tỷ lệ hoa hồng
-    balance: { type: Types.Decimal128, default: 0.0 },
-    status: { type: String, enum: ['active', 'inactive'], default: 'inactive' }
+    commision_rate: { type: Number, default: 0.02, min: 0, max: 1 }, //tỷ lệ hoa hồng
+    balance: { type: Number, default: 0.0 },
+    pending_balance: { type: Number, default: 0.0 },
+    status: { type: String, enum: ['pending', 'active', 'inactive', 'rejected', 'deleted', 'banned'], default: 'pending' },
+    verified: { type: Boolean, default: false },
+    social_media: { type: [{
+        plaform: { type: String, required: true },
+        link: { type: String, required: true }
+    }], required: true },
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
