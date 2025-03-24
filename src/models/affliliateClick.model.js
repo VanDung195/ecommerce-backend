@@ -10,6 +10,9 @@ var affiliateClickSchema = new Schema({
     clickedAt: { type: Date, default: () => new Date() },
     ip_address: {type: String, required: true },
     user_agent: { type: String, required: true }
+}, {
+    timestamps: false,
+    collection: COLLECTION_NAME
 });
 
 module.exports = model(DOCUMENT_NAME, affiliateClickSchema);
