@@ -49,7 +49,7 @@ const cancellationSchema = new Schema({
         ], default: 'buyer_no_longer_wants'},
         detail: { type: String, default: ''}
     },
-    cancelledAt: { type: Date, default: () => new Date()},
+    requestedAt: { type: Date, default: () => new Date()},
     shop_approval: { type: String, enum: ['pending', 'approved', 'reject'], default: 'pending'},
     shop_reason: {
         code: { type: String, enum: [
@@ -68,6 +68,19 @@ var orderStatusHistorySchema = new Schema({
     changedAt: { type: Date, default: new Date()}
 }, { _id: false })
 
+const refundSchema = new Schema({
+    refund_reason: {
+        code: { type: String, enum: [
+            'late_delivery',
+            'customer_not_received',
+            'other'
+        ], required: true },
+        detail: { type: String, default: ''}
+    },
+    requestedAt: { type: Date, default: () => new Date()},
+    refund_status: { type: String, enum: ['pending', 'approved', 'reject' ]}
+}, { _id: false })
+
 var orderSchema = new Schema({
     order_userId: { type: Schema.Types.ObjectId, required: true, ref: 'User'},
     order_checkout: { type: checkoutSchema, required: true},
@@ -77,6 +90,7 @@ var orderSchema = new Schema({
     order_status: { type: String, enum: ['pending', 'confirmed', 'shipping', 'pending_delivery', 'completed', 'cancelled', 'returned'], default: 'pending'},
     order_status_history: { type: [orderStatusHistorySchema], default: [{ status: 'pending', changedAt: new Date()}]},
     order_cancellation: { type: cancellationSchema, default: null},
+    order_refund: { type: refundSchema, default: null},
     order_note: { type: String, default: ''}
 }, {
     timestamps: {

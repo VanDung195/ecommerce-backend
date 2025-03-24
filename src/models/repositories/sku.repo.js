@@ -521,5 +521,5 @@ module.exports = {
     updateSkuTierIdx,
     checkSkuByServerV2,
     getSkusByListSkuId,
-    updateSkusStock
+    updateSkusStock,
 }

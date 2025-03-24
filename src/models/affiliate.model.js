@@ -13,7 +13,7 @@ var affiliateSchema = new Schema({
     status: { type: String, enum: ['pending', 'active', 'inactive', 'rejected', 'deleted', 'banned'], default: 'pending' },
     verified: { type: Boolean, default: false },
     social_media: { type: [{
-        plaform: { type: String, required: true },
+        platform: { type: String, enum: ['Facebook', 'Instagram', 'Thread', 'Youtube', 'Tiktok'], required: true },
         link: { type: String, required: true }
     }], required: true },
 }, {
