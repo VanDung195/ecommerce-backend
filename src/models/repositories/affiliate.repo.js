@@ -10,8 +10,8 @@ const getOneAffiliateById = async(affiliateId) => {
     })
 }
 
-const createAffiliate = async({ userId, social_media }) => {
-    return await AFFILIATE.create({ userId, social_media })
+const createAffiliate = async({ userId, social_media, type }) => {
+    return await AFFILIATE.create({ userId, social_media, aff_type: type })
 }
 
 //admin

@@ -7,9 +7,9 @@ const COLLECTION_NAME = 'AffiliateClicks'
 
 var affiliateClickSchema = new Schema({
     affiliate_link: { type: Types.ObjectId, ref: 'AffiliateLinks', required: true, index: true },
-    clickedAt: { type: Date, default: () => new Date() },
     ip_address: {type: String, required: true },
-    user_agent: { type: String, required: true }
+    user_agent: { type: String, required: true },
+    clickedAt: { type: Date, default: () => new Date() }
 }, {
     timestamps: false,
     collection: COLLECTION_NAME
