@@ -31,7 +31,7 @@ class ShopService{
             const updatedRole = await addRole({ userId, role: 'shop'})
             if(!updatedRole) throw new BadRequestError('Failed to update user role.')
 
-                return newShop
+            return newShop
         } catch (error) {
             console.error(error)
             throw error

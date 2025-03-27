@@ -9,7 +9,7 @@ const checkShopPermission = async (req, res, next) => {
         const foundShop = await findShopByUserId({ userId: user.userId })
         if (!foundShop) throw new AuthFailureError('Shop not registered')
         if(!foundShop.shop_verify) throw new BadRequestError('Unverified shop')
-        if(foundShop.shop_status !== 'active') throw new BadRequestError('Shop has been banned')
+        if(foundShop.shop_status !== 'active') throw new BadRequestError('Shop is not active')
         req.shop = foundShop
         next()
     } catch (error) {
