@@ -3,7 +3,7 @@
 const { SuccessResponse } = require("../core/success.response")
 const { createAffiliateService, verifyAffiliateService, rejectAffiliateService, recordClickService } = require("../services/affiliate.service")
 const { createPartnerAffiliateService } = require("../services/partnerAffiliate.service")
-const { createSellerAfiiliateService, createAffiliateLinkBySellerService } = require("../services/sellerAffiliate.service")
+const { createSellerAfiiliateService, createAffiliateLinkBySellerService, redirectToDestinationUrlService, handlerDestinationUrlService } = require("../services/sellerAffiliate.service")
 
 class AffiliateController{
     //seller affiliate
@@ -21,7 +21,7 @@ class AffiliateController{
         new SuccessResponse({
             message: 'Create affiliate link success',
             metadata: await createAffiliateLinkBySellerService({
-                userId: req.user.userId,
+                shopId: req.affiliate.shopId,
                 affiliateId: req.affiliate._id,
                 productId: req.body.productId
             })
@@ -63,6 +63,24 @@ class AffiliateController{
             metadata: await recordClickService({
                 ipAddress,
                 userAgent
+            })
+        }).send(res)
+    }
+
+    redirectToDestinationUrl = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await redirectToDestinationUrlService(req.params.shortUrl) 
+        }).send(res)
+    }
+
+    handlerDestinationUrl = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await handlerDestinationUrlService({
+                product_slug: req.params.slug,
+                type: req.query.type,
+                affiliateId: req.query.source
             })
         }).send(res)
     }
