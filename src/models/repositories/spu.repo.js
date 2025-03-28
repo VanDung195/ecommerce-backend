@@ -404,6 +404,86 @@ const getOneSpuDetailByShop = async({ shopId, spuId }) => {
     return spuDetail
 }
 
+const getOneSpuDetailForCustomer = async(spuId) => {
+    return await SPU.aggregate([
+        {
+            $match: {
+                _id: spuId,
+                isDeleted: false
+            }
+        },
+        {
+            $project: {
+                isDraft: 0,
+                isPublished: 0,
+                isDeleted: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0
+            }
+        },
+        {
+            $lookup: {
+                from: 'Shops',
+                localField: 'product_shop',
+                foreignField: '_id',
+                as: 'shop_info'
+            }
+        },
+        {
+            $match: {
+                'shop_info.shop_verify': true,
+                'shop_info.shop_status': 'active'
+            }
+        },
+        {
+            $project: {
+                'shop_info._id': 0,
+                'shop_info.shop_email': 0,
+                'shop_info.userId': 0,
+                'shop_info.shop_address': 0,
+                'shop_info.shop_phone': 0,
+                'shop_info.shop_status': 0,
+                'shop_info.shop_verify': 0,
+                'shop_info.createdAt': 0,
+                'shop_info.updatedAt': 0,
+                'shop_info.__v': 0,
+            }
+        },
+        {
+            $lookup: {
+                from: 'Skus',
+                localField: '_id',
+                foreignField: 'productId',
+                as: 'sku_info'
+            }
+        },
+        {
+            $addFields: {
+                sku_info: {
+                    $cond: {
+                        if: { $eq: ['$product_variations', null]},
+                        then: '$$REMOVE',
+                        else: '$sku_info'
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                'sku_info._id': 0,
+                'sku_info.productId': 0,
+                'sku_info.isDraft': 0,
+                'sku_info.isPublished': 0,
+                'sku_info.isDeleted': 0,
+                'sku_info.createdAt': 0,
+                'sku_info.updatedAt': 0,
+                'sku_info.__v': 0,
+            }
+        }
+    ])
+}
+
 module.exports = {
     createSpu,
     deleteSpu,
@@ -421,5 +501,6 @@ module.exports = {
     updateVariationOptions,
     getSpusByListSpuId,
     increaseInventoryStockSpuBySpuId,
-    getOneSpuDetailByShop
+    getOneSpuDetailByShop,
+    getOneSpuDetailForCustomer
 }
