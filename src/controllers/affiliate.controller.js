@@ -1,9 +1,10 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { createAffiliateService, verifyAffiliateService, rejectAffiliateService, recordClickService } = require("../services/affiliate.service")
+const { verifyAffiliateService, rejectAffiliateService, recordClickService, redirectToDestinationUrlService, handlerDestinationUrlService } = require("../services/affiliate.service")
 const { createPartnerAffiliateService } = require("../services/partnerAffiliate.service")
-const { createSellerAfiiliateService, createAffiliateLinkBySellerService, redirectToDestinationUrlService, handlerDestinationUrlService } = require("../services/sellerAffiliate.service")
+const { createSellerAfiiliateService, createAffiliateLinkBySellerService } = require("../services/sellerAffiliate.service")
+const { getLastestAffiliateCookie } = require("../utils")
 
 class AffiliateController{
     //seller affiliate
@@ -68,6 +69,9 @@ class AffiliateController{
     }
 
     redirectToDestinationUrl = async(req, res, next) => {
+        // console.log(req.cookies)
+        const affiliateCookies = getLastestAffiliateCookie(req.cookies)
+        console.log(affiliateCookies)
         new SuccessResponse({
             message: 'Success',
             metadata: await redirectToDestinationUrlService(req.params.shortUrl) 
@@ -75,13 +79,28 @@ class AffiliateController{
     }
 
     handlerDestinationUrl = async(req, res, next) => {
+        const ipAddress = req.header('x-forwarded-for') || req.connection.remoteAddress
+        const userAgent = req.headers['user-agent']
+        const result = await handlerDestinationUrlService({
+            product_slug: req.params.slug,
+            type: req.query.type,
+            affiliateId: req.query.source,
+            ip_address: ipAddress,
+            user_agent: userAgent,
+            country: 'VietNam',
+            device_type: 'desktop',
+            browser: 'Chrome'
+        })
+        res.cookie(`affiliate_${result._id.toString()}_1`, req.query.source, { //_id is productId
+            // path: '/api/order/checkout',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Lax'
+        })
         new SuccessResponse({
             message: 'Success',
-            metadata: await handlerDestinationUrlService({
-                product_slug: req.params.slug,
-                type: req.query.type,
-                affiliateId: req.query.source
-            })
+            metadata: result
         }).send(res)
     }
 }
