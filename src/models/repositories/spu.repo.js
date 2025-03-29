@@ -405,7 +405,7 @@ const getOneSpuDetailByShop = async({ shopId, spuId }) => {
 }
 
 const getOneSpuDetailForCustomer = async(spuId) => {
-    return await SPU.aggregate([
+    return SPU.aggregate([
         {
             $match: {
                 _id: spuId,

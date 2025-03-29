@@ -45,25 +45,28 @@ const createAffiliateLinkBySellerService = async({ shopId, affiliateId, productI
     return newAffiliateLink
 }
 
-const redirectToDestinationUrlService = async(short_url) => {
-    const affiliateLink = await getOneAffiliateLinkByShortUrl(short_url)
-    if(!affiliateLink)
-        throw new NotFoundError('Affiliate link not found')
-    return affiliateLink.destination_url
-}
+// const redirectToDestinationUrlService = async(short_url) => {
+//     const affiliateLink = await getOneAffiliateLinkByShortUrl(short_url)
+//     if(!affiliateLink)
+//         throw new NotFoundError('Affiliate link not found')
+//     //set cookie để tiếp thị gián tiếp?
+//     return affiliateLink.destination_url
+// }
 
-const handlerDestinationUrlService = async({ product_slug, type, affiliateId }) => {
-    const affPrefix = affiliateId.split('_')[0] //affiliate type
-    const affSuffix = affiliateId.split('_')[1] //affilaiteId
-    return {
-        affPrefix,
-        affSuffix
-    }
-}
+// const handlerDestinationUrlService = async({ product_slug, type ,affiliateId }) => {
+//     const affPrefix = affiliateId.split('_')[0] //affiliate type
+//     const affSuffix = affiliateId.split('_')[1] //affilaiteId
+//     if(affPrefix === 'sl'){ // 'sl' is seller
+         
+//     }
+//     return {
+//         affPrefix,
+//         affSuffix,
+//         affiliateId
+//     }
+// }
 
 module.exports = {
     createSellerAfiiliateService,
     createAffiliateLinkBySellerService,
-    redirectToDestinationUrlService,
-    handlerDestinationUrlService
 }
