@@ -11,8 +11,10 @@ const { aquireLock, releaseLock } = require("./redis.service")
 const { getReservationByOrderId, releaseReservedInventory  } = require("../models/repositories/inventory.repo")
 const { producerOrderMessage, producerOrderCancellationEvent, producerOrderRefundEvent } = require("../queues/order.producer")
 const { ORDER_STATUSES } = require("../configs/constant")
-const { checkSkuByServerV2, getSkusByListSkuId } = require("../models/repositories/sku.repo")
+const { checkSkuByServerV2, getSkusByListSkuId, getOneSkuById } = require("../models/repositories/sku.repo")
 const { convertToObjectIdMongodb } = require("../utils")
+const { getOneAffiliateLinkByAffIdAndProductId, getOneAffiliateLink } = require("../models/repositories/affiliateLink.repo")
+const { createAffiliateConversion } = require("../models/repositories/affiliateConversion.repo")
 //USER
 /*
     {
@@ -51,6 +53,7 @@ const { convertToObjectIdMongodb } = require("../utils")
 //use transaction!!!!!
 const createOrderService = async({
     userId,
+    affiliate_cookies,
     user_address,
     user_payment,
     order_note = '',
@@ -65,6 +68,7 @@ const createOrderService = async({
         const orderObjectId = new mongoose.Types.ObjectId()
         const shopOrderId = item_checkout[i]
         const orderProducts = {
+            orderId: orderObjectId,
             shopId: shopOrderId.shop.shopId,
             shop_discount: shopOrderId.shop_discount
         }
@@ -90,6 +94,38 @@ const createOrderService = async({
             })
         }
         orderProducts.item_products = itemProducts
+        if(affiliate_cookies && Object.keys(affiliate_cookies).length !== 0) {
+            for(const itemProduct of itemProducts){
+                const sku = await getOneSkuById(itemProduct.productId); //itemProduct.productId is sku
+                const spuId = sku.productId._id.toString() //populate
+                const cookieKey = `affiliate_${spuId}`
+                if(Object.keys(affiliate_cookies).includes(cookieKey)){
+                    const cookieValue = affiliate_cookies[cookieKey].split('_') //sl_67e8d03e1495aa25a91c42f3_67e8d64f68a0658af03570a3_1743392686473
+                    const affiliateType = cookieValue[0]
+                    const affiliateId = cookieValue[1]
+                    const affiliateLinkId = cookieValue[2]
+                    const foundAffiliateLink = await getOneAffiliateLink({
+                        affiliateLinkId,
+                        affiliateId,
+                        productId: spuId
+                    })
+                    if(!foundAffiliateLink) 
+                        throw new BadRequestError('Invalid request')
+                    const totalPriceProduct = itemProduct.price * itemProduct.quantity
+                    const commissionRate = 0.02
+                    const commissionAmount = totalPriceProduct * commissionRate > 30 ? 30 : totalPriceProduct * commissionRate
+                    await createAffiliateConversion({
+                        affiliateId,
+                        affiliate_type: foundAffiliateLink.affiliate_type,
+                        affiliate_linkId: foundAffiliateLink._id,
+                        orderId: orderObjectId,
+                        product_value: +totalPriceProduct,
+                        commission_rate: commissionRate,
+                        commission_amount: commissionAmount
+                    })
+                }
+            }
+        }
         const checkout = {
             total_price: shopOrderId.price_raw,
             total_apply_discount: shopOrderId.price_raw - shopOrderId.price_apply_discount,
