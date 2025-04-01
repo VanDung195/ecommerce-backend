@@ -1,10 +1,12 @@
 'use strict'
 
+const { convertToObjectIdMongodb } = require('../../utils')
 const AFFILIATE_LINK = require('../affiliateLink.model')
 
-const createAffiliateLink = async({ affiliateId, productId, destination_url, short_url }) => {
+const createAffiliateLink = async({ affiliateId, affiliate_type, productId, destination_url, short_url }) => {
     return await AFFILIATE_LINK.create({
         affiliateId,
+        affiliate_type,
         productId,
         destination_url,
         short_url
@@ -22,6 +24,14 @@ const getOneAffiliateLinkByAffIdAndProductId = async({ affiliateId, productId })
     })
 }
 
+const getOneAffiliateLink = async({ affiliateLinkId, affiliateId, productId }) => {
+    return AFFILIATE_LINK.findOne({
+        _id: convertToObjectIdMongodb(affiliateLinkId),
+        affiliateId: convertToObjectIdMongodb(affiliateId),
+        productId: convertToObjectIdMongodb(productId)
+    })
+}
+
 const incrementClickCount = async(affiliateId) => {
     return AFFILIATE_LINK.findOneAndUpdate(
         { _id: affiliateId },
@@ -34,5 +44,6 @@ module.exports = {
     createAffiliateLink,
     getOneAffiliateLinkByShortUrl,
     getOneAffiliateLinkByAffIdAndProductId,
-    incrementClickCount
+    incrementClickCount,
+    getOneAffiliateLink
 }
