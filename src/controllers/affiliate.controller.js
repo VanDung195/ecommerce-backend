@@ -1,10 +1,11 @@
 'use strict'
 
 const { SuccessResponse } = require("../core/success.response")
-const { verifyAffiliateService, rejectAffiliateService, recordClickService, redirectToDestinationUrlService, handlerDestinationUrlService } = require("../services/affiliate.service")
+const { getOneAffiliateLinkByAffIdAndProductId } = require("../models/repositories/affiliateLink.repo")
+const { verifyAffiliateService, rejectAffiliateService, redirectToDestinationUrlService, handlerDestinationUrlService, processAffiliatePayoutsService } = require("../services/affiliate.service")
 const { createPartnerAffiliateService } = require("../services/partnerAffiliate.service")
 const { createSellerAfiiliateService, createAffiliateLinkBySellerService } = require("../services/sellerAffiliate.service")
-const { getLastestAffiliateCookie } = require("../utils")
+const { getLastestAffiliateCookie, convertToObjectIdMongodb } = require("../utils")
 
 class AffiliateController{
     //seller affiliate
@@ -69,7 +70,7 @@ class AffiliateController{
     }
 
     redirectToDestinationUrl = async(req, res, next) => {
-        // console.log(req.cookies)
+        console.log(req.cookies)
         const affiliateCookies = getLastestAffiliateCookie(req.cookies)
         console.log(affiliateCookies)
         new SuccessResponse({
@@ -91,7 +92,10 @@ class AffiliateController{
             device_type: 'desktop',
             browser: 'Chrome'
         })
-        res.cookie(`affiliate_${result._id.toString()}_1`, req.query.source, { //_id is productId
+        const affiliateId = req.query.source.split('_')[1]
+        const foundAffiliateLink = await getOneAffiliateLinkByAffIdAndProductId({ affiliateId: convertToObjectIdMongodb(affiliateId), productId: result._id})
+        const now = Date.now()
+        res.cookie(`affiliate_${result._id.toString()}`, `${req.query.source}_${foundAffiliateLink._id.toString()}_${now}`, { //_id is productId
             // path: '/api/order/checkout',
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,
@@ -101,6 +105,13 @@ class AffiliateController{
         new SuccessResponse({
             message: 'Success',
             metadata: result
+        }).send(res)
+    }
+
+    processAffiliatePayouts = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Success',
+            metadata: await processAffiliatePayoutsService()
         }).send(res)
     }
 }
