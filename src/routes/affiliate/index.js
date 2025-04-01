@@ -25,5 +25,5 @@ router.post('', asyncHandler(affiliateController.newAffiliate))
 
 router.post('/admin/verify/:affiliateId', grantAccess('updateAny', 'affiliate'), asyncHandler(affiliateController.verifyAffiliate))
 router.post('/admin/reject/:affiliateId', grantAccess('updateAny', 'affiliate'), asyncHandler(affiliateController.rejectAffiliate))
-
+router.post('/admin/affiliate-payouts', grantAccess('updateAny', 'affiliate'), asyncHandler(affiliateController.processAffiliatePayouts))
 module.exports = router
