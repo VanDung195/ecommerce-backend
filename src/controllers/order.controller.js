@@ -15,10 +15,14 @@ class OrderController{
     }
 
     orderByUser = async(req, res, next) => {
+        const affiliateCookies = Object.fromEntries(
+            Object.entries(req.cookies || {}).filter(([key]) => key.startsWith('affiliate'))
+        )
         new SuccessResponse({
             message: 'Order success',
             metadata: await createOrderService({
                 userId: req.user.userId,
+                affiliate_cookies: affiliateCookies,
                 ...req.body
             })
         }).send(res)
