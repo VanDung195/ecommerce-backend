@@ -6,14 +6,16 @@ const DOCUMENT_NAME = 'AffiliateConversion'
 const COLLECTION_NAME = 'AffiliateConversions'
 
 var affiliateConversionSchema = new Schema({
-    affiliate_link: { type: Types.ObjectId, ref: 'AffiliateLinks', required: true },
+    affiliateId: { type: Types.ObjectId, required: true },
+    affiliate_type: { type: String, enum: ['seller', 'partner'], required: true },
+    affiliate_linkId: { type: Types.ObjectId, ref: 'AffiliateLinks', required: true },
     orderId: { type: Types.ObjectId, ref: 'Orders', required: true },
-    shopId: { type: Types.ObjectId, ref: 'Shops', required: true },
     conversion_date: { type: Date, default: () => new Date() },
-    order_value: { type: Number },
-    commission_amount: { type: Number, required: true },
-    // isSelfAffiliate: { type: Boolean, default: false },
-    status: { type: String, enum: ['pending', 'complete', 'cancelled'], default: 'pending'}
+    product_value: { type: Number, required: true, min: 0 }, 
+    commission_rate: { type: Number, required: true, min: 0, max: 0.035 },
+    commission_amount: { type: Number, required: true, min: 0 },
+    status: { type: String, enum: ['pending', 'complete', 'cancelled'], default: 'pending'},
+    completedAt: { type: Date, default: null }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
