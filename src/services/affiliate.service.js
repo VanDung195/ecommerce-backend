@@ -6,11 +6,11 @@ const { createAffiliate, getOneAffiliateById, verifyAffiliate, rejectAffiliate }
 const { getCache, setCacheExpiration } = require('../models/repositories/cache.repo')
 const { addRole } = require('../models/repositories/user.repo')
 const { getOneAffiliateLinkByShortUrl, getOneAffiliateLinkByAffIdAndProductId, incrementClickCount } = require('../models/repositories/affiliateLink.repo')
-const { getOneSellerAffiliateById } = require('../models/repositories/sellerAffiliate.repo')
+const { getOneSellerAffiliateById, addCommissionToSellerAffiliateBalance } = require('../models/repositories/sellerAffiliate.repo')
 const { getOneSpuBySlug, getOneSpuDetailForCustomer } = require('../models/repositories/spu.repo')
 const { AFFILIATE } = require('../configs/constant')
 const { recordClick } = require('../models/repositories/affiliateClick.repo')
-
+const { getEligibleConversions, markAsConverted } = require('../models/repositories/affiliateConversion.repo')
 const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const encodeBase62 = (num) => {
     let result = '';
@@ -88,6 +88,27 @@ const handlerDestinationUrlService = async({ product_slug, type ,affiliateId, ip
 
 
 //admin
+const processAffiliatePayoutsService= async() => {
+    const now = new Date()
+    const cutoffDate = new Date()
+    cutoffDate.setDate(now.getDate() - 30)
+    const eligibleAffiliateConversions = await getEligibleConversions(cutoffDate)
+    for(let affiliateConversion of eligibleAffiliateConversions){
+        console.log(affiliateConversion)
+        const affiliateType = affiliateConversion.affiliate_type
+        const affiliateId = affiliateConversion.affiliateId
+        const commissionAmount = affiliateConversion.commission_amount
+
+        if(affiliateType === 'seller') {
+            await addCommissionToSellerAffiliateBalance({ affiliateId, balance: commissionAmount })
+            await markAsConverted({ conversionId: affiliateConversion._id, affiliateId, affiliateType })
+        } else {
+            //
+        }
+    }
+    return eligibleAffiliateConversions
+}
+
 const getAllAffiliates = async({
     page = 1,
     limit = 30,
@@ -122,5 +143,6 @@ module.exports = {
     verifyAffiliateService,
     rejectAffiliateService,
     redirectToDestinationUrlService,
-    handlerDestinationUrlService
+    handlerDestinationUrlService,
+    processAffiliatePayoutsService
 }
