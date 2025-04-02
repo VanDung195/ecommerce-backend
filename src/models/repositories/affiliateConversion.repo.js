@@ -22,15 +22,28 @@ const createAffiliateConversion = async({
     })
 }
 
-const updateAffiliateConversationStatus = async({
-    orderId,
-    newStatus,
+const completeAffiliateConversion = async({
+    orderId
 }) => {
     const filter = {
         orderId
     }, update = {
         $set: {
-            status: newStatus
+            status: 'complete',
+            completedAt: new Date()
+        }
+    }, option = { new: true }
+    return AFFILIATE_CONVERSION.findOneAndUpdate(filter, update, option)
+}
+
+const cancelAffiliateConversion = async({
+    orderId
+}) => {
+    const filter = {
+        orderId
+    }, update = {
+        $set: {
+            status: 'cancelled'
         }
     }, option = { new: true }
     return AFFILIATE_CONVERSION.findOneAndUpdate(filter, update, option)
@@ -41,12 +54,26 @@ const getEligibleConversions = async(cutoffDate) => {
         status: 'complete',
         createdAt: {
             $lte: cutoffDate
-        }
+        },
+        convertedAt: null
     })
+}
+
+const markAsConverted = async({ conversionId, affiliateId, affiliateType }) => {
+    const filter = {
+        _id: conversionId,
+        affiliateId,
+        affiliateType
+    }, update = {
+        convertedAt: new Date()
+    }, option = { new: true }
+    return AFFILIATE_CONVERSION.findOneAndUpdate(filter, update, option)
 }
 
 module.exports = {
     createAffiliateConversion,
-    updateAffiliateConversationStatus,
-    getEligibleConversions
+    getEligibleConversions,
+    markAsConverted,
+    completeAffiliateConversion,
+    cancelAffiliateConversion
 }
