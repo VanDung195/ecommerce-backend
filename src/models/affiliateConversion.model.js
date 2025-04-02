@@ -15,7 +15,8 @@ var affiliateConversionSchema = new Schema({
     commission_rate: { type: Number, required: true, min: 0, max: 0.035 },
     commission_amount: { type: Number, required: true, min: 0 },
     status: { type: String, enum: ['pending', 'complete', 'cancelled'], default: 'pending'},
-    completedAt: { type: Date, default: null }
+    completedAt: { type: Date, default: null },
+    convertedAt: { type: Date, default: null }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
