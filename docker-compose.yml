@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: ecom-app
+    ports:
+      - "3052:3052"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/mydb
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mongo
+      - redis
+      - rabbitmq
+    volumes:
+      - .:/app
+    restart: always
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"       # RabbitMQ
+      - "15672:15672"     # Web UI
+volumes:
+  mongo_data:
