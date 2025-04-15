@@ -1,0 +1,49 @@
+variables:
+  #DOCKER_IMAGE: registry.hub.docker.com/user/project-name:v0.0.1_12345678
+  DOCKER_IMAGE: ${REGISTRY_URL}/${REGISTRY_USER}/${CI_PROJECT_NAME}:${CI_COMMIT_TAG}_${CI_COMMIT_SHORT_SHA}
+  DOCKER_CONTAINER: ${CI_PROJECT_NAME}
+
+stages:
+  - buildandpush
+  - deploy
+  - showlogs
+
+buildandpush:
+  stage: buildandpush
+  variables:
+    GIT_STRATEGY: clone
+  before_script:
+    - docker login ${REGISTRY_URL} -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+  tags:
+    - lab-server
+  only: 
+    - tags
+
+deploy: 
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  before_script:
+    - docker login ${REGISTRY_URL} -u ${REGISTRY_USER} -p ${REGISTRY_PASSWORD}
+  script:
+    - docker pull $DOCKER_IMAGE
+    - docker-compose down
+    - docker-compose up -d --build
+  tags:
+    - lab-server
+  only: 
+    - tags
+
+showlog:
+  stage: showlogs
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - docker-compose logs --tail=100 -f --no-color app mongo redis rabbitmq
+  tags:
+    - lab-server
+  only: 
+    - tags
